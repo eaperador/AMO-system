@@ -37,12 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'MercadoOrganico',
     'apps.administrador',
     'apps.apirest',
     'apps.comun',
     'apps.consumidor',
     'apps.distribuidor',
-    'apps.productor'
+    'apps.productor',
 ]
 
 MIDDLEWARE = [
@@ -82,10 +83,10 @@ WSGI_APPLICATION = 'MercadoOrganico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'MercadoOrganico',
-        'USER': 'makito',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'NAME': 'd489cvqprn8f6d',
+        'USER': 'lvkmmunliasnqq',
+        'PASSWORD': 'd9d364c8a83bce8950879d1f6aca4bc454d9d8c881862b329c8b7888bafb34bc',
+        'HOST': 'ec2-184-73-189-190.compute-1.amazonaws.com',
         'PORT': '5432',
 
     }
