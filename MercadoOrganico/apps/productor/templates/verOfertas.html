@@ -7,19 +7,59 @@
 	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	<script>
 		(function () {
-			$.getJSON( "http://localhost:8000/productor/StateList/").done(function (data) {
+		  /**  $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
 			    $.each(data, function (i, item) {
-		            $('#filtroEstados').prepend('<div class="col-sm-2 col-centrada ">\n' +
-                                                    item.fields.descripcion +
-                                '                </div>');
+			        $('#filtroEstados').prepend(' <span>'+item.fields.fecha+'</span>');
+                });
+			});*/
+        })();
+
+
+        (function () {
+		    $.getJSON( "http://localhost:8000/productor/listarEstados/").done(function (data) {
+			    $.each(data, function (i, item) {
+		            $('#listaEstados').prepend(' <option value="'+item.pk+'">'+item.fields.descripcion+'</option>');
                 });
 			});
         })();
+
+		function enviarForm() {
+		    $.ajax({
+                type: "POST",
+                url: "http://localhost:8000/productor/listarOfertas/",
+                data: JSON.stringify({filter: $('#listaEstados').val()}),
+                contentType: "aplication/json; charset-utf-8",
+                dataType: "json",
+                success: function (data) {
+                    alert('done')
+                    console.log(data)
+
+
+                     $('#filtroEstados').prepend(' <span>'+data+'</span>');
+                },
+                failure: function (errMsg) {
+                    alert("Hubo un error");
+                }
+            });
+            return false;
+        }
     </script>
 </head>
 <body>
 <div class="row" id="filtroEstados">
-    <input type="submit" value="Buscar" class="btn btn-primary"/>
+ <form method="post" action="" enctype="multipart/form-data" name="filtro">
+            <div class="col-lg-24 col-centrada text-right">
+                <p><label for="categorias" class="col-sm-5 label_filtro">Filtro:</label></p>
+                <div class="col-sm-2 col-centrada ">
+                    <select id="listaEstados">
+                      <option selected value="-1">Todos...</option>
+                    </select>
+                    <input type="button" value="Buscar" class="btn btn-primary" onclick="enviarForm()"/>
+                </div>
+            </div>
+        </form>
+    </div>
+
 </div>
 </body>
 </html>
