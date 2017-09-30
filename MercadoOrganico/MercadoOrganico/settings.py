@@ -83,10 +83,10 @@ WSGI_APPLICATION = 'MercadoOrganico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd489cvqprn8f6d',
-        'USER': 'lvkmmunliasnqq',
-        'PASSWORD': 'd9d364c8a83bce8950879d1f6aca4bc454d9d8c881862b329c8b7888bafb34bc',
-        'HOST': 'ec2-184-73-189-190.compute-1.amazonaws.com',
+        'NAME': 'MerkaOrganico',
+        'USER': 'postgres',
+        'PASSWORD': '1072661319',
+        'HOST': 'localhost',
         'PORT': '5432',
 
     }
@@ -129,4 +129,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
+STATIC_URL = '/images/'
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'images'),
+)

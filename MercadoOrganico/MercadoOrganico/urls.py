@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
+    url(r'^catalogo/', include('apps.administrador.urls', namespace='catalogo')),
     url(r'^productor/', include('apps.productor.urls', namespace="productor")),
     url(r'^admin/', admin.site.urls),
 ]

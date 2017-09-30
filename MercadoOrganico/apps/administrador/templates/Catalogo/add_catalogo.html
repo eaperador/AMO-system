@@ -1,0 +1,124 @@
+
+<script>
+    $(document).ready(function () {
+        //Mostrar listado de ofertas solo si se escoge un producto
+        $("#lista_ofertas_producto").hide();
+        var productos = $("#select_productos");
+        $(productos).change(function () {
+            $(".image").empty();
+            var selected_producto = productos.val();
+            if (selected_producto)
+            {
+                $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
+                    $(".image").prepend('<img src="http://127.0.0.1:8000/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
+                    $("#lista_ofertas_producto").show();
+                });
+            }
+        });
+
+        //Listar catalogos
+        $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarCatalogos/").done(function (data) {
+            console.log(data);
+            var options = $("#select_catalogos");
+            options.append($("<option />").val('').text('Seleccione catalogo'));
+            $.each(data, function() {
+                options.append($("<option />").val(this.id).text('Número ' + this.id + ' - (' + this.fecha_inicio + ')' + ' - (' + this.fecha_fin + ')'));
+            });
+        });
+
+        //Listar productos
+        $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProductos/").done(function (data) {
+             console.log(data);
+             var options = $("#select_productos");
+             options.append($("<option />").val('').text('Seleccione producto'));
+             $.each(data, function() {
+                options.append($("<option />").val(this.id).text(this.nombre));
+            });
+        });
+
+        //Mostrar el número de catalogo que se va a crear
+        $.getJSON("http://127.0.0.1:8000/catalogo/numeroCatalogo/").done(function (data) {
+            $('.numero_catalogo').html(data.numero);
+        });
+
+        //Agregar catalogo
+        $('#add_catalogo').submit(function (event) {
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8000/catalogo/addCatalogo/",
+                data: JSON.stringify({ fecha_inicio: $('#fecha_inicio_cat').val(), fecha_fin: $('#fecha_fin_cat').val() }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    alert('Catalogo creado con exito');
+                    window.location = "http://127.0.0.1:8000/catalogo";
+                },
+                failure: function (data) {
+                    console.log(data);
+                    alert('Hubo error!');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<div class="container-fluid">
+
+    <form action="" method="post">
+        <div class="col-lg-12">
+            <div class="col-lg-4">
+                <label for="select_catalogos" class="label-control">Seleccione Catalogo:</label>
+                <select name="" id="select_catalogos" class="form-control"></select>
+            </div>
+            <div class="col-lg-3">
+                <label for="" class="label-control">&nbsp;</label>
+                <br>
+                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
+                    Ingresar catalogo
+                </button>
+            </div>
+            <div class="col-lg-5">
+                <label for="select_productos" class="label-control">Seleccione producto:</label>
+                <select name="" id="select_productos" class="form-control"></select>
+            </div>
+        </div>
+        {% include 'Catalogo/add_cantidades_catalogo.html' %}
+    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Ingreso Catalogo</h4>
+                </div>
+                <div class="modal-body" style="height: 200px">
+                    <div id="form_add_catalogo" class="col-lg-12" style="margin-bottom: 40px">
+                        <form action="" method="post" id="add_catalogo">
+                            <div class="col-lg-12">
+                                <strong>Ingrese datos del catalogo:</strong>
+                            </div>
+                            <br><br>
+                            <div class="form-group col-lg-12">
+                                <strong>Número de catalogo: <span class="numero_catalogo"></span></strong>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <input type="date" class="form-control" id="fecha_inicio_cat" value="">
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <input type="date" class="form-control" id="fecha_fin_cat" value="">
+                            </div>
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary">Ingresar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
