@@ -10,7 +10,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 from .models import Catalogo, Producto
-
+from ..productor.models import EstadoOferta, Oferta
 
 @csrf_exempt
 def index(request):
@@ -71,3 +71,17 @@ def select_producto(request, id):
         data_producto = {'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.imagen), 'estado': producto.estado}
     data_convert = json.dumps(data_producto)
     return HttpResponse(data_convert)
+
+### Listar ofertas de los productores ###
+@csrf_exempt
+def listarOfertas(request):
+    listaOfertas = Oferta.objects.all()
+    if (request.method == 'POST'):
+        jsonFilter = json.loads(request.body)
+        filter = jsonFilter.get('filter')
+        if (int(filter) > 0):
+            listaOfertas = Oferta.objects.filter(producto=filter)
+    return HttpResponse(serializers.serialize("json", listaOfertas))
+
+
+
