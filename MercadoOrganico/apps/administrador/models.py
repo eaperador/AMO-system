@@ -16,12 +16,19 @@ class TipoUnidad(models.Model):
     def __unicode__(self):
        return "%s" % (self.abreviatura)
 
+class Categoria(models.Model):
+    nombre = models.CharField(max_length=50)
+
+    def __unicode__(self):
+       return "%s" % (self.nombre)
+
 class Producto(models.Model):
     nombre = models.CharField(max_length=250)
     descripcion = models.CharField(max_length=1000)
     imagen = models.ImageField(upload_to='images', null=True)
     activo = models.BooleanField(default=False, null=False)
     tipoUnidad = models.ForeignKey(TipoUnidad, null=False)
+    categoria = models.ForeignKey(Categoria, null=False)
 
     def __unicode__(self):
        return "%s" % (self.nombre)
@@ -31,11 +38,3 @@ class CatalogoOferta(models.Model):
     cantidad_definida = models.IntegerField()
     catalogo = models.ForeignKey(Catalogo, null=True)
     producto = models.ForeignKey(Producto, null=True)
-
-class Productor (models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    foto = models.ImageField(upload_to='images', null=True)
-
-    def __unicode__(self):
-        return'{}'.format(self.nombre)

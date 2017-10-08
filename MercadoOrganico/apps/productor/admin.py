@@ -3,24 +3,24 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from .models import EstadoOferta, Oferta
-from ..administrador.models import Producto, Productor
+from ..administrador.models import Producto
+from ..comun.models import Usuario
 
 class EstadoOfertaAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'descripcion', )
+    list_display = ('pk', 'nombre', )
     ordering = ('pk',)
 
-
 class OfertaAdmin(admin.ModelAdmin):
-    list_display = ('fecha', 'get_productor', 'cantidad', 'precio', 'get_estado', 'get_producto')
+    list_display = ('fecha','get_productor', 'cantidad', 'precio', 'get_estado', 'get_producto')
 
     def get_estado(self, obj):
-        return obj.estado.descripcion
+        return obj.estado.nombre
 
     get_estado.short_description = 'Estado'
-    get_estado.admin_order_field = 'descripcion'
+    get_estado.admin_order_field = 'nombre'
 
     def get_productor(self, obj):
-        return obj.productor.nombre + " " + obj.productor.apellido
+        return obj.productor.auth_user_id.first_name + " " + obj.productor.auth_user_id.last_name
 
     get_productor.short_description = 'Productor'
     get_productor.admin_order_field = 'nombre'
