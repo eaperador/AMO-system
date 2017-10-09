@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 import json
-
+from django.core.serializers.json import DjangoJSONEncoder
+import time
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -57,8 +58,12 @@ def select_catalogos(request):
 @csrf_exempt
 def select_productos(request):
     if request.method == "GET":
-        productos = Producto.objects.filter(estado=True)
-        lista_productos = [{'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.imagen), 'estado': producto.estado} for producto in productos]
+        productos = Producto.objects.filter(activo=True)
+        lista_productos = [{'id': producto.id,
+                            'nombre': producto.nombre,
+                            'descripcion': producto.descripcion,
+                            'imagen': str(producto.imagen),
+                            'activo': producto.activo} for producto in productos]
     data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)
 
@@ -74,14 +79,26 @@ def select_producto(request, id):
 
 ### Listar ofertas de los productores ###
 @csrf_exempt
-def listarOfertas(request):
-    listaOfertas = Oferta.objects.all()
-    if (request.method == 'POST'):
-        jsonFilter = json.loads(request.body)
-        filter = jsonFilter.get('filter')
-        if (int(filter) > 0):
-            listaOfertas = Oferta.objects.filter(producto=filter)
-    return HttpResponse(serializers.serialize("json", listaOfertas))
+def listarOfertas(request, productoId):
+    if request.method == 'GET':
+        if productoId == '0':
+            data_oferta = []
+        else:
+            listaOfertas = Oferta.objects.filter(producto=productoId)
+            data_oferta = [{'producto': oferta.producto.nombre,
+                            'fecha': oferta.fecha,
+                            'productor':oferta.productor.auth_user_id.first_name + " " + oferta.productor.auth_user_id.last_name,
+                            'cantidad':oferta.cantidad,
+                            'precio':oferta.precio,
+                            'estadoId':oferta.estado.id,
+                            'estadoNombre':oferta.estado.nombre,
+                            'unidad': oferta.producto.tipoUnidad.abreviatura}for oferta in listaOfertas]
+    data_convert = json.dumps(data_oferta,cls=DjangoJSONEncoder)
+    return HttpResponse(data_convert)
+
+@csrf_exempt
+def evaluarOfertas(request):
+    return render(request, "Ofertas/evaluar_ofertas.html")
 
 
 
