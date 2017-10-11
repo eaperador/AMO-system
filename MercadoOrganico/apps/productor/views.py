@@ -27,3 +27,8 @@ def listarOfertas(request):
 @csrf_exempt
 def ver_ofertas(request):
 	return render(request, "verOfertas.html")
+
+
+@csrf_exempt
+def crearOferta(request):
+	return render(request, "crearOferta.html")
