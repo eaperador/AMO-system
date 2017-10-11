@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'MercadoOrganico',
     'apps.administrador',
     'apps.apirest',
@@ -54,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'MercadoOrganico.urls'
@@ -137,3 +140,22 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 
 )
+
+
+# :::::::::::::::: ::::::::::::::::::::: ::::::::::
+# :::::::::::::::: CONFIGURACION DE CORS::::::::::
+# :::::::::::::::: ::::::::::::::::::::: ::::::::::
+
+#Permitir peticiones de cualquier servidor
+#DEV
+CORS_ORIGIN_ALLOW_ALL = True
+
+#Para permitir solo peticiones de los siguientes servidores
+# Produccion
+
+#CORS_ORIGIN_WHITELIST = (
+#    'google.com',
+#    'hostname.example.com',
+#    'localhost:8000',
+#    '127.0.0.1:9000'
+#)
