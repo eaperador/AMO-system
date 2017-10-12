@@ -27,5 +27,8 @@ class Usuario(models.Model):
     def __unicode__(self):
        return "%s" % (self.auth_user_id.first_name +  " " + self.auth_user_id.last_name)
 
+    def natural_key(self):
+        return (self.auth_user_id.first_name +  " " + self.auth_user_id.last_name)
+
 
 
