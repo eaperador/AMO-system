@@ -86,7 +86,8 @@ def listarOfertas(request, productoId):
             data_oferta = []
         else:
             listaOfertas = Oferta.objects.filter(producto=productoId)
-            data_oferta = [{'producto': oferta.producto.nombre,
+            data_oferta = [{'id': oferta.id,
+                            'producto': oferta.producto.nombre,
                             'fecha': oferta.fecha,
                             'productor':oferta.productor.auth_user_id.first_name + " " + oferta.productor.auth_user_id.last_name,
                             'cantidad':oferta.cantidad,
@@ -102,4 +103,9 @@ def evaluarOfertas(request):
     return render(request, "Ofertas/evaluar_ofertas.html")
 
 
+@csrf_exempt
+def ingresarCantidadAprobada(request):
+    if request.method == "POST":
+        print 'Entrar Cantidad'
 
+    return HttpResponse(request)

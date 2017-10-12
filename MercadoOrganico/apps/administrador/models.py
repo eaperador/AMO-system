@@ -37,6 +37,7 @@ class Producto(models.Model):
 
     def natural_key(self):
         return {"nombre" : self.nombre, "unidad": self.tipoUnidad.natural_key()}
+
 class CatalogoOferta(models.Model):
     precio_definido = models.FloatField()
     cantidad_definida = models.IntegerField()
