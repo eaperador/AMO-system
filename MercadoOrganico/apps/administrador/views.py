@@ -5,7 +5,7 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 import time
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -97,6 +97,16 @@ def listarOfertas(request, productoId):
                             'unidad': oferta.producto.tipoUnidad.abreviatura}for oferta in listaOfertas]
     data_convert = json.dumps(data_oferta,cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
+
+@csrf_exempt
+def guardarOferta(request):
+    if request.method == 'POST':
+        jsonOferta = json.loads(request.body)
+        ofertaId = jsonOferta['ofertaId']
+        estadoId = jsonOferta['estadoId']
+        Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
+
+    return JsonResponse({"mensaje": "ok"})
 
 @csrf_exempt
 def evaluarOfertas(request):
