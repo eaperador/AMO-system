@@ -27,8 +27,11 @@ def listarOfertas(request):
         filter = jsonFilter.get('filter')
         if (int(filter) > 0):
             listaOfertas = Oferta.objects.filter(estado=filter)
+
+
     page = request.GET.get('page', 1)
-    paginator = Paginator(listaOfertas, 2)
+    print page
+    paginator = Paginator(listaOfertas,3)
 
     try:
         ofertas = paginator.page(page)
@@ -36,7 +39,38 @@ def listarOfertas(request):
         ofertas = paginator.page(1)
     except EmptyPage:
         ofertas = paginator.page(paginator.num_pages)
-    return HttpResponse(serializers.serialize("json", ofertas,use_natural_foreign_keys=True))
+
+    prevPage = 0
+    nextPage = 0
+    if (ofertas.has_previous()):
+        prevPage = ofertas.previous_page_number()
+
+    if (ofertas.has_next()):
+        nextPage = ofertas.next_page_number()
+
+    ofertasPag = {"has_other_pages" : ofertas.has_other_pages(),
+                   "has_previous" : ofertas.has_previous(),
+                   "previous_page_number" : prevPage,
+                   "page_range" : ofertas.paginator.num_pages,
+                   "has_next" : ofertas.has_next(),
+                   "next_page_number" : nextPage,
+                   "current_page" : ofertas.number,
+                   "first_row" : ofertas.start_index()}
+
+    listaOfertasJson = [{
+        "pk": oferta.id,
+        "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
+        "precio": oferta.precio,
+        "cantidad": oferta.cantidad,
+        "estado": oferta.estado.nombre,
+        "producto": oferta.producto.nombre,
+        "unidad": oferta.producto.tipoUnidad.abreviatura,
+        } for oferta in ofertas.object_list]
+    json_ = [{"ofertas" : listaOfertasJson,
+              "ofertasPag" : ofertasPag
+              }]
+
+    return HttpResponse(json.dumps(json_))
 @csrf_exempt
 def ver_ofertas(request):
 	return render(request, "verOfertas.html")

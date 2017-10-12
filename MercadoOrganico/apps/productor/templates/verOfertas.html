@@ -9,22 +9,6 @@
      <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
 	 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	 <script>
-		//(function () {
-		  /**  $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
-			    $.each(data, function (i, item) {
-			        $('#listaOfertas').prepend("<tr> " +
-                                                  "<th scope="row>1</th>
-
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Mark</td>
-                    <td>Mark</td>
-                </tr>
-                });
-			});
-        })();**/
-
 
         (function () {
 		    $.getJSON( "http://localhost:8000/productor/listarEstados/").done(function (data) {
@@ -32,6 +16,10 @@
 		            $('#listaEstados').prepend(' <option value="'+item.pk+'">'+item.fields.nombre+'</option>');
                 });
 			});
+		    $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
+			     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row)
+                 paginacion(data[0].ofertasPag)
+                });
         })();
         function formtatDate(d) {
             var day = ("0" + d.getDay()).slice(-2);
@@ -43,36 +31,61 @@
             var min = ("0" + d.getMinutes()).slice(-2);
             return year+"-"+month+"-"+day+" "+hour+":"+min;
         };
-		function enviarForm() {
+		function enviarForm(page) {
 		    $.ajax({
                 type: "POST",
-                url: "http://localhost:8000/productor/listarOfertas/",
+                url: "http://localhost:8000/productor/listarOfertas/?page="+page,
                 data: JSON.stringify({filter: $('#listaEstados').val()}),
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
                 success: function (data) {
-                    $('#listaOfertas').empty()
-                    $.each(data, function (i, item) {
-                        var dt = new Date(item.fields.fecha);
-                        console.log(dt.toString('yyyy-MM-dd'))
-                        $('#listaOfertas').append("<tr style=\"color: black\"style=\"color: black\"> " +
-                                                      "<th scope='row'>"+(i+1)+"</th>"+
-                                                      "<td><p><label>"+formtatDate(dt)+"</label></p></td>" +
-                                                      "<td>"+item.fields.producto.nombre+"</td>" +
-                                                      "<td>"+item.fields.cantidad+"</td>"+
-                                                      "<td>"+item.fields.producto.unidad.abreviatura+"</td>"+
-                                                      "<td>"+item.fields.precio+"</td>"+
-                                                      "<td>"+item.fields.estado.nombre+"</td>"+
-                                                    "</tr>")
-                        i++
-                     });
-                    },
+                    mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row)
+                    paginacion(data[0].ofertasPag)
+                },
                 failure: function (errMsg) {
                     alert("Hubo un error");
                 }
             });
             return false;
         };
+		function mostrarOfertas(ofertas, current){
+		    $('#listaOfertas').empty()
+            $.each(ofertas, function (i, item) {
+                var row = current
+                $('#listaOfertas').append("<tr style=\"color: black\"style=\"color: black\"> " +
+                                              "<th scope='row'>"+(row+i)+"</th>"+
+                                              "<td><p><label>"+item.fecha+"</label></p></td>" +
+                                              "<td>"+item.producto+"</td>" +
+                                              "<td>"+item.cantidad+"</td>"+
+                                              "<td>"+item.unidad+"</td>"+
+                                              "<td>"+item.precio+"</td>"+
+                                              "<td>"+item.estado+"</td>"+
+                                            "</tr>")
+                i++
+             });
+        };
+		function paginacion(ofertasPag){
+		    $('#pagination').empty()
+		    if (ofertasPag.has_other_pages){
+                $('#pagination').append("<ul class='pagination' id='paginationList'></ul>")
+                if (ofertasPag.has_previous)
+                    $('#paginationList').append("<li><button onclick='enviarForm("+ofertasPag.previous_page_number+")'  class='btn btn-basic'>&laquo;</button></li>")
+                else
+                    $('#paginationList').append("<li class='disabled'><span>&laquo;</span></li>")
+                for (i = 1; i <= ofertasPag.page_range; i++) {
+                if (ofertasPag.current_page == i )
+                    $('#paginationList').append("<li><button onclick='enviarForm("+i+")' class='btn btn-primary'>"+i+"</button></li>")
+                else
+                    $('#paginationList').append("<li><button onclick='enviarForm("+i+")' class='btn btn-basic'>"+i+"</button></li>")
+                }
+                if (ofertasPag.has_next){
+                    $('#paginationList').append("<li><button onclick='enviarForm("+ofertasPag.next_page_number+")'  class='btn btn-basic'>&raquo;</button></li>")
+                } else {
+                    $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
+                }
+            }
+        }
+
     </script>
      <section id="Productor">
          <div class="header-content" >
@@ -107,29 +120,9 @@
                 </tbody>
             </table>
         </div>
-              <div class="col-lg-12 col-centrada text-center">
-            {% if ofertas.has_other_pages %}
-            <ul class="pagination">
-                {% if ofertas.has_previous %}
-                    <li><a href="?page={{ ofertas.previous_page_number }}">&laquo;</a></li>
-                {% else %}
-                    <li class="disabled"><span>&laquo;</span></li>
-                {% endif %}
-                {% for i in ofertas.paginator.page_range %}
-                    {% if users.number == i %}
-                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                    {% else %}
-                        <li><a href="?page={{ i }}">{{ i }}</a></li>
-                    {% endif %}
-                {% endfor %}
-                {% if ofertas.has_next %}
-                    <li><a href="?page={{ ofertas.next_page_number }}">&raquo;</a></li>
-                {% else %}
-                    <li class="disabled"><span>&raquo;</span></li>
-                {% endif %}
-            </ul>
-        {% endif %}
-        </div>
+              <div class="col-lg-12 col-centrada text-center" id="pagination">
+
+            </div>
          </div>
 
 
