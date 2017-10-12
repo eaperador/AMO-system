@@ -64,6 +64,7 @@ def select_productos(request):
                             'descripcion': producto.descripcion,
                             'imagen': str(producto.imagen),
                             'activo': producto.activo} for producto in productos]
+
     data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)
 
@@ -73,7 +74,7 @@ def select_producto(request, id):
     print request
     if request.method == "GET":
         producto = Producto.objects.get(pk=id)
-        data_producto = {'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.imagen), 'estado': producto.estado}
+        data_producto = {'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.imagen), 'activo': producto.activo}
     data_convert = json.dumps(data_producto)
     return HttpResponse(data_convert)
 
