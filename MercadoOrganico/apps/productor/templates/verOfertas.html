@@ -55,9 +55,9 @@
                     $.each(data, function (i, item) {
                         var dt = new Date(item.fields.fecha);
                         console.log(dt.toString('yyyy-MM-dd'))
-                        $('#listaOfertas').append("<tr> " +
+                        $('#listaOfertas').append("<tr style=\"color: black\"style=\"color: black\"> " +
                                                       "<th scope='row'>"+(i+1)+"</th>"+
-                                                      "<td>"+formtatDate(dt)+"</td>" +
+                                                      "<td><p><label>"+formtatDate(dt)+"</label></p></td>" +
                                                       "<td>"+item.fields.producto.nombre+"</td>" +
                                                       "<td>"+item.fields.cantidad+"</td>"+
                                                       "<td>"+item.fields.producto.unidad.abreviatura+"</td>"+
@@ -89,10 +89,10 @@
                         </div>
                 </form>
             </div>
-             <div class="container">
+             <div class="row">
             <table id="lista_ofertas_productor" class="table table-responsive">
                 <thead>
-                    <tr>
+                    <tr style="color: black">
                         <th class="col-xs-1">#</th>
                         <th class="col-xs-1">Fecha de la oferta</th>
                         <th class="col-xs-1">Producto</th>
@@ -106,6 +106,29 @@
 
                 </tbody>
             </table>
+        </div>
+              <div class="col-lg-12 col-centrada text-center">
+            {% if ofertas.has_other_pages %}
+            <ul class="pagination">
+                {% if ofertas.has_previous %}
+                    <li><a href="?page={{ ofertas.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in ofertas.paginator.page_range %}
+                    {% if users.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if ofertas.has_next %}
+                    <li><a href="?page={{ ofertas.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        {% endif %}
         </div>
          </div>
 

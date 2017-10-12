@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.core import serializers
 import json
+
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -25,7 +27,16 @@ def listarOfertas(request):
         filter = jsonFilter.get('filter')
         if (int(filter) > 0):
             listaOfertas = Oferta.objects.filter(estado=filter)
-    return HttpResponse(serializers.serialize("json", listaOfertas,use_natural_foreign_keys=True))
+    page = request.GET.get('page', 1)
+    paginator = Paginator(listaOfertas, 2)
+
+    try:
+        ofertas = paginator.page(page)
+    except PageNotAnInteger:
+        ofertas = paginator.page(1)
+    except EmptyPage:
+        ofertas = paginator.page(paginator.num_pages)
+    return HttpResponse(serializers.serialize("json", ofertas,use_natural_foreign_keys=True))
 @csrf_exempt
 def ver_ofertas(request):
 	return render(request, "verOfertas.html")
