@@ -29,8 +29,8 @@ class Producto(models.Model):
 class CatalogoOferta(models.Model):
     precio_definido = models.FloatField()
     cantidad_definida = models.IntegerField()
-    catalogo = models.ForeignKey(Catalogo, null=True)
-    producto = models.ForeignKey(Producto, null=True)
+    catalogo = models.ForeignKey(Catalogo, null=False)
+    producto = models.ForeignKey(Producto, null=False)
 
 class Productor (models.Model):
     nombre = models.CharField(max_length=100)

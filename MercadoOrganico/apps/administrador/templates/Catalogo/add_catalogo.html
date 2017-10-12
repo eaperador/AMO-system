@@ -10,6 +10,7 @@
             if (selected_producto)
             {
                 $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
+                    console.log(data);
                     $(".image").prepend('<img src="http://127.0.0.1:8000/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
                     $("#lista_ofertas_producto").show();
                 });
