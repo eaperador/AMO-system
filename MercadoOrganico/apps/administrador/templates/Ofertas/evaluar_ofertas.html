@@ -9,6 +9,25 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
     <script>
+        function evaluar(ofertaId,estadoId,productoId)
+        {
+            $.ajax({
+               type: "POST",
+               url: "http://127.0.0.1:8000/catalogo/guardarOferta/",
+               data: JSON.stringify({ ofertaId: ofertaId, estadoId : estadoId}),
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               success: function (data) {
+                   alert(ofertaId);
+                   $("#select_productos").val(productoId);
+                   $("#select_productos").change();
+               },
+               failure: function(errMsg){
+                   alert("Hubo un error");
+               }
+            });
+        };
+
         $(document).ready(function () {
             //Mostrar listado de ofertas
             var productos = $("#select_productos");
@@ -19,10 +38,8 @@
                     selected_producto = 0
                 }
                 $.getJSON("http://127.0.0.1:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
-                    console.log(data)
                     var items = [];
                     $.each(data, function (key,val) {
-                            alert(val.estadoId);
                         items.push("<tr>");
                         items.push("<td id=''"+key+"''>"+val.fecha+"</td>");
                         items.push("<td id=''"+key+"''>"+val.productor+"</td>");
@@ -30,18 +47,8 @@
                         items.push("<td id=''"+key+"''>"+val.unidad+"</td>");
                         items.push("<td id=''"+key+"''>"+val.cantidad+"</td>");
                         if (val.estadoId == '1'){
-                            items.push("<td id=''"+key+"''>"
-                                        +"<div class='radio'>"
-                                        +"<label><input type='radio' name='optradio' value='"+val.id+"'>"
-                                        +"Aprobada"
-                                        +"</label>"
-                                        +"</div>"
-                                        +"<div class='radio'>"
-                                        +"<label><input type='radio' name='optradio' value='"+val.id+"'>"
-                                        +"Rechazada"
-                                        +"</label>"
-                                        +"</div>"
-                                        +"</td>");
+                            items.push("<td class='nuevo'><input type=\"button\" id=\"Aprobar\" value=\"Aprobar\" onclick=\"evaluar("+val.id+","+2+","+selected_producto+")\"/>" +
+                                                         "<input type=\"button\" id=\"Rechazar\" value=\"Rechazar\" onclick=\"evaluar("+val.id+","+3+","+selected_producto+")\"/></td>");
                         }
                         else{
                              items.push("<td id=''"+key+"''>"+val.estadoNombre+"</td>");
@@ -82,6 +89,7 @@
              </tr>
          </thead>
         </table>
+        <!--<input id="submit1" type="button" value="Submit"/>-->
     </div>
 </body>
 </html>
