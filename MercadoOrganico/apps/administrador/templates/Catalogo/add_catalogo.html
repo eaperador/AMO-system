@@ -14,7 +14,55 @@
                     $(".image").prepend('<img src="http://127.0.0.1:8000/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
                     $("#lista_ofertas_producto").show();
                 });
+
+                $("#table_productos_oferta").find("tr:gt(0)").remove();
+                $.getJSON("http://127.0.0.1:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                    console.log(data)
+                    var items = [];
+                    $.each(data, function (key,val) {
+                        items.push("<tr>");
+                        items.push("<td id=''"+key+"''>"+val.productor+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.cantidad+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.precio+"</td>");
+                        items.push("<td id=''"+key+"''>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
+                        items.push("<td id=''"+key+"''>"
+                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados'>"
+                                    +"</td>");
+                        items.push("</tr>");
+                    });
+                    $("<tbody/>",{html: items.join("")}).appendTo("table");
+                });
             }
+        });
+
+        //Ingresar Catalogo
+        $("#ingreso_catalogo").click(function () {
+            inputValues = $('.valores_aceptados').val();
+            var map = [];
+            var id;
+            var valor;
+            console.log(map);
+            $(".valores_aceptados").each(function() {
+                id = $(this).attr("name");
+                valor = $(this).val();
+                data = {"id": id, "valor": valor}
+                map.push(data);
+            });
+
+            for(i=0; i<map.length; i++)
+            {
+                $.post("http://127.0.0.1:8000/catalogo/ingresarCantidadAprobada/",map[i],function (data) {
+                    console.log(data);
+                });
+                console.log("En " + i);
+            }
+            /*
+            $.post("http://127.0.0.1:8000/catalogo/ingresarCantidadAprobada/",map,function (data) {
+                console.log(data);
+            });
+            */
+            console.log(map);
+            return false;
         });
 
         //Listar catalogos

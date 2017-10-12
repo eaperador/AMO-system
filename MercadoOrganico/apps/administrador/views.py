@@ -5,7 +5,7 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 import time
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -86,7 +86,8 @@ def listarOfertas(request, productoId):
             data_oferta = []
         else:
             listaOfertas = Oferta.objects.filter(producto=productoId)
-            data_oferta = [{'producto': oferta.producto.nombre,
+            data_oferta = [{'id': oferta.id,
+                            'producto': oferta.producto.nombre,
                             'fecha': oferta.fecha,
                             'productor':oferta.productor.auth_user_id.first_name + " " + oferta.productor.auth_user_id.last_name,
                             'cantidad':oferta.cantidad,
@@ -98,8 +99,23 @@ def listarOfertas(request, productoId):
     return HttpResponse(data_convert)
 
 @csrf_exempt
+def guardarOferta(request):
+    if request.method == 'POST':
+        jsonOferta = json.loads(request.body)
+        ofertaId = jsonOferta['ofertaId']
+        estadoId = jsonOferta['estadoId']
+        Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
+
+    return JsonResponse({"mensaje": "ok"})
+
+@csrf_exempt
 def evaluarOfertas(request):
     return render(request, "Ofertas/evaluar_ofertas.html")
 
 
+@csrf_exempt
+def ingresarCantidadAprobada(request):
+    if request.method == "POST":
+        print 'Entrar Cantidad'
 
+    return HttpResponse(request)
