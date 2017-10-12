@@ -11,6 +11,8 @@ from django.shortcuts import render
 
 # Create your views here.
 
+
+
 @csrf_exempt
 def listarEstadosOferta(request):
     listaEstados = EstadoOferta.objects.all()
@@ -23,7 +25,7 @@ def listarOfertas(request):
         filter = jsonFilter.get('filter')
         if (int(filter) > 0):
             listaOfertas = Oferta.objects.filter(estado=filter)
-    return HttpResponse(serializers.serialize("json", listaOfertas))
+    return HttpResponse(serializers.serialize("json", listaOfertas,use_natural_foreign_keys=True))
 @csrf_exempt
 def ver_ofertas(request):
 	return render(request, "verOfertas.html")

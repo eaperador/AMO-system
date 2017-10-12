@@ -14,8 +14,10 @@ class TipoUnidad(models.Model):
     abreviatura = models.CharField(max_length=5)
 
     def __unicode__(self):
-       return "%s" % (self.abreviatura)
+       return '{}'.format(self.abreviatura)
 
+    def natural_key(self):
+        return {"abreviatura":self.abreviatura}
 class Categoria(models.Model):
     nombre = models.CharField(max_length=50)
 
@@ -33,8 +35,19 @@ class Producto(models.Model):
     def __unicode__(self):
        return "%s" % (self.nombre)
 
+    def natural_key(self):
+        return {"nombre" : self.nombre, "unidad": self.tipoUnidad.natural_key()}
 class CatalogoOferta(models.Model):
     precio_definido = models.FloatField()
     cantidad_definida = models.IntegerField()
-    catalogo = models.ForeignKey(Catalogo, null=True)
-    producto = models.ForeignKey(Producto, null=True)
+    catalogo = models.ForeignKey(Catalogo, null=False)
+    producto = models.ForeignKey(Producto, null=False)
+
+class Productor (models.Model):
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    foto = models.ImageField(upload_to='images', null=True)
+
+    def __unicode__(self):
+        return'{}'.format(self.nombre)
+

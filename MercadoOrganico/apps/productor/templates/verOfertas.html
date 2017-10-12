@@ -7,25 +7,42 @@
 {% block content %}
      <header class="masthead" style="background: whitesmoke">
      <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-	 <!--<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>-->
+	 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	 <script>
-		(function () {
+		//(function () {
 		  /**  $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
 			    $.each(data, function (i, item) {
-			        $('#filtroEstados').prepend(' <span>'+item.fields.fecha+'</span>');
+			        $('#listaOfertas').prepend("<tr> " +
+                                                  "<th scope="row>1</th>
+
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Mark</td>
+                    <td>Mark</td>
+                </tr>
                 });
-			});*/
-        })();
+			});
+        })();**/
 
 
         (function () {
 		    $.getJSON( "http://localhost:8000/productor/listarEstados/").done(function (data) {
 			    $.each(data, function (i, item) {
-		            $('#listaEstados').prepend(' <option value="'+item.pk+'">'+item.fields.descripcion+'</option>');
+		            $('#listaEstados').prepend(' <option value="'+item.pk+'">'+item.fields.nombre+'</option>');
                 });
 			});
         })();
-
+        function formtatDate(d) {
+            var day = ("0" + d.getDay()).slice(-2);
+            var month = d.getMonth();
+            month ++;
+            month = ("0" + month).slice(-2);
+            var year = d.getFullYear();
+            var hour = ("0" + d.getHours()).slice(-2);
+            var min = ("0" + d.getMinutes()).slice(-2);
+            return year+"-"+month+"-"+day+" "+hour+":"+min;
+        };
 		function enviarForm() {
 		    $.ajax({
                 type: "POST",
@@ -34,18 +51,28 @@
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
                 success: function (data) {
-                    alert('done')
-                    console.log(data)
-
-
-                     $('#filtroEstados').prepend(' <span>'+data+'</span>');
-                },
+                    $('#listaOfertas').empty()
+                    $.each(data, function (i, item) {
+                        var dt = new Date(item.fields.fecha);
+                        console.log(dt.toString('yyyy-MM-dd'))
+                        $('#listaOfertas').append("<tr> " +
+                                                      "<th scope='row'>"+(i+1)+"</th>"+
+                                                      "<td>"+formtatDate(dt)+"</td>" +
+                                                      "<td>"+item.fields.producto.nombre+"</td>" +
+                                                      "<td>"+item.fields.cantidad+"</td>"+
+                                                      "<td>"+item.fields.producto.unidad.abreviatura+"</td>"+
+                                                      "<td>"+item.fields.precio+"</td>"+
+                                                      "<td>"+item.fields.estado.nombre+"</td>"+
+                                                    "</tr>")
+                        i++
+                     });
+                    },
                 failure: function (errMsg) {
                     alert("Hubo un error");
                 }
             });
             return false;
-        }
+        };
     </script>
      <section id="Productor">
          <div class="header-content" >
@@ -62,7 +89,27 @@
                         </div>
                 </form>
             </div>
+             <div class="container">
+            <table id="lista_ofertas_productor" class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th class="col-xs-1">#</th>
+                        <th class="col-xs-1">Fecha de la oferta</th>
+                        <th class="col-xs-1">Producto</th>
+                        <th class="col-xs-1">Cantidad</th>
+                        <th class="col-xs-1">Unidad</th>
+                        <th class="col-xs-1">Precio</th>
+                        <th class="col-xs-1">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="listaOfertas">
+
+                </tbody>
+            </table>
         </div>
+         </div>
+
+
      </section>
     </header>
 {% endblock %}
