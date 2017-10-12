@@ -27,3 +27,17 @@ def listarOfertas(request):
 @csrf_exempt
 def ver_ofertas(request):
 	return render(request, "verOfertas.html")
+
+
+@csrf_exempt
+def crearOferta(request):
+	return render(request, "crearOferta.html")
+
+##def crearOferta(request, id=None):
+##    oferta = Oferta.objects.get(id=id)
+##
+##    if request.method == 'POST':
+##
+##    else:
+##
+##    return render(request, 'CatalogoApp/Comentario.html', contexto)

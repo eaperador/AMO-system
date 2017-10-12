@@ -2,15 +2,15 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from ..administrador.models import Producto, Productor
+from ..administrador.models import Producto
+from ..comun.models import Usuario
 
-# Create your models here.
 from django.forms import forms
 
 class EstadoOferta (models.Model):
-    descripcion = models.CharField(max_length=100, null=True)
+    nombre = models.CharField(max_length=100, null=True)
     def __unicode__(self):
-        return'{}'.format(self.descripcion)
+        return'{}'.format(self.nombre)
 
 class Oferta(models.Model):
     fecha = models.DateTimeField(auto_now_add=True, editable=False)
@@ -18,5 +18,5 @@ class Oferta(models.Model):
     cantidad = models.IntegerField()
     estado = models.ForeignKey(EstadoOferta, null=False)
     producto = models.ForeignKey(Producto, null=False)
-    productor = models.ForeignKey(Productor, null=False)
+    productor = models.ForeignKey(Usuario, null=False)
 
