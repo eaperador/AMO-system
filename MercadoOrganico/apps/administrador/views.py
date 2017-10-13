@@ -10,7 +10,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
-from .models import Catalogo, Producto
+from .models import Catalogo, Producto, CatalogoOferta
 from ..productor.models import EstadoOferta, Oferta
 
 @csrf_exempt
@@ -21,7 +21,6 @@ def index(request):
 @csrf_exempt
 def add_catalogo(request):
     if request.method == 'POST':
-        print 'Entro'
         jsonData = json.loads(request.body)
 
         fecha_inicio = jsonData['fecha_inicio']
@@ -116,6 +115,21 @@ def evaluarOfertas(request):
 @csrf_exempt
 def ingresarCantidadAprobada(request):
     if request.method == "POST":
-        print 'Entrar Cantidad'
+        ofertaId = request.POST['id']
+        valor = request.POST['valor']
+        Oferta.objects.filter(pk=ofertaId).update(cantidad_aprobada=valor)
+    return JsonResponse({"mensaje": "ok"})
 
-    return HttpResponse(request)
+@csrf_exempt
+def ingresarCatalogoOferta(request):
+    if request.method == "POST":
+        jsonData = json.loads(request.body)
+        precio_definido = jsonData['precio_definido']
+        cantidad_definida = jsonData['cantidad_definida']
+        idcatalogo = jsonData['catalogo']
+        catalogo = Catalogo.objects.get(pk=idcatalogo)
+        idproducto = jsonData['producto']
+        producto = Producto.objects.get(pk=idproducto)
+        catalgo_oferta = CatalogoOferta(precio_definido=precio_definido, cantidad_definida=cantidad_definida,catalogo=catalogo, producto=producto)
+        catalgo_oferta.save()
+    return JsonResponse({"mensaje": "ok"})

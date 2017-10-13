@@ -1,6 +1,7 @@
 
 <script>
     $(document).ready(function () {
+
         //Mostrar listado de ofertas solo si se escoge un producto
         $("#lista_ofertas_producto").hide();
         var productos = $("#select_productos");
@@ -21,15 +22,16 @@
                     var items = [];
                     $.each(data, function (key,val) {
                         items.push("<tr>");
-                        items.push("<td id=''"+key+"''>"+val.productor+"</td>");
-                        items.push("<td id=''"+key+"''>"+val.cantidad+"</td>");
-                        items.push("<td id=''"+key+"''>"+val.precio+"</td>");
-                        items.push("<td id=''"+key+"''>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
-                        items.push("<td id=''"+key+"''>"
-                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados'>"
+                        items.push("<td>"+val.productor+"</td>");
+                        items.push("<td>"+val.cantidad+"</td>");
+                        items.push("<td>"+val.precio+"</td>");
+                        items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
+                        items.push("<td>"
+                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'>"
                                     +"</td>");
                         items.push("</tr>");
                     });
+
                     $("<tbody/>",{html: items.join("")}).appendTo("table");
                 });
             }
@@ -38,32 +40,77 @@
         //Ingresar Catalogo
         $("#ingreso_catalogo").click(function () {
             inputValues = $('.valores_aceptados').val();
-            var map = [];
-            var id;
-            var valor;
-            console.log(map);
-            $(".valores_aceptados").each(function() {
-                id = $(this).attr("name");
-                valor = $(this).val();
-                data = {"id": id, "valor": valor}
-                map.push(data);
-            });
-
-            for(i=0; i<map.length; i++)
+            catalogo = $('#select_catalogos').val();
+            producto = $('#select_productos').val();
+            if(catalogo)
             {
-                $.post("http://127.0.0.1:8000/catalogo/ingresarCantidadAprobada/",map[i],function (data) {
-                    console.log(data);
+                console.log(catalogo);
+                var map = [];
+                var id;
+                var valor;
+                var response;
+                var cantidad_definida = 0;
+                //console.log(map);
+                $(".valores_aceptados").each(function() {
+                    id = $(this).attr("name");
+                    valor = parseInt($(this).val());
+                    data = {"id": id, "valor": valor}
+                    cantidad_definida = valor + cantidad_definida;
+                    map.push(data);
                 });
-                console.log("En " + i);
+                console.log(cantidad_definida);
+                for(i=0; i<map.length; i++)
+                {
+                    $.post("http://127.0.0.1:8000/catalogo/ingresarCantidadAprobada/",map[i],function (data) {
+                        response = data;
+                        //console.log(data.mensaje);
+                    });
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "http://127.0.0.1:8000/catalogo/guardarCatalogoOferta/",
+                    data: JSON.stringify({ precio_definido: $('#precio_definido').val(), cantidad_definida: cantidad_definida, catalogo: catalogo, producto: producto }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log(data);
+                        alert('Se ha agregado el producto al catalogo con exito!');
+                        window.location = "http://127.0.0.1:8000/catalogo";
+                    },
+                    failure: function (data) {
+                        console.log(data);
+                        alert('Hubo error!');
+                    }
+                });
             }
-            /*
-            $.post("http://127.0.0.1:8000/catalogo/ingresarCantidadAprobada/",map,function (data) {
-                console.log(data);
-            });
-            */
-            console.log(map);
+            else
+            {
+                alert("Debe seleccionar un catalogo");
+            }
+            //console.log(response);
+            //console.log(map);
             return false;
         });
+
+        //AgregarCatalogoOferta
+        var AgregarCatalogoOferta = function(){
+          $.ajax({
+              type: "POST",
+                url: "http://127.0.0.1:8000/catalogo/addCatalogo/",
+                data: JSON.stringify({ precio_definido: $('#precio_definido').val(), fecha_fin: $('#fecha_fin_cat').val() }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    alert('Catalogo creado con exito');
+                    window.location = "http://127.0.0.1:8000/catalogo";
+                },
+                failure: function (data) {
+                    console.log(data);
+                    alert('Hubo error!');
+                }
+          });
+        };
 
         //Listar catalogos
         $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarCatalogos/").done(function (data) {
