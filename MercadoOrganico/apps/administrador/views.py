@@ -10,6 +10,8 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
+
+from ..comun.views import sendMailNotification
 from .models import Catalogo, Producto
 from ..productor.models import EstadoOferta, Oferta
 
@@ -98,6 +100,19 @@ def listarOfertas(request, productoId):
     data_convert = json.dumps(data_oferta,cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
 
+
+def enviarNotificacion(oferta):
+    prod = oferta.productor
+    email = prod.auth_user_id.email
+    asunto = "Han respondido una oferta"
+    mensaje = "Señor(a) "+prod.auth_user_id.first_name+" "+prod.auth_user_id.last_name+": \n\n"
+    mensaje = mensaje + "De la forma más atenta queremos informale que la oferta que realizó en la fecha "+oferta.fecha.strftime('%Y-%m-%d %H:%M')+" \n"
+    mensaje = mensaje + "sobre el producto "+oferta.producto.nombre+" por un valor de $"+str(oferta.precio)+" se encuentra en estado:\n"
+    mensaje = mensaje + oferta.estado.nombre.upper()+"\n\n"
+    mensaje = mensaje + "Puede consultar el estado de la oferta en su perfil y recuerde estar atento a futuras notificaciones\n\n"
+    mensaje = mensaje + "Saludos."
+    sendMailNotification(email, asunto, mensaje)
+
 @csrf_exempt
 def guardarOferta(request):
     if request.method == 'POST':
@@ -105,7 +120,7 @@ def guardarOferta(request):
         ofertaId = jsonOferta['ofertaId']
         estadoId = jsonOferta['estadoId']
         Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
-
+        enviarNotificacion(Oferta.objects.filter(pk=ofertaId))
     return JsonResponse({"mensaje": "ok"})
 
 @csrf_exempt

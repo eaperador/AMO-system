@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from ..administrador.views import enviarNotificacion
 from .models import EstadoOferta, Oferta
 from django.shortcuts import render
 
@@ -47,7 +48,7 @@ def listarOfertas(request):
 
     if (ofertas.has_next()):
         nextPage = ofertas.next_page_number()
-
+    
     ofertasPag = {"has_other_pages" : ofertas.has_other_pages(),
                    "has_previous" : ofertas.has_previous(),
                    "previous_page_number" : prevPage,
