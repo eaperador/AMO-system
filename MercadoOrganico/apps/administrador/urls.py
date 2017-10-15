@@ -3,7 +3,7 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = (
-    url(r'^$', views.index, name="index"),
+    url(r'^armarCatalogo$', views.index, name="index"),
     url(r'^addCatalogo/$', views.add_catalogo, name="addCatalogo"),
     url(r'^numeroCatalogo/$', views.numero_nuevo_catalogo, name="numeroCatalogo"),
     url(r'^seleccionarCatalogos/$', views.select_catalogos, name="seleccionarCatalogos"),
