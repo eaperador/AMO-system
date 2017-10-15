@@ -1,0 +1,70 @@
+{% extends 'layout/consumidor_layout.html' %}
+
+{% block title %}
+    Compras
+{% endblock %}
+
+{% block content %}
+    <header class="masthead" style="background: whitesmoke">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+	<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script>
+            $(document).ready(function () {
+                $('.producto').click(function () {
+                    var producto = $(this).data("form");
+                    localStorage.setItem('producto', producto);
+                    $('#agregar_prod_modal').modal();
+                });
+            });
+            function detalle(id){
+                localStorage.setItem('id', id);
+                window.location = "/#";
+            }
+    </script>
+    <section id="Consumidor">
+        <div class="container" >
+            <div class="row">
+                <h1 style="color: black">Compras</h1>
+            </div>
+            <div class="row" id="filtroCategoria">
+                <div class="col-md-4 text-left">
+                    <form method="post" action="" enctype="multipart/form-data" name="filtro">
+                        <div class="form-group">
+                            <label for="listaCategorias" style="color: black">Filtro:</label>
+                            <select id="listaCategorias" onchange="enviarForm()" class="form-control">
+                                <option selected value="-1">Todos...</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                {% for producto in productos %}
+                    <div class="col-md-3 col-sm-6 col-lg-3" style="padding:0 5px 0 5px ;">
+
+                        <div class="panel panel-default" style="padding:0; height: 300px;">
+                           <div class="panel-body">
+                               <div style="height: 150px">
+                                    <img class="img-responsive" src="/{{producto.producto.imagen}}" style="margin: 0 auto; max-height: 150px">
+                               </div>
+                               <div style="height: 120px">
+                                    <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
+                                   <span style="text-align: center; overflow: auto; color: black">${{producto.precio_definido}}</span></br>
+                                   <span style="text-align: center; overflow: auto; color: black">Unidad X {{producto.producto.tipoUnidad.nombre}}</span>
+                                   <li><a class="producto" href="#" data-form="{{ producto }} ">
+                                       <span style="text-align: center" class="glyphicon glyphicon-shopping-cart"></span> Añadir al carrito</a></li>
+                               </div>
+                           </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div id="popup" class="modal fade" role="dialog"></div>
+            </div>
+        </div>
+     </section>
+    </header>
+    <body>
+        {% include "agregarProducto.html" %}
+    </body>
+{% endblock content %}
