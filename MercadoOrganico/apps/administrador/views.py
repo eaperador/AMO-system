@@ -19,7 +19,7 @@ from ..productor.models import EstadoOferta, Oferta
 
 @csrf_exempt
 def index(request):
-    return render(request,'Catalogo/index.html')
+    return render(request,'Catalogo/add_catalogo.html')
 
 ### Agregar nuevo catalogo ###
 @csrf_exempt

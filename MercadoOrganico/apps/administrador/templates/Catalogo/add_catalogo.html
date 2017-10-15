@@ -1,4 +1,13 @@
+{% extends 'layout/administrador_layout.html' %}
 
+{% block title %}
+    Admin
+{% endblock %}
+
+{% block content %}
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
 
@@ -33,7 +42,7 @@
                         items.push("</tr>");
                     });
 
-                    $("<tbody/>",{html: items.join("")}).appendTo("table");
+                    $("<tbody/>",{html: items.join("")}).appendTo("#table_productos_oferta");
                 });
             }
         });
@@ -142,26 +151,27 @@
         });
     });
 </script>
-<div class="container-fluid">
-
+<div class="container" style="margin-top: 60px">
+    <h1>Armar Catalogo</h1>
     <form action="" method="post">
-        <div class="col-lg-12">
-            <div class="col-lg-4">
-                <label for="select_catalogos" class="label-control">Seleccione Catalogo:</label>
-                <select name="" id="select_catalogos" class="form-control"></select>
-            </div>
-            <div class="col-lg-3">
-                <label for="" class="label-control">&nbsp;</label>
-                <br>
-                <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
-                    Ingresar catalogo
-                </button>
-            </div>
-            <div class="col-lg-5">
-                <label for="select_productos" class="label-control">Seleccione producto:</label>
-                <select name="" id="select_productos" class="form-control"></select>
-            </div>
-        </div>
+        <table>
+            <tr>
+                <td>
+                    <label for="select_catalogos" class="label-control">Seleccione Catalogo:</label>
+                    <select name="" id="select_catalogos" class="form-control"></select>
+                </td>
+                <td>
+                    <br>
+                    <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
+                        Ingresar catalogo
+                    </button>
+                </td>
+                <td>
+                    <label for="select_productos" class="label-control">Seleccione producto:</label>
+                    <select name="" id="select_productos" class="form-control"></select>
+                </td>
+            </tr>
+        </table>
         {% include 'Catalogo/add_cantidades_catalogo.html' %}
     </form>
     <!-- Modal -->
@@ -172,20 +182,19 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Ingreso Catalogo</h4>
                 </div>
-                <div class="modal-body" style="height: 200px">
+                <div class="modal-body" style="height: 250px">
                     <div id="form_add_catalogo" class="col-lg-12" style="margin-bottom: 40px">
                         <form action="" method="post" id="add_catalogo">
-                            <div class="col-lg-12">
+                            <div class="">
                                 <strong>Ingrese datos del catalogo:</strong>
                             </div>
-                            <br><br>
-                            <div class="form-group col-lg-12">
+                            <div class="form-group">
                                 <strong>Número de catalogo: <span class="numero_catalogo"></span></strong>
                             </div>
-                            <div class="form-group col-lg-6">
+                            <div class="form-group">
                                 <input type="date" class="form-control" id="fecha_inicio_cat" value="">
                             </div>
-                            <div class="form-group col-lg-6">
+                            <div class="form-group">
                                 <input type="date" class="form-control" id="fecha_fin_cat" value="">
                             </div>
                             <div class="col-lg-12">
@@ -195,9 +204,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
