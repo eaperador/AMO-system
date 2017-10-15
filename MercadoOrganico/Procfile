@@ -1,0 +1,1 @@
+web: gunicorn CatalogoBiodiversidad.wsgi --log-file -
