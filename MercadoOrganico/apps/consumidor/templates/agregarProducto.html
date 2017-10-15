@@ -1,14 +1,13 @@
-
-<div class="modal fade" id="agregar_prod_modal" role="dialog">
-    <div class="modal-dialog">
+<div class="modal fade" id="agregar_prod_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4><span class="glyphicon glyphicon-shopping-cart"></span> Agregar al carrito</h4>
+            <div class="modal-header" style="height: 50px">
+                <h4><span class="glyphicon glyphicon-shopping-cart" style="color: black"></span><span style="color: black"> Agregar al carrito</span></h4>
             </div>
-            <!--suppress HtmlUnknownTarget -->
-            <form role="form" action="agregar_producto" method="post" enctype="multipart/form-data" id="addProd-form" novalidate="novalidate">
+            <div class="modal-body">
+                <!--suppress HtmlUnknownTarget -->
+                <form role="form" action="agregar_producto" method="post" enctype="multipart/form-data" id="addProd-form" novalidate="novalidate">
                 {% csrf_token %}
-                <div class="modal-body">
                     <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
                     {{ field }}
                     {% for field in form_trabajador %}
@@ -23,17 +22,17 @@
                         {{ field }}
                     </div>
                     {% endfor %}
-                </div>
-                <div class="modal-footer btn-toolbar">
-                    <button type="submit"id="id_grabar" class="btn btn-default btn-success pull-right">
-                        <span class="glyphicon glyphicon-save"></span> Agregar
-                    </button>
-                    <button type="submit" class="btn btn-default btn-default pull-right" data-dismiss="modal"
-                            style="margin-left: 5px">
-                        <span class="glyphicon glyphicon-remove"></span> Cancelar
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer btn-toolbar">
+                        <button type="submit"id="id_grabar" class="btn btn-default btn-success pull-right">
+                            <span class="glyphicon glyphicon-save"></span> Agregar
+                        </button>
+                        <button type="submit" class="btn btn-default btn-default pull-right" data-dismiss="modal"
+                                style="margin-left: 5px">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

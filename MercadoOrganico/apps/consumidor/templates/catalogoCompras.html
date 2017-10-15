@@ -12,15 +12,9 @@
     <script>
             $(document).ready(function () {
                 $('.producto').click(function () {
-                    var producto = $(this).data("form");
-                    localStorage.setItem('producto', producto);
                     $('#agregar_prod_modal').modal();
                 });
             });
-            function detalle(id){
-                localStorage.setItem('id', id);
-                window.location = "/#";
-            }
     </script>
     <section id="Consumidor">
         <div class="container" >
@@ -28,17 +22,18 @@
                 <h1 style="color: black">Compras</h1>
             </div>
             <div class="row" id="filtroCategoria">
-                <div class="col-md-4 text-left">
+                <div class="col-md-4 text-left col-centered">
                     <form method="post" action="" enctype="multipart/form-data" name="filtro">
-                        <div class="form-group">
+                        <div class="form-group" >
                             <label for="listaCategorias" style="color: black">Filtro:</label>
-                            <select id="listaCategorias" onchange="enviarForm()" class="form-control">
+                            <select id="listaCategorias" onchange="enviarForm()" class="form-control" style="height: 30px">
                                 <option selected value="-1">Todos...</option>
                             </select>
                         </div>
                     </form>
                 </div>
             </div>
+            </br>
             <div class="row">
                 {% for producto in productos %}
                     <div class="col-md-3 col-sm-6 col-lg-3" style="padding:0 5px 0 5px ;">
@@ -52,19 +47,16 @@
                                     <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
                                    <span style="text-align: center; overflow: auto; color: black">${{producto.precio_definido}}</span></br>
                                    <span style="text-align: center; overflow: auto; color: black">Unidad X {{producto.producto.tipoUnidad.nombre}}</span>
-                                   <li><a class="producto" href="#" data-form="{{ producto }} ">
+                                   <li><a class="producto" data-toggle="modal" href="#" >
                                        <span style="text-align: center" class="glyphicon glyphicon-shopping-cart"></span> Añadir al carrito</a></li>
                                </div>
                            </div>
                         </div>
                     </div>
                 {% endfor %}
-                <div id="popup" class="modal fade" role="dialog"></div>
             </div>
         </div>
+        {% include "agregarProducto.html" %}
      </section>
     </header>
-    <body>
-        {% include "agregarProducto.html" %}
-    </body>
 {% endblock content %}
