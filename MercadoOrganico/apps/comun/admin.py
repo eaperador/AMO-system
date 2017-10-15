@@ -13,7 +13,10 @@ class CooperativaAdmin(admin.ModelAdmin):
     ordering = ('pk',)
 
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ('foto','descripcion','telefono','direccion')
+    list_display = ('foto','descripcion','telefono','direccion','get_rol')
+
+    def get_rol(self, obj):
+        return obj.rol.nombre
 
 # Register your models here.
 admin.site.register(Rol, RolAdmin),
