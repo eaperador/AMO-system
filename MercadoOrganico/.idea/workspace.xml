@@ -33,6 +33,16 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MercadoOrganico/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="174">
+              <caret line="87" column="50" lean-forward="false" selection-start-line="87" selection-start-column="50" selection-end-line="87" selection-end-column="50" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/productor/views.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -58,11 +68,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/administrador/views.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="77">
-              <caret line="110" column="130" lean-forward="true" selection-start-line="110" selection-start-column="130" selection-end-line="110" selection-end-column="130" />
+              <caret line="120" column="130" lean-forward="true" selection-start-line="120" selection-start-column="130" selection-end-line="120" selection-end-column="130" />
               <folding>
                 <element signature="e#24#63#0" expanded="true" />
               </folding>
@@ -93,9 +103,20 @@
       <file leaf-file-name="evaluar_ofertas.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/apps/administrador/templates/Ofertas/evaluar_ofertas.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1248">
-              <caret line="78" column="49" lean-forward="false" selection-start-line="78" selection-start-column="49" selection-end-line="78" selection-end-column="49" />
-              <folding />
+            <state relative-caret-position="1353">
+              <caret line="83" column="49" lean-forward="false" selection-start-line="83" selection-start-column="49" selection-end-line="83" selection-end-column="49" />
+              <folding>
+                <marker date="1508094855710" expanded="true" signature="4556:5526" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="4556:5541" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="4556:5555" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="4556:5571" ph="{% block content ... %}" />
+                <marker date="1508094855710" expanded="true" signature="4604:4814" ph="..." />
+                <marker date="1508094855710" expanded="false" signature="4766:4785" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="4850:5510" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="4902:5491" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="4981:5466" ph="..." />
+                <marker date="1508094855710" expanded="true" signature="5028:5440" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -105,17 +126,12 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="252">
               <caret line="40" column="41" lean-forward="false" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="41" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="home_layout.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/layout/home_layout.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="54" column="26" lean-forward="false" selection-start-line="54" selection-start-column="26" selection-end-line="54" selection-end-column="26" />
-              <folding />
+              <folding>
+                <marker date="1508094855713" expanded="true" signature="962:1303" ph="..." />
+                <marker date="1508094855713" expanded="true" signature="995:1303" ph="..." />
+                <marker date="1508094855713" expanded="true" signature="1214:1303" ph="..." />
+                <marker date="1508094855713" expanded="true" signature="2053:2156" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -155,12 +171,12 @@
         <option value="$PROJECT_DIR$/apps/administrador/models.py" />
         <option value="$PROJECT_DIR$/apps/productor/models.py" />
         <option value="$PROJECT_DIR$/apps/productor/templates/verOfertas.html" />
-        <option value="$PROJECT_DIR$/MercadoOrganico/settings.py" />
         <option value="$PROJECT_DIR$/apps/comun/admin.py" />
         <option value="$PROJECT_DIR$/apps/comun/views.py" />
         <option value="$PROJECT_DIR$/templates/layout/home_layout.html" />
         <option value="$PROJECT_DIR$/apps/productor/views.py" />
         <option value="$PROJECT_DIR$/apps/administrador/views.py" />
+        <option value="$PROJECT_DIR$/MercadoOrganico/settings.py" />
       </list>
     </option>
   </component>
@@ -678,14 +694,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/MercadoOrganico/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="237">
-          <caret line="90" column="85" lean-forward="false" selection-start-line="90" selection-start-column="85" selection-end-line="90" selection-end-column="85" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/apps/comun/templates/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -706,7 +714,33 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="72">
           <caret line="54" column="26" lean-forward="false" selection-start-line="54" selection-start-column="26" selection-end-line="54" selection-end-column="26" />
-          <folding />
+          <folding>
+            <marker date="1508094855723" expanded="true" signature="1862:2405" ph="{...}" />
+            <marker date="1508094855723" expanded="true" signature="1952:2405" ph="{...}" />
+            <marker date="1508094855723" expanded="true" signature="1975:2405" ph="{&quot;type&quot;: &quot;POST&quot;...}" />
+            <marker date="1508094855723" expanded="true" signature="2325:2405" ph="{...}" />
+            <marker date="1508094855723" expanded="true" signature="2379:2405" ph="{...}" />
+            <marker date="1508094855723" expanded="true" signature="7131:7249" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7131:7264" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7131:7729" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7131:7745" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7131:9981" ph="{% block footer ... %}" />
+            <marker date="1508094855723" expanded="true" signature="7131:9988" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7290:7716" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7343:7449" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7580:7684" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7873:9323" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7924:9312" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="7964:9297" ph="..." />
+            <marker date="1508094855723" expanded="false" signature="8015:8027" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="8028:8196" ph="..." />
+            <marker date="1508094855723" expanded="false" signature="8151:8158" ph="×" />
+            <marker date="1508094855723" expanded="true" signature="8237:9278" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="8314:9255" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="8360:8562" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="8421:8531" ph="..." />
+            <marker date="1508094855723" expanded="true" signature="9091:9227" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -765,9 +799,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/administrador/templates/Ofertas/evaluar_ofertas.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1248">
-          <caret line="78" column="49" lean-forward="false" selection-start-line="78" selection-start-column="49" selection-end-line="78" selection-end-column="49" />
-          <folding />
+        <state relative-caret-position="1353">
+          <caret line="83" column="49" lean-forward="false" selection-start-line="83" selection-start-column="49" selection-end-line="83" selection-end-column="49" />
+          <folding>
+            <marker date="1508094855710" expanded="true" signature="4556:5526" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="4556:5541" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="4556:5555" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="4556:5571" ph="{% block content ... %}" />
+            <marker date="1508094855710" expanded="true" signature="4604:4814" ph="..." />
+            <marker date="1508094855710" expanded="false" signature="4766:4785" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="4850:5510" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="4902:5491" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="4981:5466" ph="..." />
+            <marker date="1508094855710" expanded="true" signature="5028:5440" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -785,17 +830,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="252">
           <caret line="40" column="41" lean-forward="false" selection-start-line="40" selection-start-column="38" selection-end-line="40" selection-end-column="41" />
-          <folding />
+          <folding>
+            <marker date="1508094855713" expanded="true" signature="962:1303" ph="..." />
+            <marker date="1508094855713" expanded="true" signature="995:1303" ph="..." />
+            <marker date="1508094855713" expanded="true" signature="1214:1303" ph="..." />
+            <marker date="1508094855713" expanded="true" signature="2053:2156" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/apps/administrador/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="77">
-          <caret line="110" column="130" lean-forward="true" selection-start-line="110" selection-start-column="130" selection-end-line="110" selection-end-column="130" />
+          <caret line="120" column="130" lean-forward="true" selection-start-line="120" selection-start-column="130" selection-end-line="120" selection-end-column="130" />
           <folding>
             <element signature="e#24#63#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MercadoOrganico/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="174">
+          <caret line="87" column="50" lean-forward="false" selection-start-line="87" selection-start-column="50" selection-end-line="87" selection-end-column="50" />
+          <folding />
         </state>
       </provider>
     </entry>

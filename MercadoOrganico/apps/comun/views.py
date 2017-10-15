@@ -59,7 +59,10 @@ def logout_view(request):
 @csrf_exempt
 def logged_view(request):
     if request.user.is_authenticated():
-        mensaje = rolUser
+        if rolUser == "":
+            mensaje = "no"
+        else:
+            mensaje = rolUser
     else:
         mensaje= "no"
     return JsonResponse({"mensaje": mensaje})
