@@ -37,15 +37,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'MercadoOrganico',
     'apps.administrador',
     'apps.apirest',
     'apps.comun',
     'apps.consumidor',
     'apps.distribuidor',
-    'apps.productor'
+    'apps.productor',
 ]
 
+
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -53,6 +57,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'MercadoOrganico.urls'
@@ -60,7 +66,7 @@ ROOT_URLCONF = 'MercadoOrganico.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,12 +88,11 @@ WSGI_APPLICATION = 'MercadoOrganico.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'MercadoOrganico',
-        'USER': 'makito',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'NAME': 'd4n589lgspk1ar',
+        'USER': 'kykrhryvappeeo',
+        'PASSWORD': '43daabedf8d79c96e2cb686bbec2dd975ae28c208ccfcc093e4812385f176d2d',
+        'HOST': 'ec2-204-236-236-188.compute-1.amazonaws.com',
         'PORT': '5432',
-
     }
 }
 
@@ -128,4 +133,30 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/static/'
+#STATIC_URL = '/static/'
+STATIC_URL = '/images/'
+STATIC_ROOT = 'staticfiles'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'images'),
+    os.path.join(BASE_DIR, 'static'),
+
+)
+
+
+# :::::::::::::::: ::::::::::::::::::::: ::::::::::
+# :::::::::::::::: CONFIGURACION DE CORS::::::::::
+# :::::::::::::::: ::::::::::::::::::::: ::::::::::
+
+#Permitir peticiones de cualquier servidor
+#DEV
+CORS_ORIGIN_ALLOW_ALL = True
+
+#Para permitir solo peticiones de los siguientes servidores
+# Produccion
+
+#CORS_ORIGIN_WHITELIST = (
+#    'google.com',
+#    'hostname.example.com',
+#    'localhost:8000',
+#    '127.0.0.1:9000'
+#)
