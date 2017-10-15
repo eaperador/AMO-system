@@ -121,7 +121,7 @@ def guardarOferta(request):
         ofertaId = jsonOferta['ofertaId']
         estadoId = jsonOferta['estadoId']
         Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
-        enviarNotificacion(Oferta.objects.filter(pk=ofertaId))
+        enviarNotificacion(Oferta.objects.get(id=ofertaId))
     return JsonResponse({"mensaje": "ok"})
 
 @csrf_exempt
