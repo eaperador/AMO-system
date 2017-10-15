@@ -125,9 +125,14 @@ def ConsultarProductosaOfertar(request):
         } for producto in productos.object_list]
 
         jsonReturn = [{"productos": listaProductos,
-                  "ofertasPag": productosPag
+                  "productosPag": productosPag
                   }]
 
         return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
     else:
         return JsonResponse({'mensaje': 'No hay productos para ofertar'})
+
+
+@csrf_exempt
+def ver_productos(request):
+	return render(request, "productosaOfertar.html")

@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'ver_ofertas/$', views.ver_ofertas, name='ver_ofertas'),
     url(r'crearOferta/$', views.crearOferta, name='crearOferta'),
     url(r'listaProductos/$', views.ConsultarProductosaOfertar, name='productosaOfertar'),
+    url(r'ver_productos/$', views.ver_productos, name='ver_productos'),
     ]
