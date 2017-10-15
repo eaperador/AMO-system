@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from datetime import timedelta, datetime
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 import time
@@ -88,10 +88,21 @@ def listarOfertas(request, productoId):
         if productoId == '0':
             data_oferta = []
         else:
-            listaOfertas = Oferta.objects.filter(producto=productoId)
+            ultimoDiaOferta = datetime.now()
+            primerDiaOferta = datetime.now()
+            sabado = 5
+            domingo = 6
+
+            while (ultimoDiaOferta.weekday() != sabado) :
+                ultimoDiaOferta += timedelta(days=1)
+
+            while (primerDiaOferta.weekday() != domingo):
+                primerDiaOferta -= timedelta(days=1)
+
+            listaOfertas = Oferta.objects.filter(producto=productoId).filter(fecha__range=(primerDiaOferta, ultimoDiaOferta))
             data_oferta = [{'id': oferta.id,
                             'producto': oferta.producto.nombre,
-                            'fecha': oferta.fecha,
+                            'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
                             'productor':oferta.productor.auth_user_id.first_name + " " + oferta.productor.auth_user_id.last_name,
                             'cantidad':oferta.cantidad,
                             'precio':oferta.precio,
@@ -100,7 +111,6 @@ def listarOfertas(request, productoId):
                             'unidad': oferta.producto.tipoUnidad.abreviatura}for oferta in listaOfertas]
     data_convert = json.dumps(data_oferta,cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
-
 
 def enviarNotificacion(oferta):
     prod = oferta.productor
@@ -121,7 +131,7 @@ def guardarOferta(request):
         ofertaId = jsonOferta['ofertaId']
         estadoId = jsonOferta['estadoId']
         Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
-        enviarNotificacion(Oferta.objects.filter(pk=ofertaId))
+        enviarNotificacion(Oferta.objects.get(id=ofertaId))
     return JsonResponse({"mensaje": "ok"})
 
 @csrf_exempt
