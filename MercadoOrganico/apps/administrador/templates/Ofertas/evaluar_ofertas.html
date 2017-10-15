@@ -1,13 +1,3 @@
-<!--<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Evaluar Ofertas</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
-    <script src="//code.jquery.com/jquery.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>-->
 {% extends 'layout/administrador_layout.html' %}
 
 {% block title %}
@@ -41,6 +31,21 @@
         };
 
         $(document).ready(function () {
+            ultimoDiaOferta = new Date();
+            var sabado = 6;
+            while(ultimoDiaOferta.getDay() != sabado) {
+                ultimoDiaOferta.setDate(ultimoDiaOferta.getDate() + 1);
+            }
+            primerDiaOferta = new Date();
+            var domingo = 0;
+            while(primerDiaOferta.getDay() != domingo) {
+                primerDiaOferta.setDate(primerDiaOferta.getDate() - 1);
+            }
+            semana = "Ofertas de la semana del " +
+                     primerDiaOferta.getDate() +"/"+ primerDiaOferta.getMonth() + "/" + primerDiaOferta.getFullYear()+
+                     " al " + ultimoDiaOferta.getDate() +"/"+ ultimoDiaOferta.getMonth() + "/" + ultimoDiaOferta.getFullYear();
+            document.getElementById("ofertasSemana").innerHTML = semana;
+
             //Mostrar listado de ofertas
             var productos = $("#select_productos");
             $(productos).change(function () {
@@ -59,8 +64,8 @@
                         items.push("<td id=''"+key+"''>"+val.unidad+"</td>");
                         items.push("<td id=''"+key+"''>"+val.cantidad+"</td>");
                         if (val.estadoId == '1'){
-                            items.push("<td><input type=\"button\" id=\"Aprobar\" value=\"Aprobar\" class=\"btn_evaluar_ok \" onclick=\"evaluar("+val.id+","+2+","+selected_producto+")\"/>" +
-                                            "<input type=\"button\" id=\"Rechazar\" value=\"Rechazar\" class=\"btn_evaluar_mal\" onclick=\"evaluar("+val.id+","+3+","+selected_producto+")\"/></td>");
+                            items.push("<td><input type=\"button\" id=\"Aprobar\" value=\"Aprobar\" class=\"btn_evaluar_ok buttonStyle\" onclick=\"evaluar("+val.id+","+2+","+selected_producto+")\"/>" +
+                                            "<input type=\"button\" id=\"Rechazar\" value=\"Rechazar\" class=\"btn_evaluar_mal buttonStyleMal\" onclick=\"evaluar("+val.id+","+3+","+selected_producto+")\"/></td>");
                         }
                         else{
                              items.push("<td id=''"+key+"''>"+val.estadoNombre+"</td>");
@@ -83,6 +88,13 @@
     </script>
     <section id="Productor">
         <div class="container" >
+            <div class="col-md-12">
+                <h2 id="ofertasSemana" class="label-control"></h2>
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
             <div class="col-md-4 col-centered">
                 <label for="select_productos" class="label-control">Producto:</label>
                 <select id="select_productos" class="form-control" style="margin-bottom: 20px"></select>

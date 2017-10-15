@@ -25,15 +25,19 @@ def listarEstadosOferta(request):
 @csrf_exempt
 def listarOfertas(request):
     listaOfertas = Oferta.objects.all()
+    #listaOfertas = Oferta.objects.filter(productor = 1) //Filtro con el login
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
         filter = jsonFilter.get('filter')
+        user = request.user
+        print user
         if (int(filter) > 0):
             listaOfertas = Oferta.objects.filter(estado=filter)
+            #listaOfertas = Oferta.objects.filter(estado=filter).filter(productor = 1)  //Filtro con el login
+
 
 
     page = request.GET.get('page', 1)
-    print page
     paginator = Paginator(listaOfertas,3)
 
     try:
