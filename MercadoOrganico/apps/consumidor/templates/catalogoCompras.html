@@ -11,8 +11,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script>
             $(document).ready(function () {
-                $('.producto').click(function () {
-                    $('#agregar_prod_modal').modal();
+                $('.addProducto').click(function () {
+                    var producto = $(this).data("form");
+                    localStorage.setItem('producto', producto);
+                    $('#agregar_prod_modal').modal('show');
                 });
             });
     </script>
@@ -38,7 +40,7 @@
                 {% for producto in productos %}
                     <div class="col-md-3 col-sm-6 col-lg-3" style="padding:0 5px 0 5px ;">
 
-                        <div class="panel panel-default" style="padding:0; height: 300px;">
+                        <div class="panel panel-default" style="padding:0; height: 350px;">
                            <div class="panel-body">
                                <div style="height: 150px">
                                     <img class="img-responsive" src="/{{producto.producto.imagen}}" style="margin: 0 auto; max-height: 150px">
@@ -47,8 +49,9 @@
                                     <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
                                    <span style="text-align: center; overflow: auto; color: black">${{producto.precio_definido}}</span></br>
                                    <span style="text-align: center; overflow: auto; color: black">Unidad X {{producto.producto.tipoUnidad.nombre}}</span>
-                                   <li><a class="producto" data-toggle="modal" href="#" >
-                                       <span style="text-align: center" class="glyphicon glyphicon-shopping-cart"></span> Añadir al carrito</a></li>
+
+                                   <li><a href="{% url 'consumidor:agregar_producto' producto.id %}" class="addProducto" data-form="{{ producto.id }}" data-toggle="modal" data-target="#agregar_prod_modal" >
+                                       <span class="glyphicon glyphicon-shopping-cart"></span> Añadir al carrito</a></li>
                                </div>
                            </div>
                         </div>

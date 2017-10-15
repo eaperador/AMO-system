@@ -1,29 +1,24 @@
-<div class="modal fade" id="agregar_prod_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-     <div class="modal-dialog" role="document">
+
+<div class="modal fade" id="agregar_prod_modal" role="dialog" >
+     <div class="modal-dialog" >
         <div class="modal-content">
             <div class="modal-header" style="height: 50px">
-                <h4><span class="glyphicon glyphicon-shopping-cart" style="color: black"></span><span style="color: black"> Agregar al carrito</span></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h3><span class="glyphicon glyphicon-shopping-cart"></span><span style="color: black"> Agregar al carrito</span></h3>
             </div>
             <div class="modal-body">
                 <!--suppress HtmlUnknownTarget -->
                 <form role="form" action="agregar_producto" method="post" enctype="multipart/form-data" id="addProd-form" novalidate="novalidate">
                 {% csrf_token %}
-                    <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
-                    {{ field }}
-                    {% for field in form_trabajador %}
-                    <div class="form-group">
-                        {{ field.label_tag }}
-                        {{ field }}
+                    <h4 style="text-align: center; font-weight: bold; color: black">{{ producto.producto.nombre }}</h4>
+                    <br/>
+                    <div>
+                        <input type="number" width="10px" min="0"  id="cantidad" class="col-md-4 col-right form-control" name="cantidad" >
+                        <h4 style="text-align: center; font-weight: bold; color: black" class="col-md-8 col-left" > X {{producto.producto.tipoUnidad.nombre}}</h4>
                     </div>
-                    {% endfor %}
-                    {% for field in form_usuario %}
-                    <div class="form-group">
-                        {{ field.label_tag }}
-                        {{ field }}
-                    </div>
-                    {% endfor %}
+                    <br/><br/>
                     <div class="modal-footer btn-toolbar">
-                        <button type="submit"id="id_grabar" class="btn btn-default btn-success pull-right">
+                        <button type="submit"id="id_agregar" class="btn btn-default btn-success pull-right">
                             <span class="glyphicon glyphicon-save"></span> Agregar
                         </button>
                         <button type="submit" class="btn btn-default btn-default pull-right" data-dismiss="modal"
@@ -41,56 +36,20 @@
     $(document).ready(function () {
         var validator = $("#addProd-form").validate({
             rules: {
-                nombre: "required",
-                apellidos: "required",
-                aniosExperiencia: {
+                cantidad: {
                     min: 0,
                     required: true,
                     number: true
                 },
-                tiposDeServicio: {
-                    required: true,
-                    min: 1
-                },
-                telefono: {
-                    required: true,
-                    minlength: 5
-                },
-                correo: {
-                    required: true,
-                    email: true
-                },
-                imagen: "required",
-                username: "required",
-                password: {
-                    required: true,
-                    minlength: 8
-                }
             },
             messages: {
-                nombre: "Por favor ingrese su nombre completo",
-                apellidos: "Por favor ingrese sus apellidos",
-                aniosExperiencia: "Por favor indique cuantos a&ntilde;os de experiencia tiene",
-                tiposDeServicio: "Por favor seleccione el tipo de servicio que ofrecer&aacute;",
-                telefono: "Por favor ingrese un tel&eacute;fono v&aacute;alido",
-                correo: "Por favor ingrese un correo v&aacute;lido",
-                imagen: "Por favor suba una foto",
-                username: "Por favor ingrese su usuario",
-                password: "Por favor ingrese su contrase&ntilde;a",
-                confirmar: {
-                    equalTo: "La confirmaci&oacute;n no es v&aacute;lida"
-                }
+                cantidad: "Por favor ingrese la cantidad a comprar",
             },
             submitHandler: function (form) {
                 form.submit();
             }
         });
-        $('#imagen').click(function () {
-            alert($('input[type=file]').val());
-            return true;
-
-        });
-        $('#register_modal').on('hidden.bs.modal', function () {
+        $('#agregar_prod_modal').on('hidden.bs.modal', function () {
             validator.resetForm();
         })
     });

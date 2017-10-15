@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import json
 from django.views.decorators.csrf import csrf_exempt
-from ..administrador.models import Catalogo, CatalogoOferta
+from ..administrador.models import CatalogoOferta
 from django.http import HttpResponseRedirect
+from models import CompraProducto
 from django.shortcuts import render
 
 # Create your views here.
@@ -13,16 +15,16 @@ def catalogo_compras(request):
     lista_productos = CatalogoOferta.objects.all()
     return render(request, "catalogoCompras.html",{'productos':lista_productos})
 
-def agregar_producto(request):
-    print "P1"
-    return render(request, "agregarProducto.html")
-
-def agregar_producto_carrito(request,id=None):
-    print "P2"
-    lista_productos = CatalogoOferta.objects.all()
+def agregar_producto(request,id):
     producto = CatalogoOferta.objects.get(id=id)
-    cantidad=0
 
-    context = {'productos': lista_productos,
-               'cantidad':cantidad}
-    return render(request, "catalogoCompras.html", context)
+    print request.method
+    if request.method == "POST":
+        prodAdd = CompraProducto(estado='Activo',
+                                 id_catalogoProducto=producto.id)
+        prodAdd.save()
+        return HttpResponseRedirect('/')
+
+    context = {'producto': producto}
+    print producto.producto.nombre
+    return render(request, 'agregarProducto.html', context)
