@@ -88,8 +88,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'MerkaOrganico',
         'USER': 'postgres',
-        'PASSWORD': '1072661319',
+        'PASSWORD': 'Admin21',
         'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

@@ -128,15 +128,6 @@ def guardarOferta(request):
 def evaluarOfertas(request):
     return render(request, "Ofertas/evaluar_ofertas.html")
 
-
-@csrf_exempt
-def ingresarCantidadAprobada(request):
-    if request.method == "POST":
-        ofertaId = request.POST['id']
-        valor = request.POST['valor']
-        Oferta.objects.filter(pk=ofertaId).update(cantidad_aprobada=valor)
-    return JsonResponse({"mensaje": "ok"})
-
 @csrf_exempt
 def ingresarCatalogoOferta(request):
     if request.method == "POST":

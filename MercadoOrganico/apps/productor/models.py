@@ -19,7 +19,6 @@ class Oferta(models.Model):
     fecha = models.DateTimeField(auto_now_add=True, editable=False)
     precio = models.IntegerField()
     cantidad = models.IntegerField()
-    cantidad_aprobada = models.IntegerField(default=0)
     estado = models.ForeignKey(EstadoOferta, null=False)
     producto = models.ForeignKey(Producto, null=False)
     productor = models.ForeignKey(Usuario, null=False)

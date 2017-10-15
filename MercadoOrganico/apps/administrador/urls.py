@@ -11,7 +11,6 @@ urlpatterns = (
     url(r'^seleccionarProducto/(?P<id>[0-9]+)/$', views.select_producto, name="seleccionarProducto"),
     url(r'^listarOfertas/(?P<productoId>.+)$', views.listarOfertas, name="listarOfertas"),
     url(r'^evaluarOfertas/$', views.evaluarOfertas, name="evaluarOfertas"),
-    url(r'^ingresarCantidadAprobada/$', views.ingresarCantidadAprobada, name="ingresarCantidadAprobada"),
     url(r'^guardarOferta/$', views.guardarOferta, name="guardarOferta"),
     url(r'^guardarCatalogoOferta/$', views.ingresarCatalogoOferta, name="guardarCatalogoOferta")
 )

@@ -23,6 +23,7 @@ class Usuario(models.Model):
     telefono = models.IntegerField(null=True)
     direccion = models.CharField(max_length=200)
     auth_user_id = models.ForeignKey(User, null = False)
+    rol = models.ForeignKey(Rol,null = False)
 
     def __unicode__(self):
        return "%s" % (self.auth_user_id.first_name +  " " + self.auth_user_id.last_name)

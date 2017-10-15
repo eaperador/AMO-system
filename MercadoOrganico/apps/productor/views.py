@@ -5,11 +5,12 @@ from django.core import serializers
 import json
 
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from ..administrador.views import enviarNotificacion
 from .models import EstadoOferta, Oferta
+from ..administrador.models import Producto
 from django.shortcuts import render
 
 # Create your views here.
@@ -20,6 +21,7 @@ from django.shortcuts import render
 def listarEstadosOferta(request):
     listaEstados = EstadoOferta.objects.all()
     return HttpResponse(serializers.serialize("json", listaEstados))
+
 @csrf_exempt
 def listarOfertas(request):
     listaOfertas = Oferta.objects.all()
@@ -81,11 +83,56 @@ def ver_ofertas(request):
 def crearOferta(request):
 	return render(request, "crearOferta.html")
 
-##def crearOferta(request, id=None):
-##    oferta = Oferta.objects.get(id=id)
-##
-##    if request.method == 'POST':
-##
-##    else:
-##
-##    return render(request, 'CatalogoApp/Comentario.html', contexto)
+
+@csrf_exempt
+def ConsultarProductosaOfertar(request):
+    listaProductos = Producto.objects.filter(activo= True)
+    if (listaProductos.count() > 0):
+        page = request.GET.get('page', 1)
+        print page
+        paginator = Paginator(listaProductos, 3)
+
+        try:
+            productos = paginator.page(page)
+        except PageNotAnInteger:
+            productos = paginator.page(1)
+        except EmptyPage:
+            productos = paginator.page(paginator.num_pages)
+
+        prevPage = 0
+        nextPage = 0
+        if (productos.has_previous()):
+            prevPage = productos.previous_page_number()
+
+        if (productos.has_next()):
+            nextPage = productos.next_page_number()
+
+        productosPag = {"has_other_pages": productos.has_other_pages(),
+                      "has_previous": productos.has_previous(),
+                      "previous_page_number": prevPage,
+                      "page_range": productos.paginator.num_pages,
+                      "has_next": productos.has_next(),
+                      "next_page_number": nextPage,
+                      "current_page": productos.number,
+                      "first_row": productos.start_index()}
+
+        listaProductos = [{
+            "pk": producto.id,
+            "nombre": producto.nombre,
+            "descripcion": producto.descripcion,
+            "tipoUnidad": producto.tipoUnidad.abreviatura,
+            "categoria": producto.categoria.nombre,
+        } for producto in productos.object_list]
+
+        jsonReturn = [{"productos": listaProductos,
+                  "productosPag": productosPag
+                  }]
+
+        return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
+    else:
+        return JsonResponse({'mensaje': 'No hay productos para ofertar'})
+
+
+@csrf_exempt
+def ver_productos(request):
+	return render(request, "productosaOfertar.html")
