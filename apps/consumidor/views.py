@@ -20,9 +20,7 @@ def agregar_producto(request):
     if request.method == 'POST':
         jsonOferta = json.loads(request.body)
         productoId = jsonOferta['productoId']
-        print productoId
         producto = CatalogoOferta.objects.get(id=productoId)
-        print producto.producto.nombre
         prodAdd = CompraProducto(estado='Activo',
                                  id_catalogoProducto=producto)
         prodAdd.save()
