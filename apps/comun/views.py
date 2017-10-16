@@ -15,7 +15,7 @@ rolUser = ""
 
 @csrf_exempt
 def Home(request):
-	return render(request, "Index.html")
+	return render(request, "index.html")
 
 def sendMailNotification(email, subject, msj):
 	aux4="S"
