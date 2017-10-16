@@ -46,7 +46,7 @@
           $("#form-login").submit(function (event) {
               $.ajax({
                   type: "POST",
-                  url: "http://127.0.0.1:8000/login/",
+                  url: "http://amo-system.herokuapp.com:8000/login/",
                   data: JSON.stringify({ username: $('#inputUsername').val(), password: $('#inputPassword').val() }),
                   contentType: "application/json; charset=utf-8",
                   dataType: "json",
@@ -71,7 +71,7 @@
               event.preventDefault();
           });
 
-          $.getJSON("http://127.0.0.1:8000/isLogged/").done(function(data){
+          $.getJSON("http://amo-system.herokuapp.com:8000/isLogged/").done(function(data){
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
                 $("#consultar_ofertas").hide();
