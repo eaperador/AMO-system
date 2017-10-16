@@ -123,7 +123,6 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item" id ="catalogo_compras"><a class="nav-link" href="{% url 'consumidor:catalogo_compras' %}">Comprar</a></li>
             <li class="nav-item" id ="consultar_ofertas"><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Consultar Ofertas</a></li>
             <li class="nav-item" id ="ofertar"><a class="nav-link" href="{% url 'productor:ver_productos' %}">Ofertar</a></li>
             <li class="nav-item" id ="evaluar_ofertas"><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
@@ -143,7 +142,7 @@
           <h1 id="homeHeading" style="background-color: black">FRESCO + ORGANICO + SALUDABLE</h1>
           <hr>
           <p>Lo mejor del campo a la puerta de tu casa semana a semana</p>
-          <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Conoce el catálogo de productos de la semana</a>
+          <a class="btn btn-primary btn-xl js-scroll-trigger" href="{% url 'consumidor:catalogo_compras' %}">Conoce el catálogo de productos de la semana</a>
         </div>
       </div>
     </header>
