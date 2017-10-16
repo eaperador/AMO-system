@@ -40,7 +40,7 @@
     <script>
         var rolUser;
         function logout(){
-            $.getJSON("https://amo-system.herokuapp.com//logout").done(function (data) {
+            $.getJSON("https://amo-system.herokuapp.com/logout").done(function (data) {
                 if(data.mensaje == "ok"){
                     location.reload();
                 }
@@ -57,7 +57,7 @@
           $("#form-login").submit(function (event) {
               $.ajax({
                   type: "POST",
-                  url: "https://amo-system.herokuapp.com//login/",
+                  url: "https://amo-system.herokuapp.com/login/",
                   data: JSON.stringify({ username: $('#inputUsername').val(), password: $('#inputPassword').val() }),
                   contentType: "application/json; charset=utf-8",
                   dataType: "json",
@@ -82,7 +82,7 @@
               event.preventDefault();
           });
 
-          $.getJSON("https://amo-system.herokuapp.com//isLogged/").done(function(data){
+          $.getJSON("https://amo-system.herokuapp.com/isLogged/").done(function(data){
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
                 $("#consultar_ofertas").hide();
