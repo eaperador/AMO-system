@@ -103,9 +103,7 @@ def listarOfertas(request, productoId):
             while (primerDiaOferta.weekday() != domingo):
                 primerDiaOferta -= timedelta(days=1)
 
-            print(ultimoDiaOferta)
-            print(primerDiaOferta)
-            listaOfertas = Oferta.objects.filter(producto=productoId)#.filter(fecha__range=(primerDiaOferta, ultimoDiaOferta))
+            listaOfertas = Oferta.objects.filter(producto=productoId)
             data_oferta = [{'id': oferta.id,
                             'producto': oferta.producto.nombre,
                             'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
