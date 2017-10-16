@@ -92,7 +92,6 @@ def ConsultarProductosaOfertar(request):
     listaProductos = Producto.objects.filter(activo= True)
     if (listaProductos.count() > 0):
         page = request.GET.get('page', 1)
-        print page
         paginator = Paginator(listaProductos, 3)
 
         try:
