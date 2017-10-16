@@ -36,18 +36,50 @@
 		    console.log(productos)
 		    $('#listaProductos').empty()
             $.each(productos, function (i, item) {
+                var nombreProducto = item.nombre
                 var row = current
                 $('#listaProductos').append("<tr style=\"color: black\"style=\"color: black\"> " +
                                               "<th scope='row'>"+(row+i)+"</th>"+
-                                              "<td>"+item.nombre+"</td>" +
+                                              "<td>"+nombreProducto+"</td>" +
                                               "<td class='text-left'>"+item.descripcion+"</td>" +
                                               "<td>"+item.tipoUnidad+"</td>"+
                                               "<td>"+item.categoria+"</td>"+
-                                              "<td>"+"<button class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
+                                              "<td>"+"<button onclick=LanzaPopup("+item.pk+") data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
                                             "</tr>")
                 i++
              });
         };
+
+		function LanzaPopup(idProducto) {
+		    console.log('producto: ', idProducto);
+            $('#nombreProducto').html(idProducto);
+        }
+
+        function Ofertar() {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8000/productor/crearOferta",
+                data: JSON.stringify({ precio: $('#inputPrecio').val(), cantidad: $('#inputCantidad').val() }),
+                contentType: "aplication/json; charset-utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $.each(data,function (i,item) {
+                        if (item.mensaje == 'OK') {
+                            window.location = "{% url 'productor:productosaOfertar' %}";
+                        }
+                        else {
+                            $("#mess-error").show();
+                            $("#mensaje").html('Error');
+                        }
+                      })
+                },
+                failure: function (errMsg) {
+                    alert("Hubo un error");
+                }
+            });
+            return false;
+        }
+
 		function paginacion(productosPag){
 		    $('#pagination').empty()
 		    if (productosPag.has_other_pages){
@@ -98,6 +130,32 @@
                 </div>
             </div>
          </div>
+         <!--MODAL-->
+         <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #F05F40">
+                        <h4 id="nombreProducto" class="modal-lg"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="form-oferta">
+                            <input id="inputPrecio" class="form-control" placeholder="Precio" name="username" required autofocus ><br>
+
+                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" name="password" required>
+                        </form>
+                        <div id="mess-error">
+                            <div class="alert alert-danger">
+                                <label for="mensaje" id="mensaje"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="Ofertar()">Ofertar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
      </section>
     </header>
 {% endblock %}
