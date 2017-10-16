@@ -89,10 +89,6 @@ def ver_ofertas(request):
 def crearOferta(request):
     estadoOferta = EstadoOferta.objects.get(id=1)
     print 'busca usuario'
-    #usuario = request.user
-    #print usuario.id
-    usuario = Usuario.objects.get(id=1)
-    #print usuario
     if request.method == 'POST':
         print 'ingresa al metodo post'
         jsonObj = json.loads(request.body)
@@ -100,7 +96,9 @@ def crearOferta(request):
         cantidad = jsonObj['cantidad']
         idproducto = jsonObj['producto']
         producto = Producto.objects.get(id=idproducto)
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=usuario)
+        idproductor = jsonObj['user']
+        productor = Usuario.objects.get(pk=idproductor)
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=productor)
         print 'Antes de guardar'
         oferta_model.save()
 
@@ -162,7 +160,9 @@ def ConsultarProductosaOfertar(request):
 
 @csrf_exempt
 def ver_productos(request):
-	return render(request, "productosaOfertar.html")
+    user = request.user
+    print user.id
+    return render(request, "productosaOfertar.html")
 
 def editarOferta(request):
     return render(request, "editarOferta.html")

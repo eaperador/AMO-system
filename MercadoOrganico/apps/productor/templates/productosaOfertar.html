@@ -30,14 +30,14 @@
                 }
             });
             return false;
-        };
+        }
 
 		function mostrarProductos(productos, current){
-		    console.log(productos)
-		    $('#listaProductos').empty()
+		    console.log(productos);
+		    $('#listaProductos').empty();
             $.each(productos, function (i, item) {
-                var nombreProducto = item.nombre
-                var row = current
+                var nombreProducto = item.nombre;
+                var row = current;
                 $('#listaProductos').append("<tr style=\"color: black\"style=\"color: black\"> " +
                                               "<th scope='row'>"+(row+i)+"</th>"+
                                               "<td>"+nombreProducto+"</td>" +
@@ -45,10 +45,10 @@
                                               "<td>"+item.tipoUnidad+"</td>"+
                                               "<td>"+item.categoria+"</td>"+
                                               "<td>"+"<button onclick=LanzaPopup("+item.pk+") data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
-                                            "</tr>")
+                                            "</tr>");
                 i++
              });
-        };
+        }
 
 		function LanzaPopup(idProducto) {
 		    console.log('producto: ', idProducto);
@@ -56,13 +56,13 @@
         }
 
         function Ofertar() {
-		    var id = document.getElementById('inputProducto')
+		    var id = document.getElementById('inputProducto');
             var idproducto = id.innerText || id.textContent;
             $.ajax({
                 type: "POST",
                 url: "http://localhost:8000/productor/crearOferta",
                 data: JSON.stringify({ precio: $('#inputPrecio').val(), cantidad: $('#inputCantidad').val(),
-                                     producto: idproducto}),
+                                     producto: idproducto, user: "{{ user.id }}"}),
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
                 success: function (data) {
