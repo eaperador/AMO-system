@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from . import views
+from ..administrador import views
 
 urlpatterns = (
     url(r'^armarCatalogo$', views.index, name="index"),

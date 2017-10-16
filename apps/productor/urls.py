@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-import views
+from ..productor import views
 
 urlpatterns = [
     url(r'listarEstados/$', views.listarEstadosOferta, name='listaEstados'),
