@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} MerkaOrgánico {% endblock %}</title>
+    <title>{% block title %} Merkorganico {% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap core CSS -->
@@ -22,7 +22,7 @@
     <!-- Custom styles for this template -->
     <link href="{% static 'css/creative.css' %}" rel="stylesheet">
 
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
@@ -54,7 +54,7 @@
                       $.each(data,function (i,item) {
                         if (item.mensaje == 'OK')
                         {
-                            $("#mess-error").hide();
+                            rolUser=item.rol;
                             window.location = "{% url 'comun:index' %}";
                         }
                         else
@@ -74,35 +74,13 @@
           $.getJSON("http://127.0.0.1:8000/isLogged/").done(function(data){
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
-                $("#consultar_ofertas").hide();
-                $("#ofertar").hide();
-                $("#evaluar_ofertas").hide();
-                $("#armar_catalogo").hide();
                 $("#iniciar_sesion").show();
+                $("#catalogo_compras").show();
             }else{
-                if(data.mensaje == "Productor"){
-                     $("#consultar_ofertas").show();
-                     $("#ofertar").show();
-                     $("#cerrar_sesion").show();
-                     $("#evaluar_ofertas").hide();
-                     $("#armar_catalogo").hide();
-                     $("#iniciar_sesion").hide();
-                     $("#catalogo_compras").hide();
-                }else if(data.mensaje == "Administrador"){
-                     $("#consultar_ofertas").hide();
-                     $("#ofertar").hide();
-                     $("#evaluar_ofertas").show();
-                     $("#armar_catalogo").show();
+                if(data.mensaje == "Consumidor"){
                      $("#cerrar_sesion").show();
                      $("#iniciar_sesion").hide();
-                     $("#catalogo_compras").hide();
-                }else if(data.mensaje == "Consumidor"){
-                     $("#consultar_ofertas").hide();
-                     $("#ofertar").hide();
-                     $("#evaluar_ofertas").hide();
-                     $("#armar_catalogo").hide();
-                     $("#cerrar_sesion").show();
-                     $("#iniciar_sesion").hide();
+                     $("#catalogo_compras").show();
                 }
           }});
       });
@@ -112,22 +90,15 @@
 <body id="page-top">
     {% block header %}
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-shrink" id="mainNav">
       <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="{% url 'comun:index' %}" >MerkaOrgánico</a>
+        <a class="navbar-brand" href="{% url 'comun:index' %}">Mercado Orgánico</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-          <span class="navbar-toggler-icon"></span>
-          <span class="navbar-toggler-icon"></span>
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item" id ="catalogo_compras"><a class="nav-link" href="{% url 'consumidor:catalogo_compras' %}">Comprar</a></li>
-            <li class="nav-item" id ="consultar_ofertas"><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Consultar Ofertas</a></li>
-            <li class="nav-item" id ="ofertar"><a class="nav-link" href="{% url 'productor:ver_productos' %}">Ofertar</a></li>
-            <li class="nav-item" id ="evaluar_ofertas"><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
-            <li class="nav-item" id ="armar_catalogo"><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Armar Catálogo</a></li>
             <li class="nav-item" id="cerrar_sesion"><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
             <li class="nav-item" id="iniciar_sesion"><a href="#" class="nav-link" data-toggle="modal" data-target="#modalLogin"><i class="fa fa-fw fa-sign-in"></i>Iniciar Sesión</a></li>
           </ul>
@@ -139,11 +110,11 @@
     {% block content %}
      <header class="masthead">
       <div class="header-content" style="background-image:{% static 'img/header.jpg' %}">
-        <div class="header-content-inner" >
-          <h1 id="homeHeading" style="background-color: black">FRESCO + ORGANICO + SALUDABLE</h1>
+        <div class="header-content-inner">
+          <h1 id="homeHeading">FRESCO + ORGANICO + SALUDABLE</h1>
           <hr>
           <p>Lo mejor del campo a la puerta de tu casa semana a semana</p>
-          <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Conoce el catálogo de productos de la semana</a>
+          <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Conoce más</a>
         </div>
       </div>
     </header>
@@ -155,9 +126,9 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 mx-auto text-center">
-            <h2 class="section-heading">Comunícate con nosotros !</h2>
+            <h2 class="section-heading">Tomémonos un café !</h2>
             <hr class="primary">
-            <p>Si tienes dudas o comentarios, contáctanos</p>
+            <p>Cualquier duda, comentario o sugerencia con gusto será recibida</p>
           </div>
         </div>
         <div class="row">
@@ -173,48 +144,12 @@
           </div>
         </div>
       </div>
-
     </section>
-     <!-- Modal -->
-    <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="height: 10px">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <form class="form-signin" method="post" id="form-login">
-                        <div id="mess-error">
-                            <div class="alert alert-danger">
-                                <label for="mensaje" id="mensaje"></label>
-                            </div>
-                        </div>
-                        <label for="inputUsername" class="sr-only">Usuario</label>
-                        <input id="inputUsername" class="form-control" placeholder="Usuario" name="username" required autofocus ><br>
-                        <label for="inputPassword" class="sr-only">Contraseña</label>
-                        <input type="password" id="inputPassword" class="form-control" placeholder="Contraseña" name="password" required>
-                        <br/>
-                        <div class="mx-auto text-center">
-                            <button class="btn btn-lg btn-outline" type="submit">Iniciar sesión</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Bootstrap core JavaScript -->
     <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
     <script src="{% static 'vendor/popper/popper.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.js' %}"></script>
-
-    <!-- Plugin JavaScript -->
-    <script src="{% static 'vendor/jquery-easing/jquery.easing.js' %}"></script>
-    <script src="{% static 'vendor/scrollreveal/scrollreveal.js' %}"></script>
-    <script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.js' %}"></script>
-
-    <!-- Custom scripts for this template -->
-    <script src="{% static 'js/creative.js' %}"></script>
 
     {% endblock %}
 </body>
