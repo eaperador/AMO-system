@@ -4,12 +4,12 @@ from django.contrib import admin
 from .models import Producto, Categoria, TipoUnidad
 
 class CategoriaAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'nombre', )
-    ordering = ('pk',)
+    list_display = ('id', 'nombre', )
+    ordering = ('id',)
 
 class TipoUnidadAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'nombre','abreviatura' )
-    ordering = ('pk',)
+    list_display = ('id', 'nombre','abreviatura' )
+    ordering = ('id',)
 
 class ProductoAdmin(admin.ModelAdmin):
     list_display = ('nombre','imagen','descripcion','activo','get_categoria','get_tipoUnidad' )

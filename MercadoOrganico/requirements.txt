@@ -1,5 +1,4 @@
-Django==1.11.5
-django-core==1.4.1
+Django==1.11.4
 django-cors-headers==2.1.0
 olefile==0.44
 Pillow==3.0.0

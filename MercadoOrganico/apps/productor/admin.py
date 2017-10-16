@@ -7,8 +7,8 @@ from ..administrador.models import Producto
 from ..comun.models import Usuario
 
 class EstadoOfertaAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'nombre', )
-    ordering = ('pk',)
+    list_display = ('id', 'nombre', )
+    ordering = ('id',)
 
 class OfertaAdmin(admin.ModelAdmin):
     list_display = ('fecha','get_productor', 'cantidad', 'precio', 'get_estado', 'get_producto')

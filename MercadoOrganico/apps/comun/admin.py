@@ -5,12 +5,12 @@ from django.contrib import admin
 from .models import Usuario,Rol,Cooperativa
 
 class RolAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'nombre', )
-    ordering = ('pk',)
+    list_display = ('id', 'nombre', )
+    ordering = ('id',)
 
 class CooperativaAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'ciudad')
-    ordering = ('pk',)
+    list_display = ('id', 'ciudad')
+    ordering = ('id',)
 
 class UsuarioAdmin(admin.ModelAdmin):
 
