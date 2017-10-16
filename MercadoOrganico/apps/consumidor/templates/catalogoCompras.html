@@ -16,14 +16,14 @@
         {
             $.ajax({
                type: "POST",
-               url: "http://127.0.0.1:8000/consumidor/agregar_producto/",
+               url: "http://localhost:8000/consumidor/agregar_producto/",
                data: JSON.stringify({ productoId : productoId}),
                contentType: "application/json; charset=utf-8",
                dataType: "json",
                success: function (data) {
                    console.log(data);
                    alert('Producto agregado');
-                   window.location = "http://127.0.0.1:8000/consumidor/catalogo_compras";
+                   window.location = "http://localhost:8000/consumidor/catalogo_compras";
                },
                failure: function(errMsg){
                    alert("Hubo un error");
