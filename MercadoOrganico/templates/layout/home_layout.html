@@ -54,7 +54,7 @@
                       $.each(data,function (i,item) {
                         if (item.mensaje == 'OK')
                         {
-                            rolUser=item.rol;
+                            $("#mess-error").hide();
                             window.location = "{% url 'comun:index' %}";
                         }
                         else
