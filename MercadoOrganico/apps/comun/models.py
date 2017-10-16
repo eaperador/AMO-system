@@ -31,5 +31,7 @@ class Usuario(models.Model):
     def natural_key(self):
         return (self.auth_user_id.first_name +  " " + self.auth_user_id.last_name)
 
-
+class DireccionComprador(models.Model):
+    direccion_comprador = models.CharField(max_length=200)
+    id_comprador = models.ForeignKey(Usuario, null=False)
 

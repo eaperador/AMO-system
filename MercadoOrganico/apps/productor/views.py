@@ -11,7 +11,6 @@ from django.views.decorators.csrf import csrf_exempt
 from ..administrador.views import enviarNotificacion
 from .forms import OfertaForm
 from .models import EstadoOferta, Oferta
-from ..administrador.models import Producto
 from ..comun.models import Usuario
 from ..administrador.models import Producto
 from django.shortcuts import render, redirect
@@ -89,7 +88,6 @@ def ver_ofertas(request):
 @csrf_exempt
 def crearOferta(request):
     estadoOferta = EstadoOferta.objects.get(id=1)
-    producto = Producto.objects.get(id=1)
     print 'busca usuario'
     usuario = Usuario.objects.get(id=1)
     print usuario
@@ -98,10 +96,12 @@ def crearOferta(request):
         jsonObj = json.loads(request.body)
         precio = jsonObj['precio']
         cantidad = jsonObj['cantidad']
-        print 'Antes de armar el modelo oferta'
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=1)
+        idproducto = jsonObj['producto']
+        producto = Producto.objects.get(id=idproducto)
+
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=usuario)
         print 'Antes de guardar'
-        ##oferta_model.save()
+        oferta_model.save()
 
         json_response = [{'mensaje': "OK"}]
 

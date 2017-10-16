@@ -1,0 +1,77 @@
+{% extends 'layout/consumidor_layout.html' %}
+
+{% block title %}
+    Compras
+{% endblock %}
+
+{% block content %}
+    <header class="masthead" style="background: whitesmoke">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script>
+        function agregar(productoId)
+        {
+            $.ajax({
+               type: "POST",
+               url: "http://127.0.0.1:8000/consumidor/agregar_producto/",
+               data: JSON.stringify({ productoId : productoId}),
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               success: function (data) {
+                   console.log(data);
+                   alert('Producto agregado');
+                   window.location = "http://127.0.0.1:8000/consumidor/catalogo_compras";
+               },
+               failure: function(errMsg){
+                   alert("Hubo un error");
+               }
+            });
+        };
+    </script>
+    <section id="Consumidor">
+        <div class="container" >
+            <div class="row">
+                <h1 style="color: black">Compras</h1>
+            </div>
+            <div class="row" id="filtroCategoria">
+                <div class="col-md-4 text-left col-centered">
+                    <form method="post" action="" enctype="multipart/form-data" name="filtro">
+                        <div class="form-group" >
+                            <label for="listaCategorias" style="color: black">Filtro:</label>
+                            <select id="listaCategorias" onchange="enviarForm()" class="form-control" style="height: 30px">
+                                <option selected value="-1">Todos...</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </br>
+            <div class="row">
+                {% for producto in productos %}
+                    <div class="col-md-3 col-sm-6 col-lg-3" style="padding:0 5px 0 5px ;">
+                        <div class="panel panel-default" style="padding:0; height: 350px;">
+                           <div class="panel-body">
+                               <div style="height: 150px">
+                                    <img class="img-responsive" src="/{{producto.producto.imagen}}" style="margin: 0 auto; max-height: 150px">
+                               </div>
+                               <div style="height: 120px">
+                                   <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
+                                   <span style="text-align: center; overflow: auto; color: black">${{producto.precio_definido}}</span><br/>
+                                   <span style="text-align: center; overflow: auto; color: black" >Unidad X {{producto.producto.tipoUnidad.nombre}}</span>
+                                   <br/><br/>
+                                   <button onclick="return agregar({{ producto.id  }})" type="submit" class="btn btn-primary" data-form="{{ producto.id }}">
+                                       <span class="glyphicon glyphicon-shopping-cart"></span> Añadir al carrito
+                                   </button>
+                               </div>
+                           </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+     </section>
+    </header>
+{% endblock content %}

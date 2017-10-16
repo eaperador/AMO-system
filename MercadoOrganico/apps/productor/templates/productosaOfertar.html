@@ -52,23 +52,26 @@
 
 		function LanzaPopup(idProducto) {
 		    console.log('producto: ', idProducto);
-            $('#nombreProducto').html(idProducto);
+            $('#inputProducto').html(idProducto);
         }
 
         function Ofertar() {
+		    var id = document.getElementById('inputProducto')
+            var idproducto = id.innerText || id.textContent;
             $.ajax({
                 type: "POST",
                 url: "http://localhost:8000/productor/crearOferta",
-                data: JSON.stringify({ precio: $('#inputPrecio').val(), cantidad: $('#inputCantidad').val() }),
+                data: JSON.stringify({ precio: $('#inputPrecio').val(), cantidad: $('#inputCantidad').val(),
+                                     producto: idproducto}),
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
                 success: function (data) {
                     $.each(data,function (i,item) {
                         if (item.mensaje == 'OK') {
-                            window.location = "{% url 'productor:productosaOfertar' %}";
+                            window.location = "{% url 'productor:ver_productos' %}";
                         }
                         else {
-                            $("#mess-error").show();
+                            $("#mess-error").hide();
                             $("#mensaje").html('Error');
                         }
                       })
@@ -135,19 +138,16 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header" style="background-color: #F05F40">
-                        <h4 id="nombreProducto" class="modal-lg"></h4>
+                        <h4 id="nombreProducto" class="modal-lg">Ofertar producto</h4>
                     </div>
                     <div class="modal-body">
                         <form method="post" id="form-oferta">
-                            <input id="inputPrecio" class="form-control" placeholder="Precio" name="username" required autofocus ><br>
+                            <label id="inputProducto" class="modal-lg"></label>
+                            <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
 
-                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" name="password" required>
+                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
                         </form>
-                        <div id="mess-error">
-                            <div class="alert alert-danger">
-                                <label for="mensaje" id="mensaje"></label>
-                            </div>
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

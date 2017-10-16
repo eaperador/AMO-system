@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^', include('apps.comun.urls', namespace='comun')),
     url(r'^catalogo/', include('apps.administrador.urls', namespace='catalogo')),
     url(r'^productor/', include('apps.productor.urls', namespace="productor")),
+    url(r'^consumidor/', include('apps.consumidor.urls', namespace="consumidor")),
     url(r'^admin/', admin.site.urls),
 ]

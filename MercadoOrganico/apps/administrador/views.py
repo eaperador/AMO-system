@@ -8,6 +8,7 @@ from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
+
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
@@ -92,6 +93,9 @@ def listarOfertas(request, productoId):
             primerDiaOferta = datetime.now()
             sabado = 5
             domingo = 6
+
+            print(ultimoDiaOferta)
+            print(primerDiaOferta)
 
             while (ultimoDiaOferta.weekday() != sabado) :
                 ultimoDiaOferta += timedelta(days=1)
