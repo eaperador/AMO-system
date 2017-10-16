@@ -74,7 +74,6 @@ def select_productos(request):
 ### Seleccionar un producto en especifico ###
 @csrf_exempt
 def select_producto(request, id):
-    print request
     if request.method == "GET":
         producto = Producto.objects.get(pk=id)
         data_producto = {'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.imagen), 'activo': producto.activo}
