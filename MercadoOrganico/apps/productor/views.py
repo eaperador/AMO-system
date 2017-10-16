@@ -89,8 +89,10 @@ def ver_ofertas(request):
 def crearOferta(request):
     estadoOferta = EstadoOferta.objects.get(id=1)
     print 'busca usuario'
+    #usuario = request.user
+    #print usuario.id
     usuario = Usuario.objects.get(id=1)
-    print usuario
+    #print usuario
     if request.method == 'POST':
         print 'ingresa al metodo post'
         jsonObj = json.loads(request.body)
@@ -98,7 +100,6 @@ def crearOferta(request):
         cantidad = jsonObj['cantidad']
         idproducto = jsonObj['producto']
         producto = Producto.objects.get(id=idproducto)
-
         oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=usuario)
         print 'Antes de guardar'
         oferta_model.save()
@@ -106,7 +107,7 @@ def crearOferta(request):
         json_response = [{'mensaje': "OK"}]
 
         data_convert = json.dumps(json_response)
-        return HttpResponse(data_convert, content_type='application/json')
+    return HttpResponse(data_convert, content_type='application/json')
 
 
 
