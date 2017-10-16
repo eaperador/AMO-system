@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-import views
+from ..consumidor import views
 
 urlpatterns = [
     url(r'catalogo_compras/$', views.catalogo_compras, name='catalogo_compras'),
