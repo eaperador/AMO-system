@@ -11,12 +11,12 @@
 	 <script>
 
         (function () {
-		    $.getJSON( "http://amo-system.herokuapp.com:8000/productor/listarEstados/").done(function (data) {
+		    $.getJSON( "https://amo-system.herokuapp.com:8000/productor/listarEstados/").done(function (data) {
 			    $.each(data, function (i, item) {
 		            $('#listaEstados').append(' <option value="'+item.pk+'">'+item.fields.nombre+'</option>');
                 });
 			});
-		    $.getJSON( "http://amo-system.herokuapp.com:8000/productor/listarOfertas/").done(function (data) {
+		    $.getJSON( "https://amo-system.herokuapp.com:8000/productor/listarOfertas/").done(function (data) {
 			     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row)
                  paginacion(data[0].ofertasPag)
                 });
@@ -34,7 +34,7 @@
 		function enviarForm(page) {
 		    $.ajax({
                 type: "POST",
-                url: "http://amo-system.herokuapp.com:8000/productor/listarOfertas/?page="+page,
+                url: "https://amo-system.herokuapp.com:8000/productor/listarOfertas/?page="+page,
                 data: JSON.stringify({filter: $('#listaEstados').val()}),
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
