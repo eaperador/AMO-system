@@ -1,0 +1,65 @@
+{% extends 'layout/productor_layout.html' %}
+
+{% block title %}
+    Compras
+{% endblock %}
+
+{% block content %}
+    <header class="masthead" style="background: whitesmoke">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script>
+        function editar(productoId)
+        {
+            $.ajax({
+               type: "POST",
+               url: "http://127.0.0.1:8000/consumidor/agregar_producto/",
+               data: JSON.stringify({ productoId : productoId}),
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               success: function (data) {
+                   console.log(data);
+                   alert('Producto agregado');
+                   window.location = "http://127.0.0.1:8000/consumidor/catalogo_compras";
+               },
+               failure: function(errMsg){
+                   alert("Hubo un error");
+               }
+            });
+        };
+    </script>
+    <section id="Oferta">
+        <div class="container" >
+            <div class="row">
+                <h1 style="color: black">Editar Oferta</h1>
+            </div>
+            <div class="row">
+                <!--suppress HtmlUnknownTarget -->
+                <form role="form" action="" method="post" enctype="multipart/form-data" id="editar-form" novalidate="novalidate">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        {% for field in form_oferta %}
+                            <div class="form-group">
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="modal-footer btn-toolbar">
+                        <button type="submit" id="id_editar" class="btn btn-default btn-success pull-right">
+                            <span class="glyphicon glyphicon-save"></span> Guardar
+                        </button>
+                        <button type="submit" class="btn btn-default btn-default pull-right" data-dismiss="modal"
+                                style="margin-left: 5px">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+     </section>
+    </header>
+{% endblock content %}

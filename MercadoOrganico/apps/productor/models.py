@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from ..administrador.models import Producto
 from ..comun.models import Usuario
+from django.forms import ModelForm
 
 from django.forms import forms
 
@@ -26,3 +27,15 @@ class Oferta(models.Model):
 
 
     #natural_key.dependencies = ['estado','']
+
+class OfertaForm(ModelForm):
+    fecha = models.DateTimeField(auto_now_add=True, editable=False)
+    precio = models.IntegerField()
+    cantidad = models.IntegerField()
+    #estado = models.ForeignKey(EstadoOferta, null=False)
+    #producto = models.ForeignKey(Producto, null=False)
+    #productor = models.ForeignKey(Usuario, null=False)
+
+    class Meta:
+        model = Oferta
+        fields = ['fecha', 'precio', 'cantidad']
