@@ -10,7 +10,7 @@
 	 <script src="//code.jquery.com/jquery-1.11.3.js"></script>
 	 <script>
         (function () {
-		    $.getJSON( "http://localhost:8000/productor/listaProductos/").done(function (data) {
+		    $.getJSON( "https://amo-system.herokuapp.com/productor/listaProductos/").done(function (data) {
 			     mostrarProductos(data[0].productos, data[0].productosPag.first_row)
                  paginacion(data[0].productosPag)
                 });
@@ -19,7 +19,7 @@
 		function enviarForm(page) {
 		    $.ajax({
                 type: "GET",
-                url: "http://localhost:8000/productor/listaProductos/?page="+page,
+                url: "https://amo-system.herokuapp.com/productor/listaProductos/?page="+page,
                 contentType: "aplication/json; charset-utf-8",
                 success: function (data) {
                     mostrarProductos(data[0].productos, data[0].productosPag.first_row)
@@ -30,24 +30,59 @@
                 }
             });
             return false;
-        };
+        }
 
 		function mostrarProductos(productos, current){
-		    console.log(productos)
-		    $('#listaProductos').empty()
+		    console.log(productos);
+		    $('#listaProductos').empty();
             $.each(productos, function (i, item) {
-                var row = current
+                var nombreProducto = item.nombre;
+                var row = current;
                 $('#listaProductos').append("<tr style=\"color: black\"style=\"color: black\"> " +
                                               "<th scope='row'>"+(row+i)+"</th>"+
-                                              "<td>"+item.nombre+"</td>" +
+                                              "<td>"+nombreProducto+"</td>" +
                                               "<td class='text-left'>"+item.descripcion+"</td>" +
                                               "<td>"+item.tipoUnidad+"</td>"+
                                               "<td>"+item.categoria+"</td>"+
-                                              "<td>"+"<button class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
-                                            "</tr>")
+                                              "<td>"+"<button onclick=LanzaPopup("+item.pk+") data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
+                                            "</tr>");
                 i++
              });
-        };
+        }
+
+		function LanzaPopup(idProducto) {
+		    console.log('producto: ', idProducto);
+            $('#inputProducto').html(idProducto);
+        }
+
+        function Ofertar() {
+		    var id = document.getElementById('inputProducto');
+            var idproducto = id.innerText || id.textContent;
+            $.ajax({
+                type: "POST",
+                url: "https://amo-system.herokuapp.com/productor/crearOferta",
+                data: JSON.stringify({ precio: $('#inputPrecio').val(), cantidad: $('#inputCantidad').val(),
+                                     producto: idproducto, user: "{{ user.id }}"}),
+                contentType: "aplication/json; charset-utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $.each(data,function (i,item) {
+                        if (item.mensaje == 'OK') {
+                            window.location = "{% url 'productor:ver_productos' %}";
+                        }
+                        else {
+                            $("#mess-error").hide();
+                            $("#mensaje").html('Error');
+                        }
+                      })
+                },
+                failure: function (errMsg) {
+                    alert("Hubo un error");
+                }
+            });
+            return false;
+        }
+
 		function paginacion(productosPag){
 		    $('#pagination').empty()
 		    if (productosPag.has_other_pages){
@@ -98,6 +133,29 @@
                 </div>
             </div>
          </div>
+         <!--MODAL-->
+         <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #F05F40">
+                        <h4 id="nombreProducto" class="modal-lg">Ofertar producto</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="form-oferta">
+                            <label id="inputProducto" class="modal-lg"></label>
+                            <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
+
+                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="Ofertar()">Ofertar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
      </section>
     </header>
 {% endblock %}

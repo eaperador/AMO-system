@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from ..administrador.models import Producto
 from ..comun.models import Usuario
+from django.forms import ModelForm
 
 from django.forms import forms
 
@@ -26,3 +27,4 @@ class Oferta(models.Model):
 
 
     #natural_key.dependencies = ['estado','']
+
