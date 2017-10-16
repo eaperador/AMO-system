@@ -13,7 +13,7 @@
             $(document).ready(function () {
                 $('.addProducto').click(function () {
                     var producto = $(this).data("form");
-                    localStorage.setItem('producto', producto);
+                    localStorage.setItem('id', producto);
                     $('#agregar_prod_modal').modal('show');
                 });
             });
@@ -46,7 +46,7 @@
                                     <img class="img-responsive" src="/{{producto.producto.imagen}}" style="margin: 0 auto; max-height: 150px">
                                </div>
                                <div style="height: 120px">
-                                    <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
+                                   <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
                                    <span style="text-align: center; overflow: auto; color: black">${{producto.precio_definido}}</span></br>
                                    <span style="text-align: center; overflow: auto; color: black">Unidad X {{producto.producto.tipoUnidad.nombre}}</span>
 

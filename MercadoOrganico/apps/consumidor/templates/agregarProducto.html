@@ -1,10 +1,9 @@
 
-<div class="modal fade" id="agregar_prod_modal" role="dialog" >
-     <div class="modal-dialog" >
+<div class="modal fade" id="agregar_prod_modal" tabindex="-1" role="dialog" >
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header" style="height: 50px">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h3><span class="glyphicon glyphicon-shopping-cart"></span><span style="color: black"> Agregar al carrito</span></h3>
+                <h3><span style="color: black"> Agregar al carrito</span></h3>
             </div>
             <div class="modal-body">
                 <!--suppress HtmlUnknownTarget -->
@@ -52,5 +51,20 @@
         $('#agregar_prod_modal').on('hidden.bs.modal', function () {
             validator.resetForm();
         })
+        $( ".toggle-visibility" ).click(function() {
+
+          var target_selector = $(this).attr('data-target');
+          var $target = $( target_selector );
+
+          if ($target.is(':visible'))
+          {
+            $target.hide( "slow" );
+          }
+          else
+          {
+            $target.show( "slow" );
+          }
+          console.log($target.is(':visible'));
+        });
     });
 </script>

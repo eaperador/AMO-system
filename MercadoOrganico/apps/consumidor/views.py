@@ -13,7 +13,7 @@ from django.shortcuts import render
 @csrf_exempt
 def catalogo_compras(request):
     lista_productos = CatalogoOferta.objects.all()
-    return render(request, "catalogoCompras.html",{'productos':lista_productos})
+    return render(request, "catalogoCompras.html", {'productos':lista_productos})
 
 def agregar_producto(request,id):
     producto = CatalogoOferta.objects.get(id=id)
