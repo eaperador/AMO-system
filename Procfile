@@ -1,1 +1,1 @@
-web: gunicorn CatalogoBiodiversidad.wsgi --log-file -
+web: gunicorn MercadoOrganico.wsgi --log-file -
