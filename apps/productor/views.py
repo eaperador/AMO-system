@@ -8,8 +8,6 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from ..administrador.views import enviarNotificacion
-from .forms import OfertaForm
 from .models import EstadoOferta, Oferta
 from ..comun.models import Usuario
 from ..administrador.models import Producto
