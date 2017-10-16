@@ -15,6 +15,7 @@ from ..comun.models import Usuario
 from ..administrador.models import Producto
 from django.shortcuts import render, redirect
 
+
 # Create your views here.
 
 
@@ -24,23 +25,24 @@ def listarEstadosOferta(request):
     listaEstados = EstadoOferta.objects.all()
     return HttpResponse(serializers.serialize("json", listaEstados))
 
+
 @csrf_exempt
 def listarOfertas(request):
-    listaOfertas = Oferta.objects.all()
-    #listaOfertas = Oferta.objects.filter(productor = 1) //Filtro con el login
+    # listaOfertas = Oferta.objects.all()
+    print(request.user.id)
+    usuario = Usuario.objects.get(auth_user_id=request.user)
+    listaOfertas = Oferta.objects.filter(productor=usuario.id)
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
         filter = jsonFilter.get('filter')
         user = request.user
         print user
         if (int(filter) > 0):
-            listaOfertas = Oferta.objects.filter(estado=filter)
-            #listaOfertas = Oferta.objects.filter(estado=filter).filter(productor = 1)  //Filtro con el login
-
-
+            # listaOfertas = Oferta.objects.filter(estado=filter)
+            listaOfertas = Oferta.objects.filter(estado=filter).filter(productor=usuario.id)
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(listaOfertas,3)
+    paginator = Paginator(listaOfertas, 3)
 
     try:
         ofertas = paginator.page(page)
@@ -56,15 +58,15 @@ def listarOfertas(request):
 
     if (ofertas.has_next()):
         nextPage = ofertas.next_page_number()
-    
-    ofertasPag = {"has_other_pages" : ofertas.has_other_pages(),
-                   "has_previous" : ofertas.has_previous(),
-                   "previous_page_number" : prevPage,
-                   "page_range" : ofertas.paginator.num_pages,
-                   "has_next" : ofertas.has_next(),
-                   "next_page_number" : nextPage,
-                   "current_page" : ofertas.number,
-                   "first_row" : ofertas.start_index()}
+
+    ofertasPag = {"has_other_pages": ofertas.has_other_pages(),
+                  "has_previous": ofertas.has_previous(),
+                  "previous_page_number": prevPage,
+                  "page_range": ofertas.paginator.num_pages,
+                  "has_next": ofertas.has_next(),
+                  "next_page_number": nextPage,
+                  "current_page": ofertas.number,
+                  "first_row": ofertas.start_index()}
 
     listaOfertasJson = [{
         "pk": oferta.id,
@@ -74,21 +76,27 @@ def listarOfertas(request):
         "estado": oferta.estado.nombre,
         "producto": oferta.producto.nombre,
         "unidad": oferta.producto.tipoUnidad.abreviatura,
-        } for oferta in ofertas.object_list]
-    json_ = [{"ofertas" : listaOfertasJson,
-              "ofertasPag" : ofertasPag
+    } for oferta in ofertas.object_list]
+    json_ = [{"ofertas": listaOfertasJson,
+              "ofertasPag": ofertasPag
               }]
 
     return HttpResponse(json.dumps(json_))
+
+
 @csrf_exempt
 def ver_ofertas(request):
-	return render(request, "verOfertas.html")
+    return render(request, "verOfertas.html")
 
 
 @csrf_exempt
 def crearOferta(request):
     estadoOferta = EstadoOferta.objects.get(id=1)
     print 'busca usuario'
+    # usuario = request.user
+    # print usuario.id
+    usuario = Usuario.objects.get(id=1)
+    # print usuario
     if request.method == 'POST':
         print 'ingresa al metodo post'
         jsonObj = json.loads(request.body)
@@ -96,9 +104,8 @@ def crearOferta(request):
         cantidad = jsonObj['cantidad']
         idproducto = jsonObj['producto']
         producto = Producto.objects.get(id=idproducto)
-        idproductor = jsonObj['user']
-        productor = Usuario.objects.get(pk=idproductor)
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=productor)
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto,
+                              productor=usuario)
         print 'Antes de guardar'
         oferta_model.save()
 
@@ -108,10 +115,9 @@ def crearOferta(request):
     return HttpResponse(data_convert, content_type='application/json')
 
 
-
 @csrf_exempt
 def ConsultarProductosaOfertar(request):
-    listaProductos = Producto.objects.filter(activo= True)
+    listaProductos = Producto.objects.filter(activo=True)
     if (listaProductos.count() > 0):
         page = request.GET.get('page', 1)
         print page
@@ -133,13 +139,13 @@ def ConsultarProductosaOfertar(request):
             nextPage = productos.next_page_number()
 
         productosPag = {"has_other_pages": productos.has_other_pages(),
-                      "has_previous": productos.has_previous(),
-                      "previous_page_number": prevPage,
-                      "page_range": productos.paginator.num_pages,
-                      "has_next": productos.has_next(),
-                      "next_page_number": nextPage,
-                      "current_page": productos.number,
-                      "first_row": productos.start_index()}
+                        "has_previous": productos.has_previous(),
+                        "previous_page_number": prevPage,
+                        "page_range": productos.paginator.num_pages,
+                        "has_next": productos.has_next(),
+                        "next_page_number": nextPage,
+                        "current_page": productos.number,
+                        "first_row": productos.start_index()}
 
         listaProductos = [{
             "pk": producto.id,
@@ -150,8 +156,8 @@ def ConsultarProductosaOfertar(request):
         } for producto in productos.object_list]
 
         jsonReturn = [{"productos": listaProductos,
-                  "productosPag": productosPag
-                  }]
+                       "productosPag": productosPag
+                       }]
 
         return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
     else:
@@ -160,9 +166,8 @@ def ConsultarProductosaOfertar(request):
 
 @csrf_exempt
 def ver_productos(request):
-    user = request.user
-    print user.id
     return render(request, "productosaOfertar.html")
+
 
 def editarOferta(request):
     return render(request, "editarOferta.html")

@@ -26,7 +26,7 @@
     <link href="{% static 'css/creative.css' %}" rel="stylesheet">
     <script>
         function logout(){
-            $.getJSON("http://localhost:8000/logout").done(function (data) {
+            $.getJSON("https://amo-system.herokuapp.com//logout").done(function (data) {
                 if(data.mensaje == "ok"){
                     window.location ="{% url 'comun:index' %}";
                 }

@@ -16,14 +16,14 @@
         {
             $.ajax({
                type: "POST",
-               url: "http://localhost:8000/productor/editarOferta/",
+               url: "https://amo-system.herokuapp.com//productor/editarOferta/",
                data: JSON.stringify({ ofertaId : ofertaId, fecha : fecha, cantidad : cantidad}),
                contentType: "application/json; charset=utf-8",
                dataType: "json",
                success: function (data) {
                    console.log(data);
                    alert('Oferta modificada');
-                   window.location = "http://localhost:8000/";
+                   window.location = "https://amo-system.herokuapp.com//";
                },
                failure: function(errMsg){
                    alert("Hubo un error");
