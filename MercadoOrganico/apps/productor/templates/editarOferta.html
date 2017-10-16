@@ -16,14 +16,14 @@
         {
             $.ajax({
                type: "POST",
-               url: "http://127.0.0.1:8000/productor/editarOferta/",
+               url: "http://localhost:8000/productor/editarOferta/",
                data: JSON.stringify({ ofertaId : ofertaId, fecha : fecha, cantidad : cantidad}),
                contentType: "application/json; charset=utf-8",
                dataType: "json",
                success: function (data) {
                    console.log(data);
                    alert('Oferta modificada');
-                   window.location = "http://127.0.0.1:8000/";
+                   window.location = "http://localhost:8000/";
                },
                failure: function(errMsg){
                    alert("Hubo un error");

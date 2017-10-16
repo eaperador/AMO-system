@@ -7,7 +7,18 @@
     <meta charset="UTF-8">
     <title>{% block title %} MerkaOrgánico {% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+     <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
+    <script src="{% static 'vendor/popper/popper.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.js' %}"></script>
 
+    <!-- Plugin JavaScript -->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.js' %}"></script>
+    <script src="{% static 'vendor/scrollreveal/scrollreveal.js' %}"></script>
+    <script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.js' %}"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="{% static 'js/creative.js' %}"></script>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
@@ -29,7 +40,7 @@
     <script>
         var rolUser;
         function logout(){
-            $.getJSON("http://127.0.0.1:8000/logout").done(function (data) {
+            $.getJSON("http://localhost:8000/logout").done(function (data) {
                 if(data.mensaje == "ok"){
                     location.reload();
                 }
@@ -46,7 +57,7 @@
           $("#form-login").submit(function (event) {
               $.ajax({
                   type: "POST",
-                  url: "http://127.0.0.1:8000/login/",
+                  url: "http://localhost:8000/login/",
                   data: JSON.stringify({ username: $('#inputUsername').val(), password: $('#inputPassword').val() }),
                   contentType: "application/json; charset=utf-8",
                   dataType: "json",
@@ -71,7 +82,7 @@
               event.preventDefault();
           });
 
-          $.getJSON("http://127.0.0.1:8000/isLogged/").done(function(data){
+          $.getJSON("http://localhost:8000/isLogged/").done(function(data){
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
                 $("#consultar_ofertas").hide();
@@ -202,18 +213,7 @@
         </div>
     </div>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
-    <script src="{% static 'vendor/popper/popper.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.js' %}"></script>
 
-    <!-- Plugin JavaScript -->
-    <script src="{% static 'vendor/jquery-easing/jquery.easing.js' %}"></script>
-    <script src="{% static 'vendor/scrollreveal/scrollreveal.js' %}"></script>
-    <script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.js' %}"></script>
-
-    <!-- Custom scripts for this template -->
-    <script src="{% static 'js/creative.js' %}"></script>
 
     {% endblock %}
 </body>

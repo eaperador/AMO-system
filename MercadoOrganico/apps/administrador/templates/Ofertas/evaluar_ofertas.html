@@ -15,7 +15,7 @@
         {
             $.ajax({
                type: "POST",
-               url: "http://127.0.0.1:8000/catalogo/guardarOferta/",
+               url: "http://localhost:8000/catalogo/guardarOferta/",
                data: JSON.stringify({ ofertaId: ofertaId, estadoId : estadoId}),
                contentType: "application/json; charset=utf-8",
                dataType: "json",
@@ -54,7 +54,7 @@
                 if(selected_producto == ''){
                     selected_producto = 0
                 }
-                $.getJSON("http://127.0.0.1:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                $.getJSON("http://localhost:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
                     var items = [];
                     $.each(data, function (key,val) {
                         items.push("<tr>");
@@ -77,7 +77,7 @@
             });
 
             //Listar productos
-            $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProductos/").done(function (data) {
+            $.getJSON("http://localhost:8000/catalogo/seleccionarProductos/").done(function (data) {
                  var options = $("#select_productos");
                  options.append($("<option />").val('').text('Seleccione producto'));
                  $.each(data, function() {

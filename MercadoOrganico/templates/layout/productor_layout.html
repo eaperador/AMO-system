@@ -7,7 +7,10 @@
     <meta charset="UTF-8">
     <title>{% block title %} MerkaOrgánico {% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+     <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
+    <script src="{% static 'vendor/popper/popper.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.js' %}"></script>
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
@@ -23,7 +26,7 @@
     <link href="{% static 'css/creative.css' %}" rel="stylesheet">
     <script>
         function logout(){
-            $.getJSON("http://127.0.0.1:8000/logout").done(function (data) {
+            $.getJSON("http://localhost:8000/logout").done(function (data) {
                 if(data.mensaje == "ok"){
                     window.location ="{% url 'comun:index' %}";
                 }
@@ -96,10 +99,7 @@
       </div>
     </section>
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
-    <script src="{% static 'vendor/popper/popper.js' %}"></script>
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.js' %}"></script>
+
 
     {% endblock %}
 </body>

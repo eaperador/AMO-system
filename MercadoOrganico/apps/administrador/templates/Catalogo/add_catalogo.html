@@ -19,15 +19,15 @@
             var selected_producto = productos.val();
             if (selected_producto)
             {
-                $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
+                $.getJSON("http://localhost:8000/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
                     console.log(data);
-                    $(".image").prepend('<img src="http://127.0.0.1:8000/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
+                    $(".image").prepend('<img src="http://localhost:8000/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
                     $("#description_producto").html(data.descripcion)
                     $("#lista_ofertas_producto").show();
                 });
 
                 $("#table_productos_oferta").find("tr:gt(0)").remove();
-                $.getJSON("http://127.0.0.1:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                $.getJSON("http://localhost:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
                     console.log(data)
                     var items = [];
                     $.each(data, function (key,val) {
@@ -64,13 +64,13 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "http://127.0.0.1:8000/catalogo/guardarCatalogoOferta/",
+                    url: "http://localhost:8000/catalogo/guardarCatalogoOferta/",
                     data: JSON.stringify({ precio_definido: $('#precio_definido').val(), cantidad_definida: cantidad_definida, catalogo: catalogo, producto: producto }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {
                         alert('Se ha agregado el producto al catalogo con exito!');
-                        window.location = "http://127.0.0.1:8000/catalogo/armarCatalogo";
+                        window.location = "http://localhost:8000/catalogo/armarCatalogo";
                     },
                     failure: function (data) {
                         alert('Hubo error!');
@@ -88,14 +88,14 @@
         var AgregarCatalogoOferta = function(){
           $.ajax({
               type: "POST",
-                url: "http://127.0.0.1:8000/catalogo/addCatalogo/",
+                url: "http://localhost:8000/catalogo/addCatalogo/",
                 data: JSON.stringify({ precio_definido: $('#precio_definido').val(), fecha_fin: $('#fecha_fin_cat').val() }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (data) {
                     console.log(data);
                     alert('Catalogo creado con exito');
-                    window.location = "http://127.0.0.1:8000/catalogo/armarCatalogo";
+                    window.location = "http://localhost:8000/catalogo/armarCatalogo";
                 },
                 failure: function (data) {
                     console.log(data);
@@ -105,7 +105,7 @@
         };
 
         //Listar catalogos
-        $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarCatalogos/").done(function (data) {
+        $.getJSON("http://localhost:8000/catalogo/seleccionarCatalogos/").done(function (data) {
             console.log(data);
             var options = $("#select_catalogos");
             options.append($("<option />").val('').text('Seleccione catalogo'));
@@ -115,7 +115,7 @@
         });
 
         //Listar productos
-        $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProductos/").done(function (data) {
+        $.getJSON("http://localhost:8000/catalogo/seleccionarProductos/").done(function (data) {
              console.log(data);
              var options = $("#select_productos");
              options.append($("<option />").val('').text('Seleccione producto'));
@@ -125,7 +125,7 @@
         });
 
         //Mostrar el número de catalogo que se va a crear
-        $.getJSON("http://127.0.0.1:8000/catalogo/numeroCatalogo/").done(function (data) {
+        $.getJSON("http://localhost:8000/catalogo/numeroCatalogo/").done(function (data) {
             $('.numero_catalogo').html(data.numero);
         });
 
@@ -133,14 +133,14 @@
         $('#add_catalogo').submit(function (event) {
             $.ajax({
                 type: "POST",
-                url: "http://127.0.0.1:8000/catalogo/addCatalogo/",
+                url: "http://localhost:8000/catalogo/addCatalogo/",
                 data: JSON.stringify({ fecha_inicio: $('#fecha_inicio_cat').val(), fecha_fin: $('#fecha_fin_cat').val() }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (data) {
                     console.log(data);
                     alert('Catalogo creado con exito');
-                    window.location = "http://127.0.0.1:8000/catalogo/armarCatalogo";
+                    window.location = "http://localhost:8000/catalogo/armarCatalogo";
                 },
                 failure: function (data) {
                     console.log(data);
