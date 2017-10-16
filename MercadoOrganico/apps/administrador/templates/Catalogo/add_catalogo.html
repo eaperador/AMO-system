@@ -1,0 +1,213 @@
+{% extends 'layout/administrador_layout.html' %}
+
+{% block title %}
+    Admin
+{% endblock %}
+
+{% block content %}
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //Mostrar listado de ofertas solo si se escoge un producto
+        $("#lista_ofertas_producto").hide();
+        var productos = $("#select_productos");
+        $(productos).change(function () {
+            $(".image").empty();
+            var selected_producto = productos.val();
+            if (selected_producto)
+            {
+                $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
+                    console.log(data);
+                    $(".image").prepend('<img src="http://127.0.0.1:8000/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
+                    $("#description_producto").html(data.descripcion)
+                    $("#lista_ofertas_producto").show();
+                });
+
+                $("#table_productos_oferta").find("tr:gt(0)").remove();
+                $.getJSON("http://127.0.0.1:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                    console.log(data)
+                    var items = [];
+                    $.each(data, function (key,val) {
+                        items.push("<tr>");
+                        items.push("<td>"+val.productor+"</td>");
+                        items.push("<td>"+val.cantidad+"</td>");
+                        items.push("<td>"+val.precio+"</td>");
+                        items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
+                        items.push("<td>"
+                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'>"
+                                    +"</td>");
+                        items.push("</tr>");
+                    });
+
+                    $("<tbody/>",{html: items.join("")}).appendTo("#table_productos_oferta");
+                });
+            }
+        });
+
+        //Ingresar Catalogo
+        $("#ingreso_catalogo").click(function () {
+            inputValues = $('.valores_aceptados').val();
+            catalogo = $('#select_catalogos').val();
+            producto = $('#select_productos').val();
+            if(catalogo)
+            {
+                var valor;
+                var cantidad_definida = 0;
+
+                $(".valores_aceptados").each(function() {
+                    valor = parseInt($(this).val());
+                    cantidad_definida = valor + cantidad_definida;
+                });
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://127.0.0.1:8000/catalogo/guardarCatalogoOferta/",
+                    data: JSON.stringify({ precio_definido: $('#precio_definido').val(), cantidad_definida: cantidad_definida, catalogo: catalogo, producto: producto }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        alert('Se ha agregado el producto al catalogo con exito!');
+                        window.location = "http://127.0.0.1:8000/catalogo";
+                    },
+                    failure: function (data) {
+                        alert('Hubo error!');
+                    }
+                });
+            }
+            else
+            {
+                alert("Debe seleccionar un catalogo");
+            }
+            return false;
+        });
+
+        //AgregarCatalogoOferta
+        var AgregarCatalogoOferta = function(){
+          $.ajax({
+              type: "POST",
+                url: "http://127.0.0.1:8000/catalogo/addCatalogo/",
+                data: JSON.stringify({ precio_definido: $('#precio_definido').val(), fecha_fin: $('#fecha_fin_cat').val() }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    alert('Catalogo creado con exito');
+                    window.location = "http://127.0.0.1:8000/catalogo";
+                },
+                failure: function (data) {
+                    console.log(data);
+                    alert('Hubo error!');
+                }
+          });
+        };
+
+        //Listar catalogos
+        $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarCatalogos/").done(function (data) {
+            console.log(data);
+            var options = $("#select_catalogos");
+            options.append($("<option />").val('').text('Seleccione catalogo'));
+            $.each(data, function() {
+                options.append($("<option />").val(this.id).text('Número ' + this.id + ' - (' + this.fecha_inicio + ')' + ' - (' + this.fecha_fin + ')'));
+            });
+        });
+
+        //Listar productos
+        $.getJSON("http://127.0.0.1:8000/catalogo/seleccionarProductos/").done(function (data) {
+             console.log(data);
+             var options = $("#select_productos");
+             options.append($("<option />").val('').text('Seleccione producto'));
+             $.each(data, function() {
+                options.append($("<option />").val(this.id).text(this.nombre));
+            });
+        });
+
+        //Mostrar el número de catalogo que se va a crear
+        $.getJSON("http://127.0.0.1:8000/catalogo/numeroCatalogo/").done(function (data) {
+            $('.numero_catalogo').html(data.numero);
+        });
+
+        //Agregar catalogo
+        $('#add_catalogo').submit(function (event) {
+            $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:8000/catalogo/addCatalogo/",
+                data: JSON.stringify({ fecha_inicio: $('#fecha_inicio_cat').val(), fecha_fin: $('#fecha_fin_cat').val() }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    alert('Catalogo creado con exito');
+                    window.location = "http://127.0.0.1:8000/catalogo";
+                },
+                failure: function (data) {
+                    console.log(data);
+                    alert('Hubo error!');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<div class="container" style="margin-top: 60px">
+    <h1>Armar Catalogo</h1>
+    <form action="" method="post">
+        <table>
+            <tr>
+                <td>
+                    <label for="select_catalogos" class="label-control">Seleccione Catalogo:</label>
+                    <select name="" id="select_catalogos" class="form-control"></select>
+                </td>
+                <td>
+                    <br>
+                    <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
+                        Ingresar catalogo
+                    </button>
+                </td>
+                <td>
+                    <label for="select_productos" class="label-control">Seleccione producto:</label>
+                    <select name="" id="select_productos" class="form-control"></select>
+                </td>
+            </tr>
+        </table>
+        {% include 'Catalogo/add_cantidades_catalogo.html' %}
+    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Ingreso Catalogo</h4>
+                </div>
+                <div class="modal-body" style="height: 250px">
+                    <div id="form_add_catalogo" class="col-lg-12" style="margin-bottom: 40px">
+                        <form action="" method="post" id="add_catalogo">
+                            <div class="">
+                                <strong>Ingrese datos del catalogo:</strong>
+                            </div>
+                            <div class="form-group">
+                                <strong>Número de catalogo: <span class="numero_catalogo"></span></strong>
+                            </div>
+                            <div class="form-group">
+                                <input type="date" class="form-control" id="fecha_inicio_cat" value="">
+                            </div>
+                            <div class="form-group">
+                                <input type="date" class="form-control" id="fecha_fin_cat" value="">
+                            </div>
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary">Ingresar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
