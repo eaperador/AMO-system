@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import json
 from django.views.decorators.csrf import csrf_exempt
 from ..administrador.models import CatalogoOferta
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 from models import CompraProducto
 from django.shortcuts import render
 
@@ -15,16 +15,15 @@ def catalogo_compras(request):
     lista_productos = CatalogoOferta.objects.all()
     return render(request, "catalogoCompras.html", {'productos':lista_productos})
 
-def agregar_producto(request,id):
-    producto = CatalogoOferta.objects.get(id=id)
-
-    print request.method
-    if request.method == "POST":
+@csrf_exempt
+def agregar_producto(request):
+    if request.method == 'POST':
+        jsonOferta = json.loads(request.body)
+        productoId = jsonOferta['productoId']
+        print productoId
+        producto = CatalogoOferta.objects.get(id=productoId)
+        print producto.producto.nombre
         prodAdd = CompraProducto(estado='Activo',
-                                 id_catalogoProducto=producto.id)
+                                 id_catalogoProducto=producto)
         prodAdd.save()
-        return HttpResponseRedirect('/')
-
-    context = {'producto': producto}
-    print producto.producto.nombre
-    return render(request, 'agregarProducto.html', context)
+    return JsonResponse({"mensaje": "ok"})
