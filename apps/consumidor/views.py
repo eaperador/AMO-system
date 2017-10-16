@@ -3,9 +3,10 @@ from __future__ import unicode_literals
 
 import json
 from django.views.decorators.csrf import csrf_exempt
+
+from ..consumidor.models import CompraProducto
 from ..administrador.models import CatalogoOferta
 from django.http import JsonResponse
-from models import CompraProducto
 from django.shortcuts import render
 
 # Create your views here.
