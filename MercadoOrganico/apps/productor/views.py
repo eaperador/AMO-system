@@ -9,9 +9,12 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from ..administrador.views import enviarNotificacion
+from .forms import OfertaForm
 from .models import EstadoOferta, Oferta
 from ..administrador.models import Producto
-from django.shortcuts import render
+from ..comun.models import Usuario
+from ..administrador.models import Producto
+from django.shortcuts import render, redirect
 
 # Create your views here.
 
@@ -85,7 +88,26 @@ def ver_ofertas(request):
 
 @csrf_exempt
 def crearOferta(request):
-	return render(request, "crearOferta.html")
+    estadoOferta = EstadoOferta.objects.get(id=1)
+    producto = Producto.objects.get(id=1)
+    print 'busca usuario'
+    usuario = Usuario.objects.get(id=1)
+    print usuario
+    if request.method == 'POST':
+        print 'ingresa al metodo post'
+        jsonObj = json.loads(request.body)
+        precio = jsonObj['precio']
+        cantidad = jsonObj['cantidad']
+        print 'Antes de armar el modelo oferta'
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto, productor=1)
+        print 'Antes de guardar'
+        ##oferta_model.save()
+
+        json_response = [{'mensaje': "OK"}]
+
+        data_convert = json.dumps(json_response)
+        return HttpResponse(data_convert, content_type='application/json')
+
 
 
 @csrf_exempt

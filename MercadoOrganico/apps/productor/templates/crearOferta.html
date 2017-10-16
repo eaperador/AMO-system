@@ -1,6 +1,47 @@
-{% extends 'layout/base_layout.html' %}
+<script src="//code.jquery.com/jquery-1.11.3.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
 
-{% block title %}
-    Productor
-{% endblock %}
+<!--MODAL-->
+     <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="height: 10px">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form class="form-signin" method="post" id="form-login">
+                        <div id="mess-error">
+                            <div class="alert alert-danger">
+                                <label for="mensaje" id="mensaje"></label>
+                            </div>
+                        </div>
+                        <label for="inputUsername" class="sr-only">Usuario</label>
+                        <input id="inputUsername" class="form-control" placeholder="Usuario" name="username" required autofocus ><br>
+                        <label for="inputPassword" class="sr-only">Contraseña</label>
+                        <input type="password" id="inputPassword" class="form-control" placeholder="Contraseña" name="password" required>
+                        <br/>
+                        <div class="mx-auto text-center">
+                            <button class="btn btn-lg btn-outline" type="submit">Iniciar sesión</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.js' %}"></script>
+    <script src="{% static 'vendor/popper/popper.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.js' %}"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="{% static 'vendor/jquery-easing/jquery.easing.js' %}"></script>
+    <script src="{% static 'vendor/scrollreveal/scrollreveal.js' %}"></script>
+    <script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.js' %}"></script>
+
+    <!-- Custom scripts for this template -->
+    <script src="{% static 'js/creative.js' %}"></script>

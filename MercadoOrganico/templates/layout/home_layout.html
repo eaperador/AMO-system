@@ -125,7 +125,7 @@
           <ul class="navbar-nav ml-auto">
             <li class="nav-item" id ="catalogo_compras"><a class="nav-link" href="{% url 'consumidor:catalogo_compras' %}">Comprar</a></li>
             <li class="nav-item" id ="consultar_ofertas"><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Consultar Ofertas</a></li>
-            <li class="nav-item" id ="ofertar"><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Ofertar</a></li>
+            <li class="nav-item" id ="ofertar"><a class="nav-link" href="{% url 'productor:ver_productos' %}">Ofertar</a></li>
             <li class="nav-item" id ="evaluar_ofertas"><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
             <li class="nav-item" id ="armar_catalogo"><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Armar Catálogo</a></li>
             <li class="nav-item" id="cerrar_sesion"><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
@@ -175,7 +175,7 @@
       </div>
 
     </section>
-         <!-- Modal -->
+     <!-- Modal -->
     <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
