@@ -30,7 +30,6 @@ def listarOfertas(request):
         jsonFilter = json.loads(request.body)
         filter = jsonFilter.get('filter')
         user = request.user
-        print user
         if (int(filter) > 0):
             listaOfertas = Oferta.objects.filter(estado=filter)
             #listaOfertas = Oferta.objects.filter(estado=filter).filter(productor = 1)  //Filtro con el login
