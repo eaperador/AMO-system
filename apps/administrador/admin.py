@@ -12,7 +12,7 @@ class TipoUnidadAdmin(admin.ModelAdmin):
     ordering = ('id',)
 
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre','imagen','descripcion','activo','get_categoria','get_tipoUnidad' )
+    list_display = ('nombre','foto','descripcion','activo','get_categoria','get_tipoUnidad' )
 
     def get_categoria(self, obj):
         return obj.categoria.nombre

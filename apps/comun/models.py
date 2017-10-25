@@ -21,9 +21,9 @@ class Usuario(models.Model):
     foto = models.ImageField(upload_to='images/user',null=True)
     descripcion = models.CharField(max_length=1000,null=True)
     telefono = models.IntegerField(null=True)
-    direccion = models.CharField(max_length=200)
     auth_user_id = models.ForeignKey(User, null = False)
-    rol = models.ForeignKey(Rol,null = False)
+    id_rol = models.ForeignKey(Rol,null = False)
+    id_cooperativa = models.ForeignKey(Cooperativa, null=True)
 
     def __unicode__(self):
        return "%s" % (self.auth_user_id.first_name +  " " + self.auth_user_id.last_name)
@@ -31,7 +31,14 @@ class Usuario(models.Model):
     def natural_key(self):
         return (self.auth_user_id.first_name +  " " + self.auth_user_id.last_name)
 
-class DireccionComprador(models.Model):
-    direccion_comprador = models.CharField(max_length=200)
-    id_comprador = models.ForeignKey(Usuario, null=False)
+class Direccion(models.Model):
+    direccion = models.CharField(max_length=200)
+    id_usuario_comprador = models.ForeignKey(Usuario, null=False)
 
+class Finca(models.Model):
+    nombre = models.CharField(max_length=150)
+    foto = models.ImageField(upload_to='images/user',null=True)
+    descripcion = models.CharField(max_length=1000,null=True)
+    municipio = models.CharField(max_length=150)
+    ubicacion = models.CharField(max_length=50)
+    id_usuario_productor = models.ForeignKey(Usuario, null=True)

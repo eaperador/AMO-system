@@ -12,11 +12,10 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Catalogo, Producto, CatalogoOferta
-
 from ..comun.views import sendMailNotification
-from .models import Catalogo, Producto
+from .models import CatalogoProductos, Producto
 from ..productor.models import EstadoOferta, Oferta
+from ..administrador.models import ProductoCatalogo
 
 @csrf_exempt
 def index(request):
@@ -31,7 +30,7 @@ def add_catalogo(request):
         fecha_inicio = jsonData['fecha_inicio']
         fecha_fin = jsonData['fecha_fin']
 
-        catalogo = Catalogo(fecha_inicio=fecha_inicio, fecha_fin=fecha_fin)
+        catalogo = CatalogoProductos(fecha_inicio=fecha_inicio, fecha_fin=fecha_fin)
         catalogo.save()
 
         catalogo = {'fecha_inicio': str(catalogo.fecha_inicio), 'fecha_fin': str(catalogo.fecha_fin)}
@@ -43,7 +42,7 @@ def add_catalogo(request):
 @csrf_exempt
 def numero_nuevo_catalogo(request):
     if request.method == "GET":
-        ultimo_catalogo = Catalogo.objects.all().last()
+        ultimo_catalogo = CatalogoProductos.objects.all().last()
         data = {'numero': (ultimo_catalogo.id + 1)}
         convert_data = json.dumps(data)
 
@@ -53,7 +52,7 @@ def numero_nuevo_catalogo(request):
 @csrf_exempt
 def select_catalogos(request):
     if request.method == "GET":
-        catalogos = Catalogo.objects.all()
+        catalogos = CatalogoProductos.objects.all()
         lista_catalogos = [{'id': catalogo.id, 'fecha_inicio': str(catalogo.fecha_inicio), 'fecha_fin': str(catalogo.fecha_fin)} for catalogo in catalogos]
         data = json.dumps(lista_catalogos)
     return HttpResponse(data)
@@ -148,9 +147,9 @@ def ingresarCatalogoOferta(request):
         precio_definido = jsonData['precio_definido']
         cantidad_definida = jsonData['cantidad_definida']
         idcatalogo = jsonData['catalogo']
-        catalogo = Catalogo.objects.get(pk=idcatalogo)
+        catalogo = CatalogoProductos.objects.get(pk=idcatalogo)
         idproducto = jsonData['producto']
         producto = Producto.objects.get(pk=idproducto)
-        catalgo_oferta = CatalogoOferta(precio_definido=precio_definido, cantidad_definida=cantidad_definida,catalogo=catalogo, producto=producto)
+        catalgo_oferta = ProductoCatalogo(precio_definido=precio_definido, cantidad_definida=cantidad_definida,catalogo=catalogo, producto=producto)
         catalgo_oferta.save()
     return JsonResponse({"mensaje": "ok"})

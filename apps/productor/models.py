@@ -16,13 +16,19 @@ class EstadoOferta (models.Model):
     def natural_key(self):
         return {"nombre":self.nombre}
 
+class CatalogoOfertas (models.Model):
+    fecha_inicio = models.DateField(auto_now=False)
+    fecha_fin = models.DateField(auto_now=False)
+    estado = models.BooleanField(null=False)
+
 class Oferta(models.Model):
-    fecha = models.DateTimeField(auto_now_add=True, editable=False)
     precio = models.IntegerField()
     cantidad = models.IntegerField()
-    estado = models.ForeignKey(EstadoOferta, null=False)
-    producto = models.ForeignKey(Producto, null=False)
-    productor = models.ForeignKey(Usuario, null=False)
+    fecha = models.DateTimeField(auto_now_add=True, editable=False)
+    id_estado_oferta = models.ForeignKey(EstadoOferta, null=False)
+    id_productor = models.ForeignKey(Usuario, null=False)
+    id_producto = models.ForeignKey(Producto, null=False)
+    id_catalogo_oferta = models.ForeignKey(CatalogoOfertas, null=False)
     #fechaFormat = fecha.strftime('%Y-%m-%d %H:%M')
 
 
