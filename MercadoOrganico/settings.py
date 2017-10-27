@@ -95,6 +95,7 @@ if ON_CODESHIP:
         }
     }
 elif ON_HEROKU_TEST:
+    # Configuracion de base de datos para https://amo-system-test.herokuapp.com
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -107,6 +108,7 @@ elif ON_HEROKU_TEST:
     }
 
 elif ON_HEROKU_PROD:
+    # Configuracion de base de datos para https://amo-system.herokuapp.com/
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -114,6 +116,18 @@ elif ON_HEROKU_PROD:
             'USER': 'kykrhryvappeeo',
             'PASSWORD': '43daabedf8d79c96e2cb686bbec2dd975ae28c208ccfcc093e4812385f176d2d',
             'HOST': 'ec2-204-236-236-188.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
+else:
+    # Configuracion de base de datos local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'd6b3o2o3b9013i',
+            'USER': 'zjxwucjyszunpw',
+            'PASSWORD': '30ccc70eceb57dea539050dff3ae8a9a11452124b37a0d60c5b2b3f6829c5f04',
+            'HOST': 'ec2-184-72-230-93.compute-1.amazonaws.com',
             'PORT': '5432',
         }
     }
