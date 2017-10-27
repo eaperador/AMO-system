@@ -19,11 +19,12 @@ class EstadoOferta (models.Model):
 class CatalogoOfertas (models.Model):
     fecha_inicio = models.DateField(auto_now=False)
     fecha_fin = models.DateField(auto_now=False)
-    estado = models.BooleanField(null=False)
+    activo = models.BooleanField(null=False)
 
 class Oferta(models.Model):
     precio = models.IntegerField()
     cantidad = models.IntegerField()
+    cantidad_disponible = models.IntegerField()
     fecha = models.DateTimeField(auto_now_add=True, editable=False)
     id_estado_oferta = models.ForeignKey(EstadoOferta, null=False)
     id_productor = models.ForeignKey(Usuario, null=False)

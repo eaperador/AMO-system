@@ -8,7 +8,7 @@ from django.db import models
 class CatalogoProductos(models.Model):
     fecha_inicio = models.DateField(auto_now=False)
     fecha_fin = models.DateField(auto_now=False)
-    estado = models.BooleanField(null=False)
+    activo = models.BooleanField(null=False)
 
 class TipoUnidad(models.Model):
     nombre = models.CharField(max_length=50)
@@ -43,6 +43,7 @@ class Producto(models.Model):
 class ProductoCatalogo(models.Model):
     precio_definido = models.FloatField()
     cantidad_definida = models.IntegerField()
+    cantidad_disponible = models.IntegerField()
     id_producto = models.ForeignKey(Producto, null=False)
     id_catalogo = models.ForeignKey(CatalogoProductos, null=False)
 

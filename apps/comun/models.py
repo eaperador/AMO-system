@@ -37,7 +37,7 @@ class Direccion(models.Model):
 
 class Finca(models.Model):
     nombre = models.CharField(max_length=150)
-    foto = models.ImageField(upload_to='images/user',null=True)
+    foto = models.ImageField(upload_to='images/finca',null=True)
     descripcion = models.CharField(max_length=1000,null=True)
     municipio = models.CharField(max_length=150)
     ubicacion = models.CharField(max_length=50)
