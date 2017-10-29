@@ -11,8 +11,6 @@ from sendgrid import Email
 from sendgrid.helpers.mail import Content, Mail
 from .models import Usuario
 
-rolUser = ""
-
 @csrf_exempt
 def Home(request):
 	return render(request, "index.html")
@@ -39,10 +37,8 @@ def login_view(request):
         if user is not None:
             login(request, user)
             usuario = Usuario.objects.get(auth_user_id=request.user)
-            global rolUser
-            rolUser = usuario.rol.nombre
             info_usuario = [{'mensaje': "OK",
-                             'rol': usuario.rol.nombre,
+                             'rol': usuario.id_rol.nombre,
                              'username': username}]
         else:
             info_usuario = [{'mensaje': "Nombre de usuario o clave inválido",
@@ -60,11 +56,12 @@ def logout_view(request):
 def logged_view(request):
     if request.user.is_authenticated():
         mensaje ="ok"
-        #if rolUser == "":
-        #    mensaje = "no"
-        #else:
-        #    mensaje = rolUser
     else:
         mensaje= "no"
     return JsonResponse({"mensaje": mensaje})
 
+@csrf_exempt
+def get_rol_view(request):
+    usuario = Usuario.objects.get(auth_user_id=request.user)
+    print ("rolll"+usuario.id_rol.nombre)
+    return JsonResponse({'mensaje': usuario.id_rol.nombre})

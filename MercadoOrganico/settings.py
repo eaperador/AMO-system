@@ -124,10 +124,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'd6b3o2o3b9013i',
-            'USER': 'zjxwucjyszunpw',
-            'PASSWORD': '30ccc70eceb57dea539050dff3ae8a9a11452124b37a0d60c5b2b3f6829c5f04',
-            'HOST': 'ec2-184-72-230-93.compute-1.amazonaws.com',
+            'NAME': 'MerkaOrg',
+            'USER': 'postgres',
+            'PASSWORD': 'agil2017',
+            'HOST': 'localhost',
             'PORT': '5432',
         }
     }

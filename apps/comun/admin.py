@@ -14,9 +14,13 @@ class CooperativaAdmin(admin.ModelAdmin):
 
 class UsuarioAdmin(admin.ModelAdmin):
 
-    list_display = ('foto','descripcion','telefono','direccion', 'get_rol')
+    list_display = ('foto','descripcion','telefono', 'get_rol', 'get_cooperativa')
     def get_rol(self, obj):
-        return obj.rol.nombre
+        return obj.id_rol.nombre
+
+    def get_cooperativa(self, obj):
+        return obj.id_cooperativa.ciudad
+
 # Register your models here.
 admin.site.register(Rol, RolAdmin),
 admin.site.register(Cooperativa, CooperativaAdmin),
