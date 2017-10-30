@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..comun.views import sendMailNotification
 from .models import CatalogoProductos, Producto
-from ..productor.models import EstadoOferta, Oferta
+from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas
 from ..administrador.models import ProductoCatalogo
 
 @csrf_exempt
@@ -65,7 +65,7 @@ def select_productos(request):
         lista_productos = [{'id': producto.id,
                             'nombre': producto.nombre,
                             'descripcion': producto.descripcion,
-                            'imagen': str(producto.imagen),
+                            'imagen': str(producto.foto),
                             'activo': producto.activo} for producto in productos]
 
     data_convert = json.dumps(lista_productos)
@@ -87,41 +87,28 @@ def listarOfertas(request, productoId):
         if productoId == '0':
             data_oferta = []
         else:
-            ultimoDiaOferta = datetime.now()
-            primerDiaOferta = datetime.now()
-            sabado = 5
-            domingo = 6
-
-            print(ultimoDiaOferta)
-            print(primerDiaOferta)
-
-            while (ultimoDiaOferta.weekday() != sabado) :
-                ultimoDiaOferta += timedelta(days=1)
-
-            while (primerDiaOferta.weekday() != domingo):
-                primerDiaOferta -= timedelta(days=1)
-
-            listaOfertas = Oferta.objects.filter(producto=productoId)
+            listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
+            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta = listaCatalogoOfertas[0].id)
             data_oferta = [{'id': oferta.id,
-                            'producto': oferta.producto.nombre,
+                            'producto': oferta.id_producto.nombre,
                             'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-                            'productor':oferta.productor.auth_user_id.first_name + " " + oferta.productor.auth_user_id.last_name,
+                            'productor':oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
                             'cantidad':oferta.cantidad,
                             'precio':oferta.precio,
-                            'estadoId':oferta.estado.id,
-                            'estadoNombre':oferta.estado.nombre,
-                            'unidad': oferta.producto.tipoUnidad.abreviatura}for oferta in listaOfertas]
+                            'estadoId':oferta.id_estado_oferta.id,
+                            'estadoNombre':oferta.id_estado_oferta.nombre,
+                            'unidad': oferta.id_producto.id_tipo_unidad.abreviatura}for oferta in listaOfertas]
     data_convert = json.dumps(data_oferta,cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
 
 def enviarNotificacion(oferta):
-    prod = oferta.productor
+    prod = oferta.id_productor
     email = prod.auth_user_id.email
     asunto = "Han respondido una oferta"
     mensaje = "Señor(a) "+prod.auth_user_id.first_name+" "+prod.auth_user_id.last_name+": \n\n"
     mensaje = mensaje + "De la forma más atenta queremos informale que la oferta que realizó en la fecha "+oferta.fecha.strftime('%Y-%m-%d %H:%M')+" \n"
-    mensaje = mensaje + "sobre el producto "+oferta.producto.nombre+" por un valor de $"+str(oferta.precio)+" se encuentra en estado:\n"
-    mensaje = mensaje + oferta.estado.nombre.upper()+"\n\n"
+    mensaje = mensaje + "sobre el producto "+oferta.id_producto.nombre+" por un valor de $"+str(oferta.precio)+" se encuentra en estado:\n"
+    mensaje = mensaje + oferta.id_estado_oferta.nombre.upper()+"\n\n"
     mensaje = mensaje + "Puede consultar el estado de la oferta en su perfil y recuerde estar atento a futuras notificaciones\n\n"
     mensaje = mensaje + "Saludos."
     sendMailNotification(email, asunto, mensaje)
@@ -132,7 +119,7 @@ def guardarOferta(request):
         jsonOferta = json.loads(request.body)
         ofertaId = jsonOferta['ofertaId']
         estadoId = jsonOferta['estadoId']
-        Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
+        Oferta.objects.filter(pk=ofertaId).update(id_estado_oferta = estadoId)
         enviarNotificacion(Oferta.objects.get(id=ofertaId))
     return JsonResponse({"mensaje": "ok"})
 
@@ -153,3 +140,12 @@ def ingresarCatalogoOferta(request):
         catalgo_oferta = ProductoCatalogo(precio_definido=precio_definido, cantidad_definida=cantidad_definida,catalogo=catalogo, producto=producto)
         catalgo_oferta.save()
     return JsonResponse({"mensaje": "ok"})
+
+
+@csrf_exempt
+def get_CatalogoOfertaActivo(request):
+    if request.method == 'GET':
+        catalogoOferta = CatalogoOfertas.objects.get(activo=1)
+        data_catalogoOferta = {'fecha_inicio': catalogoOferta.fecha_inicio.strftime('%Y-%m-%d'), 'fecha_fin': catalogoOferta.fecha_fin.strftime('%Y-%m-%d')}
+        data_convert = json.dumps(data_catalogoOferta)
+    return HttpResponse(data_convert)

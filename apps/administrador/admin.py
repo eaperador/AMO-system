@@ -15,13 +15,13 @@ class ProductoAdmin(admin.ModelAdmin):
     list_display = ('nombre','foto','descripcion','activo','get_categoria','get_tipoUnidad' )
 
     def get_categoria(self, obj):
-        return obj.categoria.nombre
+        return obj.id_categoria.nombre
 
     get_categoria.short_description = 'Categoria'
     get_categoria.admin_order_field = 'nombre'
 
     def get_tipoUnidad(self, obj):
-        return obj.tipoUnidad.abreviatura
+        return obj.id_tipo_unidad.abreviatura
 
     get_tipoUnidad.short_description = 'Tipo Unidad'
     get_tipoUnidad.admin_order_field = 'abreviatura'
