@@ -164,3 +164,7 @@ def ver_productos(request):
 
 def editarOferta(request):
     return render(request, "editarOferta.html")
+
+@csrf_exempt
+def verOfertasVendidas(request):
+    return render(request, "consultarOfertasVendidas.html")
