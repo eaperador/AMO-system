@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['amo-system-test.herokuapp.com','amo-system.herokuapp.com','loc
 
 # Application definition
 
+# noinspection PyPackageRequirements
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -124,10 +125,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'd6b3o2o3b9013i',
-            'USER': 'zjxwucjyszunpw',
-            'PASSWORD': '30ccc70eceb57dea539050dff3ae8a9a11452124b37a0d60c5b2b3f6829c5f04',
-            'HOST': 'ec2-184-72-230-93.compute-1.amazonaws.com',
+            'NAME': 'MercadoOrganico',
+            'USER': 'makito',
+            'PASSWORD': '',
+            'HOST': 'localhost',
             'PORT': '5432',
         }
     }

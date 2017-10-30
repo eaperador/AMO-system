@@ -7,8 +7,10 @@ import json
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime, timedelta
 
-from .models import EstadoOferta, Oferta
+
+from .models import EstadoOferta, Oferta, CatalogoOfertas
 from ..comun.models import Usuario
 from ..administrador.models import Producto
 from django.shortcuts import render, redirect
@@ -88,29 +90,108 @@ def ver_ofertas(request):
 
 @csrf_exempt
 def crearOferta(request):
-    estadoOferta = EstadoOferta.objects.get(id=1)
-    # usuario = request.user
-    # print usuario.id
-    usuario = Usuario.objects.get(id=1)
-    # print usuario
+    estadoOferta = EstadoOferta.objects.get(id=1) #Ofertas activas
+
     if request.method == 'POST':
+        dias = CalculoDiasCatalogoOfertas()
+        # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
+        hoy = dias[0]
+        print "hoy: ", hoy
+        intdia = hoy.strftime("%w")
+        dia = diaSemana(intdia)
+        print "Dia de la semana: ", dia
+
+        if (dia == 'Domingo'):
+            print 'Las ofertas solo pueden realizarse de Lunes a viernes'
+            # return mensaje
+        elif (dia == 'Sabado'):
+             print 'Las ofertas solo pueden realizarse de Lunes a sábado'
+            # return mensaje
+        else:
+            print 'Dia disponible para realizar ofertas'
+            # Fecha inicio Oferta
+            _diaInicioOferta = dias[1]
+            _diaFinOferta = dias[2]
+            # Consulta catalogo de ofertas para la semana
+            _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__gte=hoy, fecha_fin__lte=hoy)
+            if _catalogoOferta.count() > 0:
+                print 'Existe catálogo oferta para esta semana, se adicionará la oferta a ese catálogo'
+                id_catalogo_oferta = _catalogoOferta
+            else:
+                print 'No existe catálogo para la semana, se creará uno'
+                id_catalogo_oferta = CatalogoOfertas(fecha_inicio = _diaInicioOferta,
+                                                     fecha_fin=_diaFinOferta,
+                                                     activo=True)
+                id_catalogo_oferta.save()
+                print 'Creacion correcta del catálogo'
+
+        #Se crea el objeto oferta a guardar
         jsonObj = json.loads(request.body)
         precio = jsonObj['precio']
         cantidad = jsonObj['cantidad']
         idproducto = jsonObj['producto']
         producto = Producto.objects.get(id=idproducto)
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, estado=estadoOferta, producto=producto,
-                              productor=usuario)
+        idproductor = jsonObj['user']
+        productor = Usuario.objects.get(pk=idproductor)
+
+        #cantidad_disponible***
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=10, id_estado_oferta=estadoOferta,
+                              id_producto=producto, id_productor=productor, id_catalogo_oferta=id_catalogo_oferta)
         oferta_model.save()
 
         json_response = [{'mensaje': "OK"}]
-
         data_convert = json.dumps(json_response)
-    return HttpResponse(data_convert, content_type='application/json')
+        return HttpResponse(data_convert, content_type='application/json')
+
+def CalculoDiasCatalogoOfertas():
+    # Hoy
+    hoy = datetime.now()
+    # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
+    print "hoy: ", hoy
+    intdia = hoy.strftime("%w")
+    dia = diaSemana(intdia)
+    print "Dia de la semana: ", dia
+    _numeroDiasOferta = 4
+
+    if (dia == 'Domingo'):
+        #print 'Las ofertas solo pueden realizarse de Lunes a sábado'
+        #print 'Inicio de Oferta: ', hoy + timedelta(days=1)
+        #Fecha inicio Oferta
+        _diaInicioOferta = hoy + timedelta(days=1)
+    elif (dia == 'Sabado'):
+        #print 'Las ofertas solo pueden realizarse de Lunes a sábado'
+        #print 'Inicio de Oferta: ', hoy + timedelta(days=2)
+        # Fecha inicio Oferta
+        _diaInicioOferta = hoy + timedelta(days=2)
+    else:
+        #print 'Dia disponible para realizar ofertas'
+        # Fecha inicio Oferta
+        _intDiaInicioOferta = intdia - (intdia - 1)
+        _diaInicioOferta = hoy - timedelta(days=_intDiaInicioOferta)
+        #print 'Inicio de Oferta: ', _diaInicioOferta
+        #print 'Fin de la oferta: ', _diaFinOferta
+
+    _diaFinOferta = _diaInicioOferta + timedelta(days=_numeroDiasOferta)
+    return (hoy, _diaInicioOferta, _diaFinOferta)
+
+def diaSemana(day):
+        return {
+            '0': 'Domingo',
+            '1': 'Lunes',
+            '2': 'Martes',
+            '3': 'Miercoles',
+            '4': 'Jueves',
+            '5': 'Viernes',
+            '6': 'Sabado'
+        }.get(day, 'No es un dia de la semana')
 
 
 @csrf_exempt
 def ConsultarProductosaOfertar(request):
+    # filtrar para obtener productos que NO estén en las ofertas hechas
+    #for pet in pets:
+    #    print(pet)
+
     listaProductos = Producto.objects.filter(activo=True)
     if (listaProductos.count() > 0):
         page = request.GET.get('page', 1)
@@ -144,8 +225,9 @@ def ConsultarProductosaOfertar(request):
             "pk": producto.id,
             "nombre": producto.nombre,
             "descripcion": producto.descripcion,
-            "tipoUnidad": producto.tipoUnidad.abreviatura,
-            "categoria": producto.categoria.nombre,
+            #"tipoUnidad": producto.tipoUnidad.abreviatura,
+            "tipoUnidad": producto.id_tipo_unidad.abreviatura,
+            "categoria": producto.id_categoria.nombre,
         } for producto in productos.object_list]
 
         jsonReturn = [{"productos": listaProductos,
@@ -159,6 +241,8 @@ def ConsultarProductosaOfertar(request):
 
 @csrf_exempt
 def ver_productos(request):
+    #user = request.user
+    #print user.id
     return render(request, "productosaOfertar.html")
 
 
