@@ -249,15 +249,10 @@ def ConsultaOfertasporProductor(request):
         jsonObj = json.loads(request.body)
         idproductor = jsonObj['user']
         print 'Id usuario: ', request.user
-        
-        try:
-            productor = Usuario.objects.get(auth_user_id=request.user.id)
-        except Usuario.DoesNotExist:
-            return JsonResponse({'mensaje': 'Error: el usuario no existe'})
 
         #Consulta información de ofertas por productor
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor)
+            listaOfertas = Oferta.objects.filter(id_productor=request.user.id)
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
 
@@ -299,7 +294,7 @@ def ConsultaOfertasporProductor(request):
                            }]
 
             return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
-        except Usuario.DoesNotExist:
+        except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene ofertas'})
 
 @csrf_exempt
