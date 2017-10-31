@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'ver_ofertas_vendidas/$', views.verOfertasVendidas, name='ver_ofertas_vendidas'),
     url(r'ofertas_por_productor/$', views.ConsultaOfertasporProductor, name='ConsultaOfertasporProductor'),
     url(r'listaOfertas/fechayProductor/$', views.ConsultaOfertasporFechayProductor, name='ofertasxFechaProductor'),
+    url(r'listaOfertas/fechaProductoryProducto/$', views.ConsultaOfertasporFechaProductoyProductor, name='ofertasxFechaProductorProducto'),
 ]
