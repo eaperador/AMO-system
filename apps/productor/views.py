@@ -243,16 +243,11 @@ def ConsultaOfertasporProductor(request):
     if (request.method == 'GET'):
 
         #Se obtiene información de request
-        #jsonObj = json.loads(request.body)
-        #idproductor = jsonObj['user']
-        #print 'Id usuario: ', idproductor
-        jsonObj = json.loads(request.body)
-        idproductor = jsonObj['user']
-        print 'Id usuario: ', request.user
+        productor = Usuario.objects.get(auth_user_id=request.user.id)
 
         #Consulta información de ofertas por productor
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=request.user.id)
+            listaOfertas = Oferta.objects.filter(id_productor=productor)
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
 
@@ -283,7 +278,7 @@ def ConsultaOfertasporProductor(request):
             listaOfertas = [{
                 "pk": oferta.id,
                 "producto": oferta.id_producto.nombre,
-                "unidad": oferta.producto.tipoUnidad.abreviatura,
+                "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
                 "cantidadVendida": 1234,  # oferta.cantidad,
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
@@ -302,12 +297,12 @@ def ConsultaOfertasporFechayProductor(request):
     if (request.method == 'POST'):
         #Se obtiene información de request
         jsonObj = json.loads(request.body)
-        idproductor = jsonObj['user']
-        print 'Id usuario: ', idproductor
         fechaInicio = jsonObj['fechaInicio']
         print 'Feha Inicio: ', fechaInicio
         fechaFin = jsonObj['fechaFin']
         print 'Fecha Fin: ', fechaFin
+
+        productor = Usuario.objects.get(auth_user_id=request.user.id)
         #Se le adiciona un día a la fecha porque en el filtro
         #los registros de la fechaFin son tomados hasta las 00:00.
         #Si se le suma un dìa al afecha fin, se tiene en cuenta
@@ -318,7 +313,7 @@ def ConsultaOfertasporFechayProductor(request):
         #Consulta información de ofertas por productor y rango de fechas
         try:
             #listaOfertas = Oferta.objects.filter(id_productor=idproductor).filter(fecha_gte=fechaInicio, fecha__lte=fechaFin)
-            listaOfertas = Oferta.objects.filter(id_productor=idproductor).filter(fecha__range=(fechaInicio, nuevafechaFin))
+            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(fecha__range=(fechaInicio, nuevafechaFin))
             print 'Lista de ofertas: ', listaOfertas.count()
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
@@ -369,16 +364,17 @@ def ConsultaOfertasporFechaProductoyProductor(request):
     if (request.method == 'POST'):
         #Se obtiene información de request
         jsonObj = json.loads(request.body)
-        idproductor = jsonObj['user']
-        print 'Id usuario: ', idproductor
         fechaInicio = jsonObj['fechaInicio']
         print 'Feha Inicio: ', fechaInicio
         fechaFin = jsonObj['fechaFin']
         print 'Fecha Fin: ', fechaFin
         _idProducto = jsonObj['idProducto']
         print 'id Producto: ', _idProducto
+
+        productor = Usuario.objects.get(auth_user_id=request.user.id)
+        producto = Producto.objects.get(pk=_idProducto)
         #Se le adiciona un día a la fecha porque en el filtro
-        #los registros de la fechaFin son tomados hasta las 00:00.
+        #los registros de la fechaFin son tomados hasta las 00:00.1
         #Si se le suma un dìa al afecha fin, se tiene en cuenta
         #en el filtro las 24 hrs del día de la fecha fin.
         nuevafechaFin = datetime.strptime(fechaFin, '%Y-%m-%d') + timedelta(days=1)
@@ -386,7 +382,7 @@ def ConsultaOfertasporFechaProductoyProductor(request):
 
         #Consulta información de ofertas por productor y rango de fechas
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=idproductor, id_producto= _idProducto).filter(fecha__range=(fechaInicio, nuevafechaFin))
+            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto= producto).filter(fecha__range=(fechaInicio, nuevafechaFin))
             print 'Lista de ofertas: ', listaOfertas.count()
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
@@ -437,14 +433,13 @@ def ConsultaOfertasporProductoyProductor(request):
     if (request.method == 'POST'):
         #Se obtiene información de request
         jsonObj = json.loads(request.body)
-        idproductor = jsonObj['user']
-        print 'Id usuario: ', idproductor
         _idProducto = jsonObj['idProducto']
         print 'id Producto: ', _idProducto
-
+        productor = Usuario.objects.get(auth_user_id=request.user.id)
+        producto = Producto.objects.get(pk=_idProducto)
         #Consulta información de ofertas por productor y producto
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=idproductor, id_producto= _idProducto)
+            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto=producto)
             print 'Lista de ofertas: ', listaOfertas.count()
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)

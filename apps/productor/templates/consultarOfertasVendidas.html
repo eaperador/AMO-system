@@ -12,40 +12,6 @@
          <script>
              $(document).ready(function () {
 
-                 $.getJSON( "http://localhost:8000/productor/ofertas_por_productor/").done(function (data) {
-                     console.log(data);
-                     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
-                     paginacion(data[0].ofertasPag);
-                 });
-
-                 //Data Test para ofertas vendidas
-                 data_json ='[' +
-                                '{' +
-                                    '"producto": "Tomate", ' +
-                                    '"unidad": "Kg", ' +
-                                    '"cantidad": 30, ' +
-                                    '"precio": 60000, ' +
-                                    '"fecha": "2017-09-05" ' +
-                                '},'+
-                                '{' +
-                                    '"producto": "Papa", ' +
-                                    '"unidad": "Kg", ' +
-                                    '"cantidad": 10, ' +
-                                    '"precio": 80000, ' +
-                                    '"fecha": "2017-09-15" ' +
-                                '},'+
-                                '{' +
-                                    '"producto": "Fresa", ' +
-                                    '"unidad": "Kg", ' +
-                                    '"cantidad": 15, ' +
-                                    '"precio": 105000, ' +
-                                    '"fecha": "2017-09-20" ' +
-                                '}'+
-                            ']';
-
-                 var obj = JSON.parse(data_json);
-                 console.log(obj);
-
                  //Productos vendidos por el productor
                  /*
                  $.getJSON( "url-productos-vendidos-productor", { productor: "{{ user.id }}" }).done(function (data) {
@@ -63,6 +29,10 @@
                      var fecha_desde = $('#fecha_inicio').val();
                      var fecha_hasta = $('#fecha_fin').val();
                      var producto = $('#productos').val();
+                     if((fecha_desde && !fecha_hasta) || (!fecha_desde && fecha_hasta))
+                     {
+                         alert("Le falta una de las fechas para hacer el filtro!");
+                     }
                      if (fecha_hasta < fecha_desde)
                      {
                          alert('La fecha hasta debe ser mayor a la fecha hasta!');
@@ -70,34 +40,54 @@
                      else if(fecha_desde && fecha_hasta && producto)
                      {
                          //Ofertas vendidas por rango de fechas y determinado producto
-                         /*
-                         $.getJSON( "url-api", { fecha_inicio: fecha_desde, fecha_fin: fecha_hasta, producto: producto, productor: "{{ user.id }}" }).done(function (data) {
-                              mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
-                              paginacion(data[0].ofertasPag);
+                         $.post( "http://localhost:8000/productor/listaOfertas/fechaProductoryProducto/", JSON.stringify({ fechaInicio: fecha_desde, fechaFin: fecha_hasta, idProducto: producto })).done(function( data ) {
+                             $('#tipo_filtro').text("Filtro: Por rango de fechas de ofertas y producto.");
+                             mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
+                             paginacion(data[0].ofertasPag);
                          });
-                         */
                      }
                      else if(fecha_desde && fecha_hasta)
                      {
                          //Ofertas vendidas por rango de fechas
-                         /*
-                         $.getJSON( "url-api", { fecha_inicio: fecha_desde, fecha_fin: fecha_hasta, productor: "{{ user.id }}" }).done(function (data) {
-                            mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
-                            paginacion(data[0].ofertasPag);
+
+                         $.post( "http://localhost:8000/productor/listaOfertas/fechayProductor/", JSON.stringify({ fechaInicio: fecha_desde, fechaFin: fecha_hasta })).done(function( data ) {
+                             $('#tipo_filtro').text("Filtro: Por rango de fechas de ofertas.");
+                             mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
+                             paginacion(data[0].ofertasPag);
                          });
-                         */
                      }
                      else if(producto)
                      {
                          //Ofertas vendidas por determinado producto
-                         /*
-                         $.getJSON( "url-api", { producto: producto, productor: "{{ user.id }}" }).done(function (data) {
+
+                         $.ajax({
+                            type: "POST",
+                            url: "http://localhost:8000/productor/listaOfertas/productoryProducto/",
+                            data: JSON.stringify({ idProducto: producto }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                $('#tipo_filtro').text("Filtro: Por producto.");
+                                console.log(data);
+                                mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
+                                paginacion(data[0].ofertasPag);
+                            },
+                            failure: function (data) {
+                                console.log(data);
+                                alert('Hubo error!');
+                            }
+                        });
+                     }
+                     else
+                     {
+                         $.getJSON( "http://localhost:8000/productor/ofertas_por_productor/").done(function (data) {
+                             console.log("Todas las ofertas");
+                             console.log(data);
+                             $('#tipo_filtro').text("Filtro: Todas las ofertas");
                              mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
                              paginacion(data[0].ofertasPag);
                          });
-                         */
                      }
-                     mostrarOfertas(obj,1);
                      event.preventDefault();
                  });
 
@@ -209,8 +199,9 @@
                                     <div class="form-group">
                                         <label for="productos" class="label-control" style="color: black">Productos:</label>
                                         <select name="" id="productos" class="form-control">
-                                            <option value="">Product 1</option>
-                                            <option value="">Product 2</option>
+                                            <option value="">Seleccione Producto</option>
+                                            <option value="1">Product 1</option>
+                                            <option value="2">Product 2</option>
                                         </select>
                                     </div>
                                 </td>
@@ -229,6 +220,7 @@
                 </div>
             </div>
             <div class="row" style="margin-top: 20px">
+                <strong><span id="tipo_filtro" style="margin-bottom: 15px; font-weight: 500; color: #0b0b0b;"></span></strong>
                 <table id="lista_ofertas_productor" class="table table-responsive">
                     <thead>
                         <tr style="color: black">
