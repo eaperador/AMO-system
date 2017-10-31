@@ -185,7 +185,6 @@ def diaSemana(day):
             '6': 'Sabado'
         }.get(day, 'No es un dia de la semana')
 
-
 @csrf_exempt
 def ConsultarProductosaOfertar(request):
     # filtrar para obtener productos que NO estén en las ofertas hechas
@@ -238,6 +237,65 @@ def ConsultarProductosaOfertar(request):
     else:
         return JsonResponse({'mensaje': 'No hay productos para ofertar'})
 
+@csrf_exempt
+def ConsultaOfertasporProductor(request):
+
+    if (request.method == 'POST'):
+        #Se obtiene información de request
+        jsonObj = json.loads(request.body)
+        idproductor = jsonObj['user']
+        print 'Id usuario: ', idproductor
+        try:
+            productor = Usuario.objects.get(auth_user_id=idproductor)
+        except Usuario.DoesNotExist:
+            return JsonResponse({'mensaje': 'Error: el usuario no existe'})
+
+        #Consulta información de ofertas por productor
+        try:
+            listaOfertas = Oferta.objects.filter(id_producto=productor.id)
+            page = request.GET.get('page', 1)
+            paginator = Paginator(listaOfertas, 3)
+
+            try:
+                ofertas = paginator.page(page)
+            except PageNotAnInteger:
+                ofertas = paginator.page(1)
+            except EmptyPage:
+                ofertas = paginator.page(paginator.num_pages)
+
+            prevPage = 0
+            nextPage = 0
+            if (ofertas.has_previous()):
+                prevPage = ofertas.previous_page_number()
+
+            if (ofertas.has_next()):
+                nextPage = ofertas.next_page_number()
+
+            ofertasPag = {"has_other_pages": ofertas.has_other_pages(),
+                          "has_previous": ofertas.has_previous(),
+                          "previous_page_number": prevPage,
+                          "page_range": ofertas.paginator.num_pages,
+                          "has_next": ofertas.has_next(),
+                          "next_page_number": nextPage,
+                          "current_page": ofertas.number,
+                          "first_row": ofertas.start_index()}
+
+            listaOfertas = [{
+                "pk": oferta.id,
+                "producto": oferta.id_producto.nombre,
+                "unidad": 'Kg',#oferta.tipoUnidad.abreviatura,
+                "cantidadVendida": 1234,  # oferta.cantidad,
+                "precio": oferta.precio,
+                "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
+            } for oferta in ofertas.object_list]
+
+            jsonReturn = [{"ofertas": listaOfertas,
+                           "ofertasPag": ofertasPag
+                           }]
+
+            return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
+        except Usuario.DoesNotExist:
+            return JsonResponse({'mensaje': 'El productor no tiene ofertas'})
 
 @csrf_exempt
 def ver_productos(request):
