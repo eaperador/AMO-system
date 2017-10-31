@@ -506,11 +506,9 @@ def ConsultaOfertasporProductoyProductor(request):
 def ConsultaProductosporProductor(request):
     if (request.method == 'POST'):
         # Se obtiene información de request
-        jsonObj = json.loads(request.body)
-        idproductor = jsonObj['user']
-        print 'Id usuario: ', idproductor
+        productor = Usuario.objects.get(auth_user_id=request.user.id)
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=idproductor)
+            listaOfertas = Oferta.objects.filter(id_productor=productor)
 
             if listaOfertas.count() > 0:
                 #return HttpResponse(serializers.serialize("json", listaProductos), content_type='application/json')

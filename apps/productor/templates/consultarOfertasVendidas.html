@@ -13,16 +13,14 @@
              $(document).ready(function () {
 
                  //Productos vendidos por el productor
-                 /*
-                 $.getJSON( "url-productos-vendidos-productor", { productor: "{{ user.id }}" }).done(function (data) {
-                    var options = $("#productos");
-                    options.append($("<option />").val('').text('Seleccione producto'));
-                    $.each(data, function() {
-                        options.append($("<option />").val(this.id).text(this.nombre);
-                    });
+                 $.post( "http://localhost:8000/productor/listaProductos/productor/").done(function( data ) {
+                     var options = $("#productos");
+                     producto = data[0]['productos'];
+                     options.append($("<option />").val('').text('Seleccione producto'));
+                     $.each(producto, function() {
+                         options.append($("<option />").val(this.id).text(this.producto));
+                     });
                  });
-                 */
-
 
                  //Submit del formulario de busqueda
                  $( "#form_filters" ).submit(function( event ) {
@@ -198,11 +196,7 @@
                                 <td>
                                     <div class="form-group">
                                         <label for="productos" class="label-control" style="color: black">Productos:</label>
-                                        <select name="" id="productos" class="form-control">
-                                            <option value="">Seleccione Producto</option>
-                                            <option value="1">Product 1</option>
-                                            <option value="2">Product 2</option>
-                                        </select>
+                                        <select name="" id="productos" class="form-control"></select>
                                     </div>
                                 </td>
                                 <td>
@@ -220,7 +214,7 @@
                 </div>
             </div>
             <div class="row" style="margin-top: 20px">
-                <strong><span id="tipo_filtro" style="margin-bottom: 15px; font-weight: 500; color: #0b0b0b;"></span></strong>
+                <strong><span id="tipo_filtro" style="margin-bottom: 15px; color: #0b0b0b;"></span></strong>
                 <table id="lista_ofertas_productor" class="table table-responsive">
                     <thead>
                         <tr style="color: black">
