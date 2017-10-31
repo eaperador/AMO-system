@@ -143,6 +143,9 @@ def crearOferta(request):
         data_convert = json.dumps(json_response)
         return HttpResponse(data_convert, content_type='application/json')
 
+
+#Método que calcula los días en que la oferta estaría
+# disponible de acuerdo al día actual de la consult
 def CalculoDiasCatalogoOfertas():
     # Hoy
     hoy = datetime.now()
@@ -174,6 +177,8 @@ def CalculoDiasCatalogoOfertas():
     _diaFinOferta = _diaInicioOferta + timedelta(days=_numeroDiasOferta)
     return (hoy, _diaInicioOferta, _diaFinOferta)
 
+# Método que retorna el nombre del día
+# cuando se envía el id del día.
 def diaSemana(day):
         return {
             '0': 'Domingo',
@@ -185,6 +190,8 @@ def diaSemana(day):
             '6': 'Sabado'
         }.get(day, 'No es un dia de la semana')
 
+# Método que realiza la consulta de lista de productos
+# por listos para ofertar
 @csrf_exempt
 def ConsultarProductosaOfertar(request):
     # filtrar para obtener productos que NO estén en las ofertas hechas
@@ -237,6 +244,8 @@ def ConsultarProductosaOfertar(request):
     else:
         return JsonResponse({'mensaje': 'No hay productos para ofertar'})
 
+# Método que realiza la consulta de lista de ofertas
+# por productor
 @csrf_exempt
 def ConsultaOfertasporProductor(request):
 
@@ -292,6 +301,8 @@ def ConsultaOfertasporProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene ofertas'})
 
+# Método que realiza la consulta de lista de ofertas
+# por productor y rango de fechas (fecha inicio - fecha fin)
 @csrf_exempt
 def ConsultaOfertasporFechayProductor(request):
     if (request.method == 'POST'):
@@ -359,6 +370,8 @@ def ConsultaOfertasporFechayProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
 
+# Método que realiza la consulta de lista de ofertas
+# por productor, rango de fechas y producto
 @csrf_exempt
 def ConsultaOfertasporFechaProductoyProductor(request):
     if (request.method == 'POST'):
@@ -428,6 +441,8 @@ def ConsultaOfertasporFechaProductoyProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
 
+# Método que realiza la consulta de la lista de ofertas
+# por productor y producto
 @csrf_exempt
 def ConsultaOfertasporProductoyProductor(request):
     if (request.method == 'POST'):
@@ -484,6 +499,34 @@ def ConsultaOfertasporProductoyProductor(request):
             return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
+
+# Método que realiza la consulta la lista de
+# productos que un productor ha ofertado
+@csrf_exempt
+def ConsultaProductosporProductor(request):
+    if (request.method == 'POST'):
+        # Se obtiene información de request
+        jsonObj = json.loads(request.body)
+        idproductor = jsonObj['user']
+        print 'Id usuario: ', idproductor
+        try:
+            listaOfertas = Oferta.objects.filter(id_productor=idproductor)
+
+            if listaOfertas.count() > 0:
+                #return HttpResponse(serializers.serialize("json", listaProductos), content_type='application/json')
+                lista = [{
+                    "id": oferta.id_producto.id,
+                    "producto": oferta.id_producto.nombre,
+                } for oferta in listaOfertas]
+
+                json_response = [{'productos': lista}]
+                data_convert = json.dumps(json_response)
+                return HttpResponse(data_convert, content_type='application/json')
+            else:
+                return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
+        except Oferta.DoesNotExist:
+            return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
+
 
 @csrf_exempt
 def ver_productos(request):
