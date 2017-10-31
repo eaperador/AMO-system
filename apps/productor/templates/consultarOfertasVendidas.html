@@ -11,8 +11,13 @@
      <section id="Productor">
          <script>
              $(document).ready(function () {
-                 currentDate = new Date();
-                 console.log(currentDate);
+
+                 $.getJSON( "http://localhost:8000/productor/ofertas_por_productor/").done(function (data) {
+                     console.log(data);
+                     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
+                     paginacion(data[0].ofertasPag);
+                 });
+
                  //Data Test para ofertas vendidas
                  data_json ='[' +
                                 '{' +
@@ -96,10 +101,6 @@
                      event.preventDefault();
                  });
 
-                 $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
-                     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
-                     paginacion(data[0].ofertasPag);
-                 });
              });
 
              function formatDate(d)
@@ -144,9 +145,9 @@
                          "<th scope='row'>"+(row+i)+"</th>"+
                          "<td>"+item.producto+"</td>" +
                          "<td>"+item.unidad+"</td>"+
-                         "<td>"+item.cantidad+"</td>"+
+                         "<td>"+item.cantidadVendida+"</td>"+
                          "<td>"+item.precio+"</td>"+
-                         "<td><p><label>"+item.fecha+"</label></p></td>" +
+                         "<td><p><label>"+item.fechaOferta+"</label></p></td>" +
                          "</tr>"
                      );
                      i++;
