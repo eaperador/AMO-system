@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'ofertas_por_productor/$', views.ConsultaOfertasporProductor, name='ConsultaOfertasporProductor'),
     url(r'listaOfertas/fechayProductor/$', views.ConsultaOfertasporFechayProductor, name='ofertasxFechaProductor'),
     url(r'listaOfertas/fechaProductoryProducto/$', views.ConsultaOfertasporFechaProductoyProductor, name='ofertasxFechaProductorProducto'),
+    url(r'listaOfertas/productoryProducto/$', views.ConsultaOfertasporProductoyProductor, name='ofertasxProductorProducto'),
 ]
