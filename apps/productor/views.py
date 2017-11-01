@@ -288,7 +288,7 @@ def ConsultaOfertasporProductor(request):
                 "pk": oferta.id,
                 "producto": oferta.id_producto.nombre,
                 "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 1234,  # oferta.cantidad,
+                "cantidadVendida": 0,  # oferta.cantidad,
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
@@ -299,11 +299,13 @@ def ConsultaOfertasporProductor(request):
                 try:
                     cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
                     if (cantidadVendida.count() > 0):
-                        item['cantidadVendida'] = cantidadVendida.cantidad
+                        for cv in cantidadVendida:
+                            item['cantidadVendida'] += cv.cantidad
                     else:
                         item['cantidadVendida'] = 0
                 except CompraOfertado.DoesNotExist:
                     item['cantidadVendida'] = 0
+
 
             jsonReturn = [{"ofertas": listaOfertas,
                            "ofertasPag": ofertasPag
@@ -369,7 +371,7 @@ def ConsultaOfertasporFechayProductor(request):
                 "pk": oferta.id,
                 "producto": oferta.id_producto.nombre,
                 "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 1234,  # oferta.cantidad,
+                "cantidadVendida": 0,  # oferta.cantidad,
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
@@ -380,7 +382,8 @@ def ConsultaOfertasporFechayProductor(request):
                 try:
                     cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
                     if (cantidadVendida.count() > 0):
-                        item['cantidadVendida'] = cantidadVendida.cantidad
+                        for cv in cantidadVendida:
+                            item['cantidadVendida'] += cv.cantidad
                     else:
                         item['cantidadVendida'] = 0
                 except CompraOfertado.DoesNotExist:
@@ -452,7 +455,7 @@ def ConsultaOfertasporFechaProductoyProductor(request):
                 "pk": oferta.id,
                 "producto": oferta.id_producto.nombre,
                 "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 1234,  # oferta.cantidad,
+                "cantidadVendida": 0,  # oferta.cantidad,
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
@@ -463,7 +466,8 @@ def ConsultaOfertasporFechaProductoyProductor(request):
                 try:
                     cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
                     if (cantidadVendida.count() > 0):
-                        item['cantidadVendida'] = cantidadVendida.cantidad
+                        for cv in cantidadVendida:
+                            item['cantidadVendida'] += cv.cantidad
                     else:
                         item['cantidadVendida'] = 0
                 except CompraOfertado.DoesNotExist:
@@ -527,7 +531,7 @@ def ConsultaOfertasporProductoyProductor(request):
                 "pk": oferta.id,
                 "producto": oferta.id_producto.nombre,
                 "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 1234,  # oferta.cantidad,
+                "cantidadVendida": 0,  # oferta.cantidad,
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
@@ -538,7 +542,8 @@ def ConsultaOfertasporProductoyProductor(request):
                 try:
                     cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
                     if (cantidadVendida.count() > 0):
-                        item['cantidadVendida'] = cantidadVendida.cantidad
+                        for cv in cantidadVendida:
+                            item['cantidadVendida'] += cv.cantidad
                     else:
                         item['cantidadVendida'] = 0
                 except CompraOfertado.DoesNotExist:
