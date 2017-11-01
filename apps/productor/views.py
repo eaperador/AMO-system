@@ -95,34 +95,34 @@ def crearOferta(request):
         dias = CalculoDiasCatalogoOfertas()
         # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
         hoy = dias[0]
-        print "hoy: ", hoy
+        print("hoy: ", hoy)
         intdia = hoy.strftime("%w")
         dia = diaSemana(intdia)
-        print "Dia de la semana: ", dia
+        print("Dia de la semana: ", dia)
 
         if (dia == 'Domingo'):
-            print 'Las ofertas solo pueden realizarse de Lunes a viernes'
+            print('Las ofertas solo pueden realizarse de Lunes a viernes')
             # return mensaje
         elif (dia == 'Sabado'):
-             print 'Las ofertas solo pueden realizarse de Lunes a sábado'
+            print('Las ofertas solo pueden realizarse de Lunes a sábado')
             # return mensaje
         else:
-            print 'Dia disponible para realizar ofertas'
+            print('Dia disponible para realizar ofertas')
             # Fecha inicio Oferta
             _diaInicioOferta = dias[1]
             _diaFinOferta = dias[2]
             # Consulta catalogo de ofertas para la semana
             _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__gte=hoy, fecha_fin__lte=hoy)
             if _catalogoOferta.count() > 0:
-                print 'Existe catálogo oferta para esta semana, se adicionará la oferta a ese catálogo'
+                print('Existe catálogo oferta para esta semana, se adicionará la oferta a ese catálogo')
                 id_catalogo_oferta = _catalogoOferta
             else:
-                print 'No existe catálogo para la semana, se creará uno'
+                print('No existe catálogo para la semana, se creará uno')
                 id_catalogo_oferta = CatalogoOfertas(fecha_inicio = _diaInicioOferta,
                                                      fecha_fin=_diaFinOferta,
                                                      activo=True)
                 id_catalogo_oferta.save()
-                print 'Creacion correcta del catálogo'
+                print('Creacion correcta del catálogo')
 
         #Se crea el objeto oferta a guardar
         jsonObj = json.loads(request.body)
@@ -149,10 +149,10 @@ def CalculoDiasCatalogoOfertas():
     # Hoy
     hoy = datetime.now()
     # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
-    print "hoy: ", hoy
+    print("hoy: ", hoy)
     intdia = hoy.strftime("%w")
     dia = diaSemana(intdia)
-    print "Dia de la semana: ", dia
+    print("Dia de la semana: ", dia)
     _numeroDiasOferta = 4
 
     if (dia == 'Domingo'):
