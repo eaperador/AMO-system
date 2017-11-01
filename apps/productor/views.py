@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 
 
-from .models import EstadoOferta, Oferta, CatalogoOfertas
+from .models import EstadoOferta, Oferta, CatalogoOfertas, CompraOfertado
 from ..comun.models import Usuario
 from ..administrador.models import Producto
 from django.shortcuts import render, redirect
@@ -293,6 +293,18 @@ def ConsultaOfertasporProductor(request):
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
 
+            # Se itera en la lista de ofertas para
+            # buscar la cantidad vendida por cada oferta
+            for item in listaOfertas:
+                try:
+                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
+                    if (cantidadVendida.count() > 0):
+                        item['cantidadVendida'] = cantidadVendida.cantidad
+                    else:
+                        item['cantidadVendida'] = 0
+                except CompraOfertado.DoesNotExist:
+                    item['cantidadVendida'] = 0
+
             jsonReturn = [{"ofertas": listaOfertas,
                            "ofertasPag": ofertasPag
                            }]
@@ -361,6 +373,18 @@ def ConsultaOfertasporFechayProductor(request):
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
+
+            # Se itera en la lista de ofertas para
+            # buscar la cantidad vendida por cada oferta
+            for item in listaOfertas:
+                try:
+                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
+                    if (cantidadVendida.count() > 0):
+                        item['cantidadVendida'] = cantidadVendida.cantidad
+                    else:
+                        item['cantidadVendida'] = 0
+                except CompraOfertado.DoesNotExist:
+                    item['cantidadVendida'] = 0
 
             jsonReturn = [{"ofertas": listaOfertas,
                            "ofertasPag": ofertasPag
@@ -433,6 +457,19 @@ def ConsultaOfertasporFechaProductoyProductor(request):
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
 
+            # Se itera en la lista de ofertas para
+            # buscar la cantidad vendida por cada oferta
+            for item in listaOfertas:
+                try:
+                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
+                    if (cantidadVendida.count() > 0):
+                        item['cantidadVendida'] = cantidadVendida.cantidad
+                    else:
+                        item['cantidadVendida'] = 0
+                except CompraOfertado.DoesNotExist:
+                    item['cantidadVendida'] = 0
+
+
             jsonReturn = [{"ofertas": listaOfertas,
                            "ofertasPag": ofertasPag
                            }]
@@ -450,12 +487,15 @@ def ConsultaOfertasporProductoyProductor(request):
         jsonObj = json.loads(request.body)
         _idProducto = jsonObj['idProducto']
         print 'id Producto: ', _idProducto
+        #_idProductor = jsonObj['user']
         productor = Usuario.objects.get(auth_user_id=request.user.id)
+        #productor = Usuario.objects.get(auth_user_id=_idProductor)
         producto = Producto.objects.get(pk=_idProducto)
         #Consulta información de ofertas por productor y producto
         try:
             listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto=producto)
             print 'Lista de ofertas: ', listaOfertas.count()
+
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
 
@@ -491,6 +531,18 @@ def ConsultaOfertasporProductoyProductor(request):
                 "precio": oferta.precio,
                 "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
             } for oferta in ofertas.object_list]
+
+            # Se itera en la lista de ofertas para
+            # buscar la cantidad vendida por cada oferta
+            for item in listaOfertas:
+                try:
+                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
+                    if (cantidadVendida.count() > 0):
+                        item['cantidadVendida'] = cantidadVendida.cantidad
+                    else:
+                        item['cantidadVendida'] = 0
+                except CompraOfertado.DoesNotExist:
+                    item['cantidadVendida'] = 0
 
             jsonReturn = [{"ofertas": listaOfertas,
                            "ofertasPag": ofertasPag

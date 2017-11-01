@@ -30,6 +30,8 @@ class Oferta(models.Model):
     id_catalogo_oferta = models.ForeignKey(CatalogoOfertas, null=False)
     #fechaFormat = fecha.strftime('%Y-%m-%d %H:%M')
 
-
-    #natural_key.dependencies = ['estado','']
+class CompraOfertado(models.Model):
+    cantidad = models.IntegerField()
+    id_item_compra = models.ForeignKey(ItemCompra, null=False)
+    id_oferta = models.ForeignKey(Oferta, null=False)
 
