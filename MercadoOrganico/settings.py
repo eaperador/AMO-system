@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'corsheaders',
+    'corsheaders',
     'MercadoOrganico',
     'apps.administrador',
     'apps.apirest',
@@ -124,9 +124,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'MerkaOrganico',
-            'USER': 'postgres',
-            'PASSWORD': '1072661319',
+            'NAME': 'MercadoOrganico',
+            'USER': 'makito',
+            'PASSWORD': '',
             'HOST': 'localhost',
             'PORT': '5432',
         }
