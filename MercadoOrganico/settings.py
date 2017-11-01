@@ -124,9 +124,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'MercadoOrganico',
-            'USER': 'makito',
-            'PASSWORD': '',
+            'NAME': 'MerkaOrganico',
+            'USER': 'postgres',
+            'PASSWORD': '1072661319',
             'HOST': 'localhost',
             'PORT': '5432',
         }
