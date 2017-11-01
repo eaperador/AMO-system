@@ -4,9 +4,7 @@ from __future__ import unicode_literals
 from django.db import models
 from ..administrador.models import Producto
 from ..comun.models import Usuario
-from django.forms import ModelForm
-
-from django.forms import forms
+from ..consumidor.models import ItemCompra
 
 class EstadoOferta (models.Model):
     nombre = models.CharField(max_length=100, null=True)
@@ -32,6 +30,8 @@ class Oferta(models.Model):
     id_catalogo_oferta = models.ForeignKey(CatalogoOfertas, null=False)
     #fechaFormat = fecha.strftime('%Y-%m-%d %H:%M')
 
-
-    #natural_key.dependencies = ['estado','']
+class CompraOfertado(models.Model):
+    cantidad = models.IntegerField()
+    id_item_compra = models.ForeignKey(ItemCompra, null=False)
+    id_oferta = models.ForeignKey(Oferta, null=False)
 
