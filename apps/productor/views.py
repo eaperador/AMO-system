@@ -29,16 +29,15 @@ def listarEstadosOferta(request):
 @csrf_exempt
 def listarOfertas(request):
     # listaOfertas = Oferta.objects.all()
-    print(request.user.id)
-    usuario = Usuario.objects.get(auth_user_id=request.user)
-    listaOfertas = Oferta.objects.filter(productor=usuario.id)
+    usuario = Usuario.objects.get(auth_user_id=request.user.id)
+    listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
         filter = jsonFilter.get('filter')
         user = request.user
         if (int(filter) > 0):
             # listaOfertas = Oferta.objects.filter(estado=filter)
-            listaOfertas = Oferta.objects.filter(estado=filter).filter(productor=usuario.id)
+            listaOfertas = Oferta.objects.filter(id_estado_oferta=filter).filter(id_productor=usuario.id)
 
     page = request.GET.get('page', 1)
     paginator = Paginator(listaOfertas, 3)
@@ -72,9 +71,9 @@ def listarOfertas(request):
         "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
         "precio": oferta.precio,
         "cantidad": oferta.cantidad,
-        "estado": oferta.estado.nombre,
-        "producto": oferta.producto.nombre,
-        "unidad": oferta.producto.tipoUnidad.abreviatura,
+        "estado": oferta.id_estado_oferta.nombre,
+        "producto": oferta.id_producto.nombre,
+        "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
     } for oferta in ofertas.object_list]
     json_ = [{"ofertas": listaOfertasJson,
               "ofertasPag": ofertasPag
