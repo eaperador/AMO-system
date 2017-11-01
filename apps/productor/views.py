@@ -107,7 +107,7 @@ def crearOferta(request):
         elif (dia == 'Sabado'):
             print('Las ofertas solo pueden realizarse de Lunes a sábado')
             # return mensaje
-             return JsonResponse({'mensaje': 'Las ofertas solo pueden realizarse de Lunes a viernes'})
+            return JsonResponse({'mensaje': 'Las ofertas solo pueden realizarse de Lunes a viernes'})
         else:
             print('Dia disponible para realizar ofertas')
             # Fecha inicio Oferta
