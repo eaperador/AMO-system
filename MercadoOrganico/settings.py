@@ -124,9 +124,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'MerkaOrg',
+            'NAME': 'MerkaOrganico',
             'USER': 'postgres',
-            'PASSWORD': 'agil2017',
+            'PASSWORD': 'Admin21',
             'HOST': 'localhost',
             'PORT': '5432',
         }
@@ -172,7 +172,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'images'),
+    os.path.join(BASE_DIR, 'apps/../apps/../apps/consumidor/../images'),
     os.path.join(BASE_DIR, 'static'),
 
 )
