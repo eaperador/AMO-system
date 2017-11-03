@@ -1,77 +1,205 @@
 {% extends 'layout/consumidor_layout.html' %}
 
 {% block title %}
-    Compras
+	Compras
 {% endblock %}
 
 {% block content %}
-    <header class="masthead" style="background: whitesmoke">
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-     <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
-     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script>
-        function agregar(productoId)
-        {
-            $.ajax({
-               type: "POST",
-               url: "https://amo-system.herokuapp.com/consumidor/agregar_producto/",
-               data: JSON.stringify({ productoId : productoId}),
-               contentType: "application/json; charset=utf-8",
-               dataType: "json",
-               success: function (data) {
-                   console.log(data);
-                   alert('Producto agregado');
-                   window.location = "https://amo-system.herokuapp.com/consumidor/catalogo_compras";
-               },
-               failure: function(errMsg){
-                   alert("Hubo un error");
-               }
+	<header class="masthead" style="background: whitesmoke">
+		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+
+		<script>
+
+            $.getJSON("http://localhost:8000/consumidor/seleccionarProductos/").done(function (data) {
+                 var options = $("#listaProducto");
+                 $.each(data, function () {
+                    options.append($("<option />").val(this.id).text(this.nombre));
+                });
+                filtrarProductos(1)
             });
-        };
-    </script>
-    <section id="Consumidor">
-        <div class="container" >
-            <div class="row">
-                <h1 style="color: black">Compras</h1>
-            </div>
-            <div class="row" id="filtroCategoria">
-                <div class="col-md-4 text-left col-centered">
-                    <form method="post" action="" enctype="multipart/form-data" name="filtro">
-                        <div class="form-group" >
-                            <label for="listaCategorias" style="color: black">Filtro:</label>
-                            <select id="listaCategorias" onchange="enviarForm()" class="form-control" style="height: 30px">
-                                <option selected value="-1">Todos...</option>
-                            </select>
-                        </div>
-                    </form>
+
+
+
+            $.getJSON("http://localhost:8000/consumidor/items_carrito/").done(function (data1) {
+                $("#cantidadItems").html(data1.sum);
+            });
+
+            //$("#productoscompra").hide();
+			function filtrarProductos(page) {
+                var selected_producto = $("#listaProducto").val();
+                console.log("id producto"+selected_producto);
+                    $.getJSON("http://localhost:8000/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
+                        var HTML = "";
+                        $('#productoscompra').empty();
+                        paginacion(data[0].prodCatalogoPag)
+                        $.each(data[0].prodCatalogo, function (key,val) {
+                            HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px\">";
+                            HTML += "<div class=\"panel panel-default\" style=\"padding:0; height: 390px; background-color: white\">";
+                            HTML += "<div class=\"panel-body\">";
+                            HTML += "<div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
+                            HTML += "<button type=\"button\" class=\"btn btn-danger btn-circle\" data-toggle=\"modal\" data-target=\"#eliminar_prod_modal" + val.id + "\">";
+                            HTML += "<i class=\"fa fa-minus\" style=\"font-size:24px\"></i>";
+                            HTML += "</button></div></div>";
+                            HTML += "<div style=\"height: 150px\">";
+                            HTML += "<img class=\"img-responsive\" src=\"/static/" + val.foto + "\" style=\"margin: 0 auto; max-height: 150px\">";
+                            HTML += "</div><br/>";
+                            HTML += "<div style=\"height: 120px\">";
+                            HTML += "<h3 style=\"text-align: center; font-weight: bold; color: black\">" + val.producto + "</h3>";
+                            HTML += "<span style=\"text-align: center; overflow: auto; color: black\">" + val.cantidadDisp + " Unidades disponibles </span>";
+                            HTML += "<br/>";
+                            HTML += "<span style=\"text-align: center; overflow: auto; color: black\">$" + val.precio + "</span>";
+                            HTML += "<br/>";
+                            HTML += "<span style=\"text-align: center; overflow: auto; color: black\" >Unidad X " + val.unidad + "</span>";
+                            HTML += "<br/><br/>";
+                            HTML += "<button type=\"button\" class=\"btn btn-primary btn-md\" data-toggle=\"modal\" data-target=\"#agregar_prod_modal" + val.id + "\">";
+                            HTML += "<i class=\"fa fa-shopping-cart\" style=\"font-size:24px\"></i> Añadir al carrito";
+                            HTML += "</button></div>";
+
+                            //Modal add
+                            HTML += "<div class=\"modal fade\" id=\"agregar_prod_modal" + val.id + "\" tabindex=\"-1\" role=\"dialog\" >";
+                            HTML += "<div class=\"modal-dialog\" role=\"document\" id=\"" + val.id + "\">";
+                            HTML += "<div class=\"modal-content\" >";
+                            HTML += "<div class=\"modal-header\" >";
+                            HTML += "<h3><span style=\"color: black\"> Agregar al carrito</span></h3>";
+                            HTML += "</div>";
+                            HTML += "<div class=\"modal-body\">";
+                            HTML += "<form   id=\"form\" role=\"form\" action=\"agregar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"addProd-form\" novalidate=\"novalidate\">";
+                            HTML += "{% csrf_token %}";
+                            HTML += "<h4 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h4>";
+                            HTML += "<br/><div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
+                            HTML += "<input type=\"number\" min=\"0\"  id=\"cantidad" + val.idProducto + "\" value=\"0\" name=\"cantidad\" ></div>";
+                            HTML += "<div class=\"col\" style=\"text-align: left\"><h4 style=\"text-align: center; font-weight: bold; color: black\" class=\"col-md-8 col-left\" > X " + val.unidad + "</h4></div>";
+                            HTML += "</div><br/><br/>";
+                            HTML += "<div class=\"modal-footer btn-toolbar\">";
+                            HTML += "<button onclick=\"return agregar(" + val.id + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
+                            HTML += "<i class=\"fa fa-check\" style=\"font-size:24px\"></i> Agregar";
+                            HTML += "</button>";
+                            HTML += "<button type=\"submit\" class=\"btn btn-default pull-right\" data-dismiss=\"modal\" style=\"margin-left: 5px; background-color: lightgrey\">";
+                            HTML += "<i class=\"fa fa-remove\" style=\"font-size:24px\"></i> Cancelar";
+                            HTML += "</button></div></form></div></div></div></div>";
+
+                            //Modal remove
+                            HTML += "<div class=\"modal fade\" id=\"eliminar_prod_modal" + val.id + "\" tabindex=\"-1\" role=\"dialog\" >";
+                            HTML += "<div class=\"modal-dialog\" role=\"document\" id=\"elp" + val.id + "\">";
+                            HTML += "<div class=\"modal-content\" >";
+                            HTML += "<div class=\"modal-header\" >";
+                            HTML += "<h3><span style=\"color: black\"> Eliminar del carrito</span></h3>";
+                            HTML += "</div>";
+                            HTML += "<div class=\"modal-body\">";
+                            HTML += "<form role=\"form\" action=\"eliminar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"restProd-form\" novalidate=\"novalidate\">";
+                            HTML += "{% csrf_token %}";
+                            HTML += "<h4 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h4>";
+                            HTML += "<br/><div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
+                            HTML += "<input type=\"number\" min=\"0\"  id=\"restCantidad" + val.idProducto + "\" value=\"0\" name=\"restCantidad\" ></div>";
+                            HTML += "<div class=\"col\" style=\"text-align: left\"><h4 style=\"text-align: center; font-weight: bold; color: black\" class=\"col-md-8 col-left\" > X " + val.unidad + "</h4></div>";
+                            HTML += "</div><br/><br/>";
+                            HTML += "<div class=\"modal-footer btn-toolbar\">";
+                            HTML += "<button onclick=\"return eliminar(" + val.id + ",document.getElementById('restCantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_eliminar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
+                            HTML += "<i class=\"fa fa-check\" style=\"font-size:24px\"></i> Eliminar";
+                            HTML += "</button>";
+                            HTML += "<button type=\"submit\" class=\"btn btn-default pull-right\" data-dismiss=\"modal\" style=\"margin-left: 5px; background-color: lightgrey\" >";
+                            HTML += "<i class=\"fa fa-remove\" style=\"font-size:24px\"></i> Cancelar";
+                            HTML += "</button></div></form></div></div></div></div></div></div></div>";
+                        });
+
+                        $('#productoscompra').append(HTML);
+                        $("#productoscompra").show();
+                    });
+            }
+
+			function agregar(productoId,cantidad)
+			{
+				$.ajax({
+					type: "POST",
+					url: "http://localhost:8000/consumidor/agregar_producto/",
+					data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
+					contentType: "application/json; charset=utf-8",
+					dataType: "json",
+					success: function (data) {
+						console.log(data);
+                        alert('Producto agregado');
+                        window.location = "http://localhost:8000/consumidor/catalogo_compras/";
+					},
+					failure: function(errMsg){
+						alert("Hubo un error");
+					}
+				});
+			};
+
+			function eliminar(productoId,cantidad)
+            {
+                $.ajax({
+                   type: "PUT",
+                   url: "http://localhost:8000/consumidor/eliminar_producto/",
+                   data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
+                   contentType: "application/json; charset=utf-8",
+                   dataType: "json",
+                   success: function (data) {
+                       console.log(data);
+                       alert('Producto Eliminado');
+                       window.location = "http://localhost:8000/consumidor/catalogo_compras/";
+                   },
+                   failure: function(errMsg){
+                       alert("Hubo un error");
+                   }
+                });
+            }
+            
+            function paginacion(prodCatalogoPag){
+		    $('#pagination').empty()
+		    if (prodCatalogoPag.has_other_pages){
+                $('#pagination').append("<ul class='pagination' id='paginationList'></ul>")
+                if (prodCatalogoPag.has_previous)
+                    $('#paginationList').append("<li><button onclick='filtrarProductos("+prodCatalogoPag.previous_page_number+")'  class='btn btn-basic'>&laquo;</button></li>")
+                else
+                    $('#paginationList').append("<li class='disabled'><span>&laquo;</span></li>")
+                for (i = 1; i <= prodCatalogoPag.page_range; i++) {
+                if (prodCatalogoPag.current_page == i )
+                    $('#paginationList').append("<li><button onclick='filtrarProductos("+i+")' class='btn btn-primary'>"+i+"</button></li>")
+                else
+                    $('#paginationList').append("<li><button onclick='filtrarProductos("+i+")' class='btn btn-basic'>"+i+"</button></li>")
+                }
+                if (prodCatalogoPag.has_next){
+                    $('#paginationList').append("<li><button onclick='filtrarProductos("+prodCatalogoPag.next_page_number+")'  class='btn btn-basic'>&raquo;</button></li>")
+                } else {
+                    $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
+                }
+            }
+        }
+		</script>
+		<section id="Consumidor">
+			<div class="container" >
+				<div class="row">
+                    <div class="col" style="text-align: left">
+					    <h1 style="color: black">Compras</h1>
+                    </div>
+                    <div class="col" style="text-align: right">
+                        <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px">
+                            <i class="fa fa-shopping-cart" style="font-size:24px"></i>
+                            <span id="cantidadItems"></span>
+                        </button>
+                    </div>
+				</div>
+				<div class="row" id="filtroProducto">
+					<div class="col-md-4 text-left col-centered">
+						<form method="post" action="" enctype="multipart/form-data" name="filtro">
+							<div class="form-group" >
+								<label for="listaProducto" style="color: black">Filtro:</label>
+                                <select name="" id="listaProducto" class="form-control" onchange="filtrarProductos(1)">
+                                    <option selected value="-1">Todos... </option>
+                                </select>
+							</div>
+						</form>
+					</div>
+				</div>
+				</br>
+                <div class="row" id="productoscompra"></div>
+			</div>
+            <div class="row" >
+                <div class="col-md-8" id="pagination">
+
                 </div>
             </div>
-            </br>
-            <div class="row">
-                {% for producto in productos %}
-                    <div class="col-md-3 col-sm-6 col-lg-3" style="padding:0 5px 0 5px ;">
-                        <div class="panel panel-default" style="padding:0; height: 350px;">
-                           <div class="panel-body">
-                               <div style="height: 150px">
-                                    <img class="img-responsive" src="/{{producto.producto.imagen}}" style="margin: 0 auto; max-height: 150px">
-                               </div>
-                               <div style="height: 120px">
-                                   <h3 style="text-align: center; font-weight: bold; color: black">{{producto.producto.nombre}}</h3>
-                                   <span style="text-align: center; overflow: auto; color: black">${{producto.precio_definido}}</span><br/>
-                                   <span style="text-align: center; overflow: auto; color: black" >Unidad X {{producto.producto.tipoUnidad.nombre}}</span>
-                                   <br/><br/>
-                                   <button onclick="return agregar({{ producto.id  }})" type="submit" class="btn btn-primary" data-form="{{ producto.id }}">
-                                       <span class="glyphicon glyphicon-shopping-cart"></span> Añadir al carrito
-                                   </button>
-                               </div>
-                           </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-     </section>
-    </header>
+		</section>
+	</header>
 {% endblock content %}

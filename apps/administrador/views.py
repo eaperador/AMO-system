@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..comun.views import sendMailNotification
 from .models import CatalogoProductos, Producto
-from ..productor.models import EstadoOferta, Oferta
+from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas
 from ..administrador.models import ProductoCatalogo
 
 @csrf_exempt
@@ -107,13 +107,13 @@ def listarOfertas(request, productoId):
     return HttpResponse(data_convert)
 
 def enviarNotificacion(oferta):
-    prod = oferta.productor
+    prod = oferta.id_productor
     email = prod.auth_user_id.email
     asunto = "Han respondido una oferta"
     mensaje = "Señor(a) "+prod.auth_user_id.first_name+" "+prod.auth_user_id.last_name+": \n\n"
     mensaje = mensaje + "De la forma más atenta queremos informale que la oferta que realizó en la fecha "+oferta.fecha.strftime('%Y-%m-%d %H:%M')+" \n"
-    mensaje = mensaje + "sobre el producto "+oferta.producto.nombre+" por un valor de $"+str(oferta.precio)+" se encuentra en estado:\n"
-    mensaje = mensaje + oferta.estado.nombre.upper()+"\n\n"
+    mensaje = mensaje + "sobre el producto "+oferta.id_producto.nombre+" por un valor de $"+str(oferta.precio)+" se encuentra en estado:\n"
+    mensaje = mensaje + oferta.id_estado_oferta.nombre.upper()+"\n\n"
     mensaje = mensaje + "Puede consultar el estado de la oferta en su perfil y recuerde estar atento a futuras notificaciones\n\n"
     mensaje = mensaje + "Saludos."
     sendMailNotification(email, asunto, mensaje)
@@ -124,7 +124,7 @@ def guardarOferta(request):
         jsonOferta = json.loads(request.body)
         ofertaId = jsonOferta['ofertaId']
         estadoId = jsonOferta['estadoId']
-        Oferta.objects.filter(pk=ofertaId).update(estado = estadoId)
+        Oferta.objects.filter(pk=ofertaId).update(id_estado_oferta = estadoId)
         enviarNotificacion(Oferta.objects.get(id=ofertaId))
     return JsonResponse({"mensaje": "ok"})
 
@@ -145,3 +145,12 @@ def ingresarCatalogoOferta(request):
         catalgo_oferta = ProductoCatalogo(precio_definido=precio_definido, cantidad_definida=cantidad_definida, cantidad_disponible=cantidad_definida,  id_catalogo=catalogo, id_producto=producto)
         catalgo_oferta.save()
     return JsonResponse({"mensaje": "ok"})
+
+
+@csrf_exempt
+def get_CatalogoOfertaActivo(request):
+    if request.method == 'GET':
+        catalogoOferta = CatalogoOfertas.objects.get(activo=1)
+        data_catalogoOferta = {'fecha_inicio': catalogoOferta.fecha_inicio.strftime('%Y-%m-%d'), 'fecha_fin': catalogoOferta.fecha_fin.strftime('%Y-%m-%d')}
+        data_convert = json.dumps(data_catalogoOferta)
+    return HttpResponse(data_convert)

@@ -37,6 +37,10 @@ hr.light {
     border-radius: 300px;
 }
 
+.hide{
+  display:none;
+}
+
 .buttonStyle:hover { background: #383; }
 
 .buttonStyleMal:hover { background:#ff3333}
@@ -125,6 +129,11 @@ body {
   -webkit-transition: all 0.2s;
   -moz-transition: all 0.2s;
   transition: all 0.2s; }
+  #mainNav .navbar-welcome {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #222222; }
   #mainNav .navbar-brand {
     font-weight: 700;
     text-transform: uppercase;
@@ -383,3 +392,13 @@ header.masthead {
 
 .btn-xl {
   padding: 15px 30px; }
+
+.btn-circle {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 1.428571429;
+  border-radius: 15px;
+}
