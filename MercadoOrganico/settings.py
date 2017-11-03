@@ -124,10 +124,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'MerkaOrganico',
-            'USER': 'postgres',
-            'PASSWORD': 'Admin21',
-            'HOST': 'localhost',
+            'NAME': 'd6b3o2o3b9013i',
+            'USER': 'zjxwucjyszunpw',
+            'PASSWORD': '30ccc70eceb57dea539050dff3ae8a9a11452124b37a0d60c5b2b3f6829c5f04',
+            'HOST': 'ec2-184-72-230-93.compute-1.amazonaws.com',
             'PORT': '5432',
         }
     }
@@ -172,7 +172,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'apps/../apps/../apps/consumidor/../images'),
     os.path.join(BASE_DIR, 'static'),
 
 )
