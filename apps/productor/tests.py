@@ -25,5 +25,6 @@ class ProductorTestCase(TestCase):
         print ("Esta si")
         self.browser.get('http://localhost:8000/productor/ver_ofertas')
         print ("abrio "+self.browser.title)
-
-        self.assertIn('Productor', self.browser.title)
+        span = self.browser.find_element(By.XPATH, '//label[text()="Filtro:"]')
+        self.assertIn('Filtro:', span.text)
+        #self.assertIn('Productor', self.browser.title)
