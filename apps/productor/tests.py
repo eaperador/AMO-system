@@ -23,7 +23,7 @@ class ProductorTestCase(TestCase):
 
     def test_title(self):
         print ("Esta si")
-        self.browser.get('http://localhost:8000')
+        self.browser.get('http://localhost:8000/productor/ver_ofertas')
         print ("abrio "+self.browser.title)
 
         self.assertIn('Productor', self.browser.title)
