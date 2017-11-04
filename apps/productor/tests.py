@@ -24,7 +24,7 @@ class ProductorTestCase(TestCase):
 
     def test_title(self):
         print ("Esta si")
-        self.browser.get('http://localhost:8000/productor/ver_ofertas')
+        #self.browser.get('http://localhost:8000/productor/ver_ofertas')
         content = requests.get('http://localhost:8000/productor/ver_ofertas').content
         self.browser.implicitly_wait(10)
         print(self.browser.get("data:text/html;charset=utf-8," + content))
