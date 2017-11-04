@@ -6,8 +6,8 @@ from selenium.webdriver.common.by import By
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver33.exe")
-        #self.browser = webdriver.Chrome()
+        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver33.exe")
+        self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
 
     def tearDown(self):
