@@ -27,7 +27,7 @@
    
     <script>
         function logout(){
-            $.getJSON("http://localhost:8000/logout").done(function (data) {
+            $.getJSON("https://amo-system-test.herokuapp.com/logout").done(function (data) {
                 if(data.mensaje == "ok"){
                     window.location ="{% url 'comun:index' %}";
                 }

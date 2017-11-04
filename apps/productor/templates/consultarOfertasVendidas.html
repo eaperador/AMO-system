@@ -13,7 +13,7 @@
              $(document).ready(function () {
 
                  //Productos vendidos por el productor
-                 $.post( "http://localhost:8000/productor/listaProductos/productor/").done(function( data ) {
+                 $.post( "https://amo-system-test.herokuapp.com/productor/listaProductos/productor/").done(function( data ) {
                      var options = $("#productos");
                      producto = data[0]['productos'];
                      options.append($("<option />").val('').text('Seleccione producto'));
@@ -38,7 +38,7 @@
                      else if(fecha_desde && fecha_hasta && producto)
                      {
                          //Ofertas vendidas por rango de fechas y determinado producto
-                         $.post( "http://localhost:8000/productor/listaOfertas/fechaProductoryProducto/", JSON.stringify({ fechaInicio: fecha_desde, fechaFin: fecha_hasta, idProducto: producto })).done(function( data ) {
+                         $.post( "https://amo-system-test.herokuapp.com/productor/listaOfertas/fechaProductoryProducto/", JSON.stringify({ fechaInicio: fecha_desde, fechaFin: fecha_hasta, idProducto: producto })).done(function( data ) {
                              $('#tipo_filtro').text("Filtro: Por rango de fechas de ofertas y producto.");
                              mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
                              paginacion(data[0].ofertasPag);
@@ -48,7 +48,7 @@
                      {
                          //Ofertas vendidas por rango de fechas
 
-                         $.post( "http://localhost:8000/productor/listaOfertas/fechayProductor/", JSON.stringify({ fechaInicio: fecha_desde, fechaFin: fecha_hasta })).done(function( data ) {
+                         $.post( "https://amo-system-test.herokuapp.com/productor/listaOfertas/fechayProductor/", JSON.stringify({ fechaInicio: fecha_desde, fechaFin: fecha_hasta })).done(function( data ) {
                              $('#tipo_filtro').text("Filtro: Por rango de fechas de ofertas.");
                              mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row);
                              paginacion(data[0].ofertasPag);
@@ -60,7 +60,7 @@
 
                          $.ajax({
                             type: "POST",
-                            url: "http://localhost:8000/productor/listaOfertas/productoryProducto/",
+                            url: "https://amo-system-test.herokuapp.com/productor/listaOfertas/productoryProducto/",
                             data: JSON.stringify({ idProducto: producto }),
                             contentType: "application/json; charset=utf-8",
                             dataType: "json",
@@ -78,7 +78,7 @@
                      }
                      else
                      {
-                         $.getJSON( "http://localhost:8000/productor/ofertas_por_productor/").done(function (data) {
+                         $.getJSON( "https://amo-system-test.herokuapp.com/productor/ofertas_por_productor/").done(function (data) {
                              console.log("Todas las ofertas");
                              console.log(data);
                              $('#tipo_filtro').text("Filtro: Todas las ofertas");
@@ -106,7 +106,7 @@
              function enviarForm(page) {
                  $.ajax({
                      type: "POST",
-                     url: "http://localhost:8000/productor/listarOfertas/?page="+page,
+                     url: "https://amo-system-test.herokuapp.com/productor/listarOfertas/?page="+page,
                      data: JSON.stringify({filter: $('#listaEstados').val()}),
                      contentType: "aplication/json; charset-utf-8",
                      dataType: "json",

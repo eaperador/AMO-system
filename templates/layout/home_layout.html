@@ -39,7 +39,7 @@
     <script>
         var rolUser;
         function logout(){
-            $.getJSON("http://localhost:8000/logout").done(function (data) {
+            $.getJSON("https://amo-system-test.herokuapp.com/logout").done(function (data) {
                 if(data.mensaje == "ok"){
                     location.reload();
                 }
@@ -56,7 +56,7 @@
           $("#form-login").submit(function (event) {
               $.ajax({
                   type: "POST",
-                  url: "http://localhost:8000/login/",
+                  url: "https://amo-system-test.herokuapp.com/login/",
                   data: JSON.stringify({ username: $('#inputUsername').val(), password: $('#inputPassword').val() }),
                   contentType: "application/json; charset=utf-8",
                   dataType: "json",
@@ -81,7 +81,7 @@
               event.preventDefault();
           });
 
-          $.getJSON("http://localhost:8000/isLogged/").done(function(data){
+          $.getJSON("https://amo-system-test.herokuapp.com/isLogged/").done(function(data){
               if(data.mensaje == "no"){
                   $("#cerrar_sesion").hide();
                   $("#consultar_ofertas").hide();
@@ -90,7 +90,7 @@
                   $("#armar_catalogo").hide();
                   $("#iniciar_sesion").show();
               }else {
-                  $.getJSON("http://localhost:8000/getRol/").done(function(data){
+                  $.getJSON("https://amo-system-test.herokuapp.com/getRol/").done(function(data){
                       if(data.mensaje == "Productor"){
                           $("#consultar_ofertas").show();
                           $("#ofertar").show();
@@ -207,7 +207,7 @@
                         <input type="password" id="inputPassword" class="form-control" placeholder="Contraseña" name="password" required>
                         <br/>
                         <div class="mx-auto text-center">
-                            <button class="btn btn-lg btn-outline" type="submit">Iniciar sesión</button>
+                            <button class="btn btn-lg btn-outline" id="btn_iniciarSesion" type="submit">Iniciar sesión</button>
                         </div>
                     </form>
                 </div>

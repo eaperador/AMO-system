@@ -624,3 +624,16 @@ def editarOferta(request):
 @csrf_exempt
 def verOfertasVendidas(request):
     return render(request, "consultarOfertasVendidas.html")
+
+@csrf_exempt
+def listarProductosOfertas(request):
+    usuario = Usuario.objects.get(auth_user_id=request.user.id)
+    listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
+    if request.method == "GET":
+        lista_productos = [{'id': oferta.id_producto.id,
+                            'nombre': oferta.id_producto.nombre,
+                            'descripcion': oferta.id_producto.descripcion,
+                            'activo': oferta.id_producto.activo} for oferta in listaOfertas]
+        unique_lista_productos = {each['id']: each for each in lista_productos}.values()
+    data_convert = json.dumps(unique_lista_productos)
+    return HttpResponse(data_convert)

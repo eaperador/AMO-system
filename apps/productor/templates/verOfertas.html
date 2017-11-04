@@ -11,15 +11,23 @@
 	 <script>
 
         (function () {
-		    $.getJSON( "http://localhost:8000/productor/listarEstados/").done(function (data) {
+            $.getJSON( "https://amo-system-test.herokuapp.com/productor/listarProductosOfertas/").done(function (data) {
+			    var options = $("#listaProductos");
+                 options.prepend($("<option />").val('').text('Todos...'));
+                 $.each(data, function() {
+                    options.append($("<option />").val(this.id).text(this.nombre));
+                });
+			});
+		    $.getJSON( "https://amo-system-test.herokuapp.com/productor/listarEstados/").done(function (data) {
 			    $.each(data, function (i, item) {
 		            $('#listaEstados').append(' <option value="'+item.pk+'">'+item.fields.nombre+'</option>');
                 });
 			});
-		    $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
+		    $.getJSON( "https://amo-system-test.herokuapp.com/productor/listarOfertas/").done(function (data) {
 			     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row)
                  paginacion(data[0].ofertasPag)
                 });
+
         })();
         function formtatDate(d) {
             var day = ("0" + d.getDay()).slice(-2);
@@ -34,7 +42,7 @@
 		function enviarForm(page) {
 		    $.ajax({
                 type: "POST",
-                url: "http://localhost:8000/productor/listarOfertas/?page="+page,
+                url: "https://amo-system-test.herokuapp.com/productor/listarOfertas/?page="+page,
                 data: JSON.stringify({filter: $('#listaEstados').val()}),
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
@@ -102,10 +110,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="listaProductos" class="label-control" style="color: black">Producto:</label>
-                            <select id="listaProductos" onchange="enviarForm()" class="form-control">
-                                <option selected value="-1">Todos...</option>
-                            </select>
+                            <label for="listaProductos" class="label-control">Producto:</label>
+                            <select id="listaProductos" class="form-control" style="margin-bottom: 20px"></select>
                         </div>
                     </form>
                 </div>

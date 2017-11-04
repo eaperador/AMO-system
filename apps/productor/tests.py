@@ -14,20 +14,60 @@ class ProductorTestCase(TestCase):
         self.browser.quit()
 
     def test_filter(self):
-        self.browser.get('http://localhost:8000/productor/ver_ofertas')
-        self.browser.implicitly_wait(10)
+        self.browser.get('http://localhost:8000')
+
+        link = self.browser.find_element_by_id('iniciar_sesion')
+        link.click()
+
+        self.browser.implicitly_wait(5)
+
+        nombreUsuario = self.browser.find_element_by_id('inputUsername')
+        nombreUsuario.send_keys('prod1')
+        self.browser.implicitly_wait(3)
+
+        clave = self.browser.find_element_by_id('inputPassword')
+        clave.send_keys('usuarioprod1')
+        self.browser.implicitly_wait(3)
+
+        botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
+        botonLogin.click()
+        self.browser.implicitly_wait(5)
+
+        continue_link = self.browser.find_element_by_link_text('CONSULTAR OFERTAS')
+        continue_link.click()
+
+        self.browser.implicitly_wait(5)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
 
         listaProductos = self.browser.find_element_by_id('listaProductos')
         opCount = len(listaProductos.find_elements_by_tag_name("option"))
-        self.assertEquals(1, opCount)
         self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
 
     def test_filter_a_lot_of_products(self):
-        self.browser.get('http://localhost:8000/productor/ver_ofertas')
-        self.browser.implicitly_wait(10)
+        self.browser.get('http://localhost:8000')
+
+        link = self.browser.find_element_by_id('iniciar_sesion')
+        link.click()
+        self.browser.implicitly_wait(5)
+
+        nombreUsuario = self.browser.find_element_by_id('inputUsername')
+        nombreUsuario.send_keys('prod1')
+        self.browser.implicitly_wait(3)
+
+        clave = self.browser.find_element_by_id('inputPassword')
+        clave.send_keys('usuarioprod1')
+        self.browser.implicitly_wait(3)
+
+        botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
+        botonLogin.click()
+        self.browser.implicitly_wait(5)
+
+        continue_link = self.browser.find_element_by_link_text('CONSULTAR OFERTAS')
+        continue_link.click()
+
+        self.browser.implicitly_wait(5)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
