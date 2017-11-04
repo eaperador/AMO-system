@@ -22,7 +22,6 @@ class ProductorTestCase(TestCase):
         self.browser.quit()
 
     def test_title(self):
-        print ("Esta si")
         self.browser.get('http://localhost:8000')
         self.browser.implicitly_wait(10)
         print ("abrio "+self.browser.title)
