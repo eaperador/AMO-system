@@ -22,11 +22,11 @@ class ProductorTestCase(TestCase):
         self.browser.quit()
 
     def test_title(self):
-        self.browser.get('http://localhost:8000')
+        self.browser.get('http://localhost:8000/productor/ver_ofertas')
         self.browser.implicitly_wait(10)
         print ("abrio "+self.browser.title)
         print (self.browser.current_url)
-      #  span = self.browser.find_element(By.XPATH, '//label[text()="Filtro:"]')
-     #   print(span.text)
-        #self.assertIn('Filtro:', span.text)
+        span = self.browser.find_element(By.XPATH, '//label[text()="Filtro:"]')
+        print(span.text)
+        self.assertIn('Filtro:', span.text)
         #self.assertIn('Productor', self.browser.title)
