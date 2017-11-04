@@ -32,7 +32,7 @@ class ProductorTestCase(TestCase):
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
-        sleep(10)
+        sleep(20)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
@@ -63,7 +63,7 @@ class ProductorTestCase(TestCase):
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
-        sleep(10)
+        sleep(20)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
