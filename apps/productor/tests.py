@@ -1,3 +1,4 @@
+from time import sleep
 from unittest import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -6,8 +7,8 @@ from selenium.webdriver.common.by import By
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\CATHERIN\\Documents\\chromedriver.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\Users\\CATHERIN\\Documents\\chromedriver.exe")
+        #self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
 
     def tearDown(self):
@@ -19,24 +20,23 @@ class ProductorTestCase(TestCase):
         link = self.browser.find_element_by_id('iniciar_sesion')
         link.click()
 
-        self.browser.implicitly_wait(5)
+        sleep(2)
 
         nombreUsuario = self.browser.find_element_by_id('inputUsername')
         nombreUsuario.send_keys('prod1')
-        self.browser.implicitly_wait(3)
+        sleep(1)
 
         clave = self.browser.find_element_by_id('inputPassword')
         clave.send_keys('usuarioprod1')
-        self.browser.implicitly_wait(3)
+        sleep(1)
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
-        self.browser.implicitly_wait(5)
+        sleep(5)
 
-        continue_link = self.browser.find_element_by_link_text('CONSULTAR OFERTAS')
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
-
-        self.browser.implicitly_wait(5)
+        sleep(5)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
@@ -50,24 +50,24 @@ class ProductorTestCase(TestCase):
 
         link = self.browser.find_element_by_id('iniciar_sesion')
         link.click()
-        self.browser.implicitly_wait(5)
+
+        sleep(2)
 
         nombreUsuario = self.browser.find_element_by_id('inputUsername')
         nombreUsuario.send_keys('prod1')
-        self.browser.implicitly_wait(3)
+        sleep(1)
 
         clave = self.browser.find_element_by_id('inputPassword')
         clave.send_keys('usuarioprod1')
-        self.browser.implicitly_wait(3)
+        sleep(1)
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
-        self.browser.implicitly_wait(5)
+        sleep(5)
 
-        continue_link = self.browser.find_element_by_link_text('CONSULTAR OFERTAS')
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
-
-        self.browser.implicitly_wait(5)
+        sleep(5)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
