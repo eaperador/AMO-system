@@ -1,12 +1,26 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from unittest import TestCase
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
-from django.test import TestCase
 
-# Create your tests here.
 class ProductorTestCase(TestCase):
-    # Para verificar la integracion con CodeShip
-    def test_echo_for_CI(self):
-        """Animals that can speak are correctly identified"""
-        print ("Ejecuta el test de Productor")
-        self.assertEqual('Modulo productor', 'Modulo productor')
+
+    def setUp(self):
+        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver33.exe")
+        #self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(2)
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_filter(self):
+        self.browser.get('http://localhost:8000/productor/ver_ofertas')
+        self.browser.implicitly_wait(10)
+
+        span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
+        self.assertIn('Producto:', span.text)
+
+        listaProductos = self.browser.find_element_by_id('listaProductos')
+        opCount = len(listaProductos.find_elements_by_tag_name("option"))
+        self.assertEquals(1, opCount)
+        self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
