@@ -1,12 +1,25 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from telnetlib import EC
+from time import sleep
 
-from django.test import TestCase
+from selenium.webdriver.support.wait import WebDriverWait
 
-# Create your tests here.
+_author_ = 'asistente'
+from unittest import TestCase
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+
 class ProductorTestCase(TestCase):
     # Para verificar la integracion con CodeShip
-    def test_echo_for_CI(self):
-        """Animals that can speak are correctly identified"""
-        print ("Ejecuta el test de Productor")
-        self.assertEqual('Modulo productor', 'Modulo productor')
+
+
+    def setUp(self):
+        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        self.browser.implicitly_wait(2)
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_title(self):
+        self.browser.get('http://localhost:8000/productor/ver_ofertas')
+        self.assertIn('Productor', self.browser.title)
