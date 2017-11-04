@@ -1,6 +1,7 @@
 from telnetlib import EC
 from time import sleep
 
+import requests
 from selenium.webdriver.support.wait import WebDriverWait
 
 _author_ = 'asistente'
@@ -14,8 +15,8 @@ class ProductorTestCase(TestCase):
 
 
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver33.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver33.exe")
+        #self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
 
     def tearDown(self):
@@ -24,7 +25,9 @@ class ProductorTestCase(TestCase):
     def test_title(self):
         print ("Esta si")
         self.browser.get('http://localhost:8000/productor/ver_ofertas')
+        content = requests.get('http://localhost:8000/productor/ver_ofertas').content
         self.browser.implicitly_wait(10)
+        print(self.browser.get("data:text/html;charset=utf-8," + content))
         print ("abrio "+self.browser.title)
         print (self.browser.current_url)
         span = self.browser.find_element(By.XPATH, '//label[text()="Filtro:"]')
