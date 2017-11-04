@@ -1,5 +1,5 @@
 from telnetlib import EC
-from time import sleep
+from time import sleep, time
 
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -14,9 +14,17 @@ class ProductorTestCase(TestCase):
 
 
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver33.exe")
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(2)
+
+        self.browser.get('http://www.google.com/xhtml');
+        self.browser.implicitly_wait(2)  # Let the user actually see something!
+        search_box = self.browser.find_element_by_name('q')
+        search_box.send_keys('ChromeDriver')
+        search_box.submit()
+        self.browser.implicitly_wait(2)  # Let the user actually see something!
+        self.browser.quit()
+
 
     def tearDown(self):
         self.browser.quit()
