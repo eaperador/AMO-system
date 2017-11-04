@@ -1,7 +1,6 @@
 from telnetlib import EC
 from time import sleep
 
-import requests
 from selenium.webdriver.support.wait import WebDriverWait
 
 _author_ = 'asistente'
@@ -28,7 +27,7 @@ class ProductorTestCase(TestCase):
         self.browser.implicitly_wait(10)
         print ("abrio "+self.browser.title)
         print (self.browser.current_url)
-        span = self.browser.find_element(By.XPATH, '//label[text()="Filtro:"]')
-        print(span.text)
+      #  span = self.browser.find_element(By.XPATH, '//label[text()="Filtro:"]')
+     #   print(span.text)
         #self.assertIn('Filtro:', span.text)
         #self.assertIn('Productor', self.browser.title)
