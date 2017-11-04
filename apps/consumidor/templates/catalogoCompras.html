@@ -10,7 +10,7 @@
 
 		<script>
 
-            $.getJSON("https://amo-system-test.herokuapp.com/consumidor/seleccionarProductos/").done(function (data) {
+            $.getJSON("http://localhost:8000/consumidor/seleccionarProductos/").done(function (data) {
                  var options = $("#listaProducto");
                  $.each(data, function () {
                     options.append($("<option />").val(this.id).text(this.nombre));
@@ -20,7 +20,7 @@
 
 
 
-            $.getJSON("https://amo-system-test.herokuapp.com/consumidor/items_carrito/").done(function (data1) {
+            $.getJSON("http://localhost:8000/consumidor/items_carrito/").done(function (data1) {
                 $("#cantidadItems").html(data1.sum);
             });
 
@@ -28,7 +28,7 @@
 			function filtrarProductos(page) {
                 var selected_producto = $("#listaProducto").val();
                 console.log("id producto"+selected_producto);
-                    $.getJSON("https://amo-system-test.herokuapp.com/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
+                    $.getJSON("http://localhost:8000/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
                         var HTML = "";
                         $('#productoscompra').empty();
                         paginacion(data[0].prodCatalogoPag)
@@ -111,14 +111,14 @@
 			{
 				$.ajax({
 					type: "POST",
-					url: "https://amo-system-test.herokuapp.com/consumidor/agregar_producto/",
+					url: "http://localhost:8000/consumidor/agregar_producto/",
 					data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
 					contentType: "application/json; charset=utf-8",
 					dataType: "json",
 					success: function (data) {
 						console.log(data);
                         alert('Producto agregado');
-                        window.location = "https://amo-system-test.herokuapp.com/consumidor/catalogo_compras/";
+                        window.location = "http://localhost:8000/consumidor/catalogo_compras/";
 					},
 					failure: function(errMsg){
 						alert("Hubo un error");
@@ -130,14 +130,14 @@
             {
                 $.ajax({
                    type: "PUT",
-                   url: "https://amo-system-test.herokuapp.com/consumidor/eliminar_producto/",
+                   url: "http://localhost:8000/consumidor/eliminar_producto/",
                    data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
                    contentType: "application/json; charset=utf-8",
                    dataType: "json",
                    success: function (data) {
                        console.log(data);
                        alert('Producto Eliminado');
-                       window.location = "https://amo-system-test.herokuapp.com/consumidor/catalogo_compras/";
+                       window.location = "http://localhost:8000/consumidor/catalogo_compras/";
                    },
                    failure: function(errMsg){
                        alert("Hubo un error");
