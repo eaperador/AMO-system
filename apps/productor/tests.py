@@ -7,8 +7,8 @@ from selenium.webdriver.common.by import By
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        #self.browser = webdriver.Chrome()
+        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        self.browser = webdriver.Chrome()
     def tearDown(self):
         self.browser.quit()
 
