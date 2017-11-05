@@ -67,11 +67,11 @@ class ProductorTestCase(TestCase):
 
         nombreUsuario = self.browser.find_element_by_id('inputUsername')
         nombreUsuario.send_keys('prodTest')
-        sleep(1)
+        sleep(2)
 
         clave = self.browser.find_element_by_id('inputPassword')
         clave.send_keys('userprodtest')
-        sleep(1)
+        sleep(2)
 
         user = authenticate(username='prodTest', password='userprodtest')
         print(user)
@@ -79,7 +79,7 @@ class ProductorTestCase(TestCase):
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
         print(self.browser.current_url)
-        sleep(1)
+        sleep(10)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
