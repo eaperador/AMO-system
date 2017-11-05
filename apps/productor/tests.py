@@ -58,7 +58,7 @@ class ProductorTestCase(TestCase):
         self.browser.quit()
 
     def test_filter(self):
-        ''' self.browser.get('http://localhost:8000')
+        self.browser.get('http://localhost:8000')
 
         link = self.browser.find_element_by_id('iniciar_sesion')
         link.click()
@@ -68,7 +68,7 @@ class ProductorTestCase(TestCase):
         nombreUsuario = self.browser.find_element_by_id('inputUsername')
         nombreUsuario.send_keys('prodTest')
         sleep(1)
-        '''
+
         print (User.objects.get(id=1).password)
         print (User.objects.get(id=1).username)
         user = authenticate(username='prodTest', password='userprodtest')
@@ -76,7 +76,7 @@ class ProductorTestCase(TestCase):
         user = authenticate(username=User.objects.get(id=1).username, password=User.objects.get(id=1).password)
         print(user)
 
-        '''clave = self.browser.find_element_by_id('inputPassword')
+        clave = self.browser.find_element_by_id('inputPassword')
         clave.send_keys('userprodtest')
         sleep(1)
 
@@ -94,7 +94,7 @@ class ProductorTestCase(TestCase):
         listaProductos = self.browser.find_element_by_id('listaProductos')
         opCount = len(listaProductos.find_elements_by_tag_name("option"))
         self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
-
+'''
     def test_filter_a_lot_of_products(self):
         self.browser.get('http://localhost:8000')
 
