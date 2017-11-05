@@ -39,7 +39,7 @@ class ProductorTestCase(TestCase):
         self.catalogo.save()
         self.oferta = Oferta(precio=5000,cantidad=1000,cantidad_disponible=100,fecha=datetime.datetime.today(),id_catalogo_oferta=self.catalogo,id_producto=self.producto1,id_productor=self.usuario,id_estado_oferta=self.estadoOferta)
         self.oferta.save()
-
+        print (User.objects.all())
     def tearDown(self):
         self.oferta.delete()
         self.catalogo.delete()
