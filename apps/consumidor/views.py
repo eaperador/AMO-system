@@ -27,6 +27,9 @@ def agregar_producto(request):
         cantidad = jsonOferta['cantidad']
         producto = ProductoCatalogo.objects.get(id=productoId)
 
+        if int(cantidad) > int(producto.cantidad_disponible):
+            cantidad = str(int(producto.cantidad_disponible))
+
         try:
             itemCompra = ItemCompra.objects.get(id_producto_catalogo=producto)
             itemCompra.cantidad = str(int(itemCompra.cantidad) + int(cantidad))
