@@ -88,15 +88,15 @@ if ON_CODESHIP:
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'test',
-            'USER': 'test',
-            'PASSWORD': 'test',
+            'USER': os.environ.get('PGUSER'),
+            'PASSWORD': os.environ.get('PGPASSWORD'),
             'HOST': '127.0.0.1',
         }
     }
 
-    print('iniciando local'+str(DATABASES))
+    print('iniciando CS'+str(DATABASES))
 elif ON_HEROKU_TEST:
     # Configuracion de base de datos para https://amo-system-test.herokuapp.com
     DATABASES = {
@@ -109,7 +109,7 @@ elif ON_HEROKU_TEST:
             'PORT': '5432',
         }
     }
-
+    print('iniciando HT' + str(DATABASES))
 elif ON_HEROKU_PROD:
     # Configuracion de base de datos para https://amo-system.herokuapp.com/
     DATABASES = {
@@ -122,6 +122,7 @@ elif ON_HEROKU_PROD:
             'PORT': '5432',
         }
     }
+    print('iniciando HP' + str(DATABASES))
 else:
     # Configuracion de base de datos local
     DATABASES = {
@@ -134,6 +135,7 @@ else:
             'PORT': '5432',
         }
     }
+    print('iniciando LOCAL'+str(DATABASES))
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
