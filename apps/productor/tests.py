@@ -25,8 +25,8 @@ def login(self):
 
 class ProductorTestCase(TestCase):
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
-        # self.browser = webdriver.Chrome()
+        # self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
+        self.browser = webdriver.Chrome()
 
     def tearDown(self):
         self.browser.quit()
@@ -78,8 +78,8 @@ class ProductorTestCase(TestCase):
 
 class ProductorEditOfertaTestCase(TestCase):
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
-        # self.browser = webdriver.Chrome()
+        # self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
+        self.browser = webdriver.Chrome()
 
     def tearDown(self):
         self.browser.quit()
