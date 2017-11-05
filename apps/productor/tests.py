@@ -79,12 +79,20 @@ class ProductorTestCase(TestCase):
         print(usuario.auth_user_id.first_name)
         self.assertEquals("Roberto",usuario.auth_user_id.first_name)
 
-        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
-        continue_link.click()
-        sleep(5)
+        #continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        #continue_link.click()
+        #sleep(5)
+
+        self.browser.get('http://localhost:8000/productor/ver_ofertas/')
+        sleep(10)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
+
+        listaProductos = self.browser.find_element_by_id('listaProductos')
+        opCount = len(listaProductos.find_elements_by_tag_name("option"))
+        self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
+
 
     #def test_filter(self):
     #    self.browser.get('http://localhost:8000')
