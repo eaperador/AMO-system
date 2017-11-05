@@ -69,20 +69,16 @@ class ProductorTestCase(TestCase):
         nombreUsuario.send_keys('prodTest')
         sleep(1)
 
-        print (User.objects.get(id=1).password)
-        print (User.objects.get(id=1).username)
-        user = authenticate(username='prodTest', password='userprodtest')
-        print(user)
-        user = authenticate(username=User.objects.get(id=1).username, password=User.objects.get(id=1).password)
-        print(user)
-
         clave = self.browser.find_element_by_id('inputPassword')
         clave.send_keys('userprodtest')
         sleep(1)
 
+        user = authenticate(username='prodTest', password='userprodtest')
+        print(user)
+
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
-        sleep(20)
+        sleep(40)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
