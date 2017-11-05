@@ -7,6 +7,7 @@ import time
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas
 
 
 # Create your views here.
@@ -30,10 +31,10 @@ def add_catalogo(request):
         fecha_inicio = jsonData['fecha_inicio']
         fecha_fin = jsonData['fecha_fin']
 
-        catalogo = CatalogoProductos(fecha_inicio=fecha_inicio, fecha_fin=fecha_fin)
+        catalogo = CatalogoProductos(fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, activo=True)
         catalogo.save()
 
-        catalogo = {'fecha_inicio': str(catalogo.fecha_inicio), 'fecha_fin': str(catalogo.fecha_fin)}
+        catalogo = {'fecha_inicio': str(catalogo.fecha_inicio), 'fecha_fin': str(catalogo.fecha_fin), 'activo': str(catalogo.activo)}
         convert_catalogo = json.dumps(catalogo)
 
     return HttpResponse(convert_catalogo)
@@ -43,7 +44,11 @@ def add_catalogo(request):
 def numero_nuevo_catalogo(request):
     if request.method == "GET":
         ultimo_catalogo = CatalogoProductos.objects.all().last()
-        data = {'numero': (ultimo_catalogo.id + 1)}
+        if ultimo_catalogo:
+            data = {'numero': (ultimo_catalogo.id + 1)}
+        else:
+            data = {'numero': 1}
+
         convert_data = json.dumps(data)
 
     return HttpResponse(convert_data)
@@ -65,7 +70,7 @@ def select_productos(request):
         lista_productos = [{'id': producto.id,
                             'nombre': producto.nombre,
                             'descripcion': producto.descripcion,
-                            'imagen': str(producto.foto),
+                            'foto': str(producto.foto),
                             'activo': producto.activo} for producto in productos]
 
     data_convert = json.dumps(lista_productos)
@@ -76,7 +81,7 @@ def select_productos(request):
 def select_producto(request, id):
     if request.method == "GET":
         producto = Producto.objects.get(pk=id)
-        data_producto = {'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.imagen), 'activo': producto.activo}
+        data_producto = {'id': producto.id, 'nombre': producto.nombre, 'descripcion': producto.descripcion, 'imagen': str(producto.foto), 'activo': producto.activo}
     data_convert = json.dumps(data_producto)
     return HttpResponse(data_convert)
 
@@ -88,17 +93,17 @@ def listarOfertas(request, productoId):
             data_oferta = []
         else:
             listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
-            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta = listaCatalogoOfertas[0].id)
+            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
             data_oferta = [{'id': oferta.id,
                             'producto': oferta.id_producto.nombre,
                             'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-                            'productor':oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
-                            'cantidad':oferta.cantidad,
-                            'precio':oferta.precio,
-                            'estadoId':oferta.id_estado_oferta.id,
-                            'estadoNombre':oferta.id_estado_oferta.nombre,
-                            'unidad': oferta.id_producto.id_tipo_unidad.abreviatura}for oferta in listaOfertas]
-    data_convert = json.dumps(data_oferta,cls=DjangoJSONEncoder)
+                            'productor': oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
+                            'cantidad': oferta.cantidad,
+                            'precio': oferta.precio,
+                            'estadoId': oferta.id_estado_oferta.id,
+                            'estadoNombre': oferta.id_estado_oferta.nombre,
+                            'unidad': oferta.id_producto.id_tipo_unidad.abreviatura} for oferta in listaOfertas]
+    data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
 
 def enviarNotificacion(oferta):
@@ -137,7 +142,7 @@ def ingresarCatalogoOferta(request):
         catalogo = CatalogoProductos.objects.get(pk=idcatalogo)
         idproducto = jsonData['producto']
         producto = Producto.objects.get(pk=idproducto)
-        catalgo_oferta = ProductoCatalogo(precio_definido=precio_definido, cantidad_definida=cantidad_definida,catalogo=catalogo, producto=producto)
+        catalgo_oferta = ProductoCatalogo(precio_definido=precio_definido, cantidad_definida=cantidad_definida, cantidad_disponible=cantidad_definida,  id_catalogo=catalogo, id_producto=producto)
         catalgo_oferta.save()
     return JsonResponse({"mensaje": "ok"})
 
