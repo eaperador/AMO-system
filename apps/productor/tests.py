@@ -26,8 +26,8 @@ def login(self):
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
+        #self.browser = webdriver.Chrome()
     def tearDown(self):
         self.browser.quit()
 
@@ -78,8 +78,8 @@ class ProductorTestCase(TestCase):
 
 class ProductorEditOfertaTestCase(TestCase):
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
+        #self.browser = webdriver.Chrome()
     def tearDown(self):
         self.browser.quit()
 
@@ -92,3 +92,18 @@ class ProductorEditOfertaTestCase(TestCase):
 
         edit_link = self.browser.find_element_by_id('to_edit_1')
         self.assertIsNotNone(edit_link)
+
+    def test_edit_modal(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(1)
+
+        edit_link = self.browser.find_element_by_id('to_edit_1')
+        edit_link.click()
+        labelCant = self.browser.find_element(By.XPATH, '//label[text()="Cantidad:"]')
+        self.assertIn('Cantidad:', labelCant.text)
+
+        labelPrecio = self.browser.find_element(By.XPATH, '//label[text()="Precio:"]')
+        self.assertIn('Precio:', labelPrecio.text)
