@@ -24,13 +24,13 @@ def login(self):
 
 
 class ProductorTestCase(TestCase):
-
     def setUp(self):
         #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
         self.browser = webdriver.Chrome()
+
     def tearDown(self):
         self.browser.quit()
-
+        
     def test_filter(self):
         self.browser.get('http://localhost:8000')
         login(self)
@@ -75,3 +75,79 @@ class ProductorTestCase(TestCase):
         otherProds = 0
         for offer in offer_list.find_elements_by_tag_name('tr'):
             self.assertEquals(offer.find_elements_by_tag_name('td')[1].text, 'Naranja')
+
+class ProductorEditOfertaTestCase(TestCase):
+    def setUp(self):
+        # self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        self.browser.quit()
+
+
+    def test_edit_available(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(1)
+
+        edit_link = self.browser.find_element_by_id('to_edit_1')
+        self.assertIsNotNone(edit_link)
+
+    def test_edit_modal(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(1)
+
+        edit_link = self.browser.find_element_by_id('to_edit_1')
+        edit_link.click()
+        sleep(1)
+
+        labelCant = self.browser.find_element(By.XPATH, '//h4[text()="Editar oferta producto"]')
+        self.assertIn('Editar oferta producto', labelCant.text)
+
+    def test_edit_modal(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(1)
+
+        edit_link = self.browser.find_element_by_id('to_edit_1')
+        edit_link.click()
+        sleep(1)
+
+        labelCant = self.browser.find_element(By.XPATH, '//h4[text()="Editar oferta producto"]')
+        self.assertIn('Editar oferta producto', labelCant.text)
+
+    def test_edit_function(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(1)
+
+        edit_link = self.browser.find_element_by_id('to_edit_1')
+        edit_link.click()
+        sleep(1)
+
+        precio = self.browser.find_element_by_id('inputPrecio')
+        precio.send_keys('9999')
+        sleep(1)
+
+        cant = self.browser.find_element_by_id('inputCantidad')
+        cant.send_keys('5555')
+        sleep(1)
+
+        botonEdit = self.browser.find_element_by_id('editOferBtn')
+        botonEdit.click()
+        sleep(1)
+
+        labelPrecio = self.browser.find_element_by_id('precio_1')
+        self.assertIn('9999', labelPrecio.text)
+
+        labelCant = self.browser.find_element_by_id('cant_1')
+        self.assertIn('5555', labelCant.text)
