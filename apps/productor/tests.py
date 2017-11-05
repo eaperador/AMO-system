@@ -13,13 +13,32 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 
+def createUser(self):
+    self.browser.get('http://localhost:8000/admin')
+    nombreUsuario = self.browser.find_element_by_id('id_username')
+    nombreUsuario.send_keys('admin')
+    sleep(2)
+
+    clave = self.browser.find_element_by_id('id_password')
+    clave.send_keys('useradmin')
+    sleep(2)
+
+    #botton = self.browser.find_element_by_tag_name('input')
+    botton = self.browser.find_element_by_xpath("//input[@type='submit' and @value='Identificarse']")
+    botton.click()
+    sleep(10)
+
+    # AuthUser
+    link = 
+
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        #self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
-        #Usuario
+        createUser(self)
+        '''#Usuario
         self.cooperativa = Cooperativa(ciudad="Cali")
         self.cooperativa.save()
         self.user = User(username="prodTest",first_name="Roberto",last_name="Perez",email="cl.santana@uniandes.edu.co")
@@ -28,7 +47,7 @@ class ProductorTestCase(TestCase):
         self.rol = Rol(nombre="Productor",descripcion="usuario productor")
         self.rol.save()
         self.usuario = Usuario(foto="images/user/photo1.jpg",descripcion="Productor Test",telefono="3432345",auth_user_id=self.user,id_cooperativa=self.cooperativa, id_rol=self.rol)
-        self.usuario.save()
+        self.usuario.save()'''
         #Productos
         self.categoria = Categoria(nombre="Frutas")
         self.categoria.save()
@@ -58,7 +77,7 @@ class ProductorTestCase(TestCase):
         self.browser.quit()
 
     def test_filter(self):
-        self.browser.get('http://localhost:8000')
+        '''self.browser.get('http://localhost:8000')
 
         link = self.browser.find_element_by_id('iniciar_sesion')
         link.click()
@@ -90,7 +109,12 @@ class ProductorTestCase(TestCase):
 
         listaProductos = self.browser.find_element_by_id('listaProductos')
         opCount = len(listaProductos.find_elements_by_tag_name("option"))
-        self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
+        self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)'''
+        print('hola')
+
+
+
+
 '''
     def test_filter_a_lot_of_products(self):
         self.browser.get('http://localhost:8000')
@@ -121,3 +145,5 @@ class ProductorTestCase(TestCase):
 
         listaProductos = self.browser.find_element_by_id('listaProductos')
         self.assertTrue(len(listaProductos.find_elements_by_tag_name("option")) > 1)'''
+
+
