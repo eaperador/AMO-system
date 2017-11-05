@@ -75,3 +75,20 @@ class ProductorTestCase(TestCase):
         otherProds = 0
         for offer in offer_list.find_elements_by_tag_name('tr'):
             self.assertEquals(offer.find_elements_by_tag_name('td')[1].text, 'Naranja')
+
+class ProductorEditOfertaTestCase(TestCase):
+    def setUp(self):
+        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        self.browser = webdriver.Chrome()
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_edit_available(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(1)
+
+        edit_link = self.browser.find_element_by_id('to_edit_1')
+        self.assertIsNotNone(edit_link)
