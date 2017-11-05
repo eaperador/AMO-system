@@ -122,13 +122,12 @@ elif ON_HEROKU_PROD:
 else:
     # Configuracion de base de datos local
     DATABASES = {
-        'default': {
+         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'test_postgres',
-            'USER': 'postgres',
-            'PASSWORD': 'CONDORTIO',
-            'HOST': 'localhost',
-            'PORT': '5432',
+            'NAME': 'test',
+            'USER': os.environ.get('PGUSER'),
+            'PASSWORD': os.environ.get('PGPASSWORD'),
+            'HOST': '127.0.0.1',
         }
     }
 
