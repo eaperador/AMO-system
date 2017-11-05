@@ -15,12 +15,11 @@
         {
             $.ajax({
                type: "POST",
-               url: "https://amo-system.herokuapp.com/catalogo/guardarOferta/",
+               url: location.origin+"/catalogo/guardarOferta/",
                data: JSON.stringify({ ofertaId: ofertaId, estadoId : estadoId}),
                contentType: "application/json; charset=utf-8",
                dataType: "json",
                success: function (data) {
-                   alert(ofertaId);
                    $("#select_productos").val(productoId);
                    $("#select_productos").change();
                },
@@ -31,20 +30,12 @@
         };
 
         $(document).ready(function () {
-            ultimoDiaOferta = new Date();
-            var sabado = 6;
-            while(ultimoDiaOferta.getDay() != sabado) {
-                ultimoDiaOferta.setDate(ultimoDiaOferta.getDate() + 1);
-            }
-            primerDiaOferta = new Date();
-            var domingo = 0;
-            while(primerDiaOferta.getDay() != domingo) {
-                primerDiaOferta.setDate(primerDiaOferta.getDate() - 1);
-            }
-            semana = "Ofertas de la semana del " +
-                     primerDiaOferta.getDate() +"/"+ primerDiaOferta.getMonth() + "/" + primerDiaOferta.getFullYear()+
-                     " al " + ultimoDiaOferta.getDate() +"/"+ ultimoDiaOferta.getMonth() + "/" + ultimoDiaOferta.getFullYear();
-            document.getElementById("ofertasSemana").innerHTML = semana;
+            $.getJSON(location.origin+"/catalogo/getCatalogoOfertaActivo/").done(function (data) {
+                semana = "Ofertas de la semana del " +
+                    data.fecha_inicio +
+                    " al " + data.fecha_fin;
+                document.getElementById("ofertasSemana").innerHTML = semana;
+            });
 
             //Mostrar listado de ofertas
             var productos = $("#select_productos");
@@ -54,7 +45,7 @@
                 if(selected_producto == ''){
                     selected_producto = 0
                 }
-                $.getJSON("https://amo-system.herokuapp.com/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
                     var items = [];
                     $.each(data, function (key,val) {
                         items.push("<tr>");
@@ -77,7 +68,7 @@
             });
 
             //Listar productos
-            $.getJSON("https://amo-system.herokuapp.com/catalogo/seleccionarProductos/").done(function (data) {
+            $.getJSON(location.origin+"/catalogo/seleccionarProductos/").done(function (data) {
                  var options = $("#select_productos");
                  options.append($("<option />").val('').text('Seleccione producto'));
                  $.each(data, function() {

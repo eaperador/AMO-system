@@ -5,9 +5,10 @@ from django.db import models
 
 # Create your models here.
 
-class Catalogo(models.Model):
+class CatalogoProductos(models.Model):
     fecha_inicio = models.DateField(auto_now=False)
     fecha_fin = models.DateField(auto_now=False)
+    activo = models.BooleanField(null=False)
 
 class TipoUnidad(models.Model):
     nombre = models.CharField(max_length=50)
@@ -18,6 +19,7 @@ class TipoUnidad(models.Model):
 
     def natural_key(self):
         return {"abreviatura":self.abreviatura}
+
 class Categoria(models.Model):
     nombre = models.CharField(max_length=50)
 
@@ -27,10 +29,10 @@ class Categoria(models.Model):
 class Producto(models.Model):
     nombre = models.CharField(max_length=250)
     descripcion = models.CharField(max_length=1000)
-    imagen = models.ImageField(upload_to='images', null=True)
+    foto = models.ImageField(upload_to='images', null=True)
     activo = models.BooleanField(default=False, null=False)
-    tipoUnidad = models.ForeignKey(TipoUnidad, null=False)
-    categoria = models.ForeignKey(Categoria, null=False)
+    id_tipo_unidad = models.ForeignKey(TipoUnidad, null=False)
+    id_categoria = models.ForeignKey(Categoria, null=False)
 
     def __unicode__(self):
        return "%s" % (self.nombre)
@@ -38,17 +40,10 @@ class Producto(models.Model):
     def natural_key(self):
         return {"nombre" : self.nombre, "unidad": self.tipoUnidad.natural_key()}
 
-class CatalogoOferta(models.Model):
+class ProductoCatalogo(models.Model):
     precio_definido = models.FloatField()
     cantidad_definida = models.IntegerField()
-    catalogo = models.ForeignKey(Catalogo, null=False)
-    producto = models.ForeignKey(Producto, null=False)
-
-class Productor (models.Model):
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    foto = models.ImageField(upload_to='images', null=True)
-
-    def __unicode__(self):
-        return'{}'.format(self.nombre)
+    cantidad_disponible = models.IntegerField()
+    id_producto = models.ForeignKey(Producto, null=False)
+    id_catalogo = models.ForeignKey(CatalogoProductos, null=False)
 
