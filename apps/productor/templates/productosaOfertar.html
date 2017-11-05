@@ -10,7 +10,7 @@
 	 <script src="//code.jquery.com/jquery-1.11.3.js"></script>
 	 <script>
         (function () {
-		    $.getJSON( "http://localhost:8000/productor/listaProductos/").done(function (data) {
+		    $.getJSON( location.origin+"/productor/listaProductos/").done(function (data) {
 			     mostrarProductos(data[0].productos, data[0].productosPag.first_row)
                  paginacion(data[0].productosPag)
                 });
@@ -19,7 +19,7 @@
 		function enviarForm(page) {
 		    $.ajax({
                 type: "GET",
-                url: "http://localhost:8000/productor/listaProductos/?page="+page,
+                url: location.origin+"/productor/listaProductos/?page="+page,
                 contentType: "aplication/json; charset-utf-8",
                 success: function (data) {
                     mostrarProductos(data[0].productos, data[0].productosPag.first_row)
@@ -60,7 +60,7 @@
             var idproducto = id.innerText || id.textContent;
             $.ajax({
                 type: "POST",
-                url: "http://localhost:8000/productor/crearOferta",
+                url: location.origin+"/productor/crearOferta",
                 data: JSON.stringify({ precio: $('#inputPrecio').val(), cantidad: $('#inputCantidad').val(),
                                      producto: idproducto, user: "{{ user.id }}"}),
                 contentType: "aplication/json; charset-utf-8",

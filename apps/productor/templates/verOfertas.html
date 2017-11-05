@@ -11,18 +11,18 @@
 	 <script>
 
         (function () {
-            $.getJSON( "location.origin+"/productor/listarProductosOfertas/").done(function (data) {
+            $.getJSON( location.origin+"/productor/listarProductosOfertas/").done(function (data) {
 			    var options = $("#listaProductos");
                  $.each(data, function() {
                     options.append($("<option />").val(this.id).text(this.nombre));
                 });
 			});
-		    $.getJSON( "location.origin+"/productor/listarEstados/").done(function (data) {
+		    $.getJSON( location.origin+"/productor/listarEstados/").done(function (data) {
 			    $.each(data, function (i, item) {
 		            $('#listaEstados').append(' <option value="'+item.pk+'">'+item.fields.nombre+'</option>');
                 });
 			});
-		    $.getJSON( "location.origin+"/productor/listarOfertas/").done(function (data) {
+		    $.getJSON( location.origin+"/productor/listarOfertas/").done(function (data) {
 			     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row)
                  paginacion(data[0].ofertasPag)
                 });

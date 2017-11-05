@@ -15,7 +15,7 @@
         {
             $.ajax({
                type: "POST",
-               url: "http://localhost:8000/catalogo/guardarOferta/",
+               url: location.origin+"/catalogo/guardarOferta/",
                data: JSON.stringify({ ofertaId: ofertaId, estadoId : estadoId}),
                contentType: "application/json; charset=utf-8",
                dataType: "json",
@@ -30,7 +30,7 @@
         };
 
         $(document).ready(function () {
-            $.getJSON("http://localhost:8000/catalogo/getCatalogoOfertaActivo/").done(function (data) {
+            $.getJSON(location.origin+"/catalogo/getCatalogoOfertaActivo/").done(function (data) {
                 semana = "Ofertas de la semana del " +
                     data.fecha_inicio +
                     " al " + data.fecha_fin;
@@ -45,7 +45,7 @@
                 if(selected_producto == ''){
                     selected_producto = 0
                 }
-                $.getJSON("http://localhost:8000/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
                     var items = [];
                     $.each(data, function (key,val) {
                         items.push("<tr>");
@@ -68,7 +68,7 @@
             });
 
             //Listar productos
-            $.getJSON("http://localhost:8000/catalogo/seleccionarProductos/").done(function (data) {
+            $.getJSON(location.origin+"/catalogo/seleccionarProductos/").done(function (data) {
                  var options = $("#select_productos");
                  options.append($("<option />").val('').text('Seleccione producto'));
                  $.each(data, function() {
