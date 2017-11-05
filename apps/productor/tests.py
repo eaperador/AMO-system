@@ -19,11 +19,11 @@ class ProductorTestCase(TestCase):
         #Usuario
         self.cooperativa = Cooperativa(ciudad="Cali")
         self.cooperativa.save()
-        self.user = User(username="prodTest",first_name="Roberto",last_name="Perez",email="cl.santana@uniandes.edu.co",password="userprodtest")
-        self.user.save()
+        self.userDjango = User(username="prodTest",first_name="Roberto",last_name="Perez",email="cl.santana@uniandes.edu.co",password="userprodtest")
+        self.userDjango.save()
         self.rol = Rol(nombre="Productor",descripcion="usuario productor")
         self.rol.save()
-        self.usuario = Usuario(foto="images/user/photo1.jpg",descripcion="Productor Test",telefono="3432345",auth_user_id=self.user,id_cooperativa=self.cooperativa, id_rol=self.rol)
+        self.usuario = Usuario(foto="images/user/photo1.jpg",descripcion="Productor Test",telefono="3432345",auth_user_id=self.userDjango,id_cooperativa=self.cooperativa, id_rol=self.rol)
         self.usuario.save()
         #Productos
         self.categoria = Categoria(nombre="Frutas")
@@ -72,19 +72,14 @@ class ProductorTestCase(TestCase):
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
+        sleep(10)
+
+        self.browser.get('http://localhost:8000/')
         sleep(5)
 
-        span = self.user
-        usuario = Usuario.objects.get(auth_user_id=self.user)
-        print(usuario.auth_user_id.first_name)
-        self.assertEquals("Roberto",usuario.auth_user_id.first_name)
-
-        #continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
-        #continue_link.click()
-        #sleep(5)
-
-        self.browser.get('http://localhost:8000/productor/ver_ofertas/')
-        sleep(10)
+        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        continue_link.click()
+        sleep(5)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
