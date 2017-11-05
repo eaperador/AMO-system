@@ -89,7 +89,7 @@ class ProductorTestCase(TestCase):
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
-        sleep(1)
+        sleep(5)
 
         span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
         self.assertIn('Producto:', span.text)
