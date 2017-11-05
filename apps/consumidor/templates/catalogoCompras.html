@@ -59,16 +59,18 @@
                             HTML += "<div class=\"modal fade\" id=\"agregar_prod_modal" + val.id + "\" tabindex=\"-1\" role=\"dialog\" >";
                             HTML += "<div class=\"modal-dialog\" role=\"document\" id=\"" + val.id + "\">";
                             HTML += "<div class=\"modal-content\" >";
-                            HTML += "<div class=\"modal-header\" >";
-                            HTML += "<h3><span style=\"color: black\"> Agregar al carrito</span></h3>";
+                            HTML += "<div class=\"modal-header\" style=\"background-color: #F05F40\">";
+                            HTML += "<a class=\"navbar-brand js-scroll-trigger\" style=\"text-align: center; font-weight: bold\"> Agregar al carrito</a>";
                             HTML += "</div>";
                             HTML += "<div class=\"modal-body\">";
                             HTML += "<form   id=\"form\" role=\"form\" action=\"agregar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"addProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
-                            HTML += "<h4 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h4>";
-                            HTML += "<br/><div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
-                            HTML += "<input type=\"number\" min=\"0\"  id=\"cantidad" + val.idProducto + "\" value=\"0\" name=\"cantidad\" ></div>";
-                            HTML += "<div class=\"col\" style=\"text-align: left\"><h4 style=\"text-align: center; font-weight: bold; color: black\" class=\"col-md-8 col-left\" > X " + val.unidad + "</h4></div>";
+                            HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<br/><div class=\"row\">";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
+                            HTML += "<div class=\"col\">";
+                            HTML += "<input type=\"number\" min=\"0\"  id=\"cantidad" + val.idProducto + "\" value=\"0\" name=\"cantidad\" style=\"text-align: center\"></div>";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
                             HTML += "<button onclick=\"return agregar(" + val.id + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
@@ -82,16 +84,18 @@
                             HTML += "<div class=\"modal fade\" id=\"eliminar_prod_modal" + val.id + "\" tabindex=\"-1\" role=\"dialog\" >";
                             HTML += "<div class=\"modal-dialog\" role=\"document\" id=\"elp" + val.id + "\">";
                             HTML += "<div class=\"modal-content\" >";
-                            HTML += "<div class=\"modal-header\" >";
-                            HTML += "<h3><span style=\"color: black\"> Eliminar del carrito</span></h3>";
+                            HTML += "<div class=\"modal-header\" style=\"background-color: #F05F40\">";
+                            HTML += "<a class=\"navbar-brand js-scroll-trigger\" style=\"text-align: center; font-weight: bold\"> Eliminar del carrito</a>";
                             HTML += "</div>";
                             HTML += "<div class=\"modal-body\">";
                             HTML += "<form role=\"form\" action=\"eliminar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"restProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
-                            HTML += "<h4 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h4>";
-                            HTML += "<br/><div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
-                            HTML += "<input type=\"number\" min=\"0\"  id=\"restCantidad" + val.idProducto + "\" value=\"0\" name=\"restCantidad\" ></div>";
-                            HTML += "<div class=\"col\" style=\"text-align: left\"><h4 style=\"text-align: center; font-weight: bold; color: black\" class=\"col-md-8 col-left\" > X " + val.unidad + "</h4></div>";
+                            HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<br/><div class=\"row\">";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
+                            HTML += "<div class=\"col\" style=\"text-align: right\">";
+                            HTML += "<input type=\"number\" min=\"0\"  id=\"restCantidad" + val.idProducto + "\" value=\"0\" name=\"restCantidad\" style=\"text-align: center\"></div>";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
                             HTML += "<button onclick=\"return eliminar(" + val.id + ",document.getElementById('restCantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_eliminar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
@@ -117,8 +121,9 @@
 					dataType: "json",
 					success: function (data) {
 						console.log(data);
-                        alert('Producto agregado');
+                        //alert('Producto agregado');
                         window.location = location.origin+"/consumidor/catalogo_compras/";
+
 					},
 					failure: function(errMsg){
 						alert("Hubo un error");
@@ -136,7 +141,8 @@
                    dataType: "json",
                    success: function (data) {
                        console.log(data);
-                       alert('Producto Eliminado');
+                       //alert('Producto Eliminado');
+                       window.location = "http://localhost:8000/consumidor/catalogo_compras/";
                        window.location = location.origin+"/consumidor/catalogo_compras/";
                    },
                    failure: function(errMsg){
