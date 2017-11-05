@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Variable de entrono para CI
 ON_CODESHIP = os.getenv('ON_CODESHIP', False)
 ON_HEROKU_TEST = os.getenv('ON_HEROKU_TEST', False)
-ON_HEROKU_PROD = os.getenv('ON_HEROKU_PRODheroku config', False)
+ON_HEROKU_PROD = os.getenv('ON_HEROKU_PROD', False)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
