@@ -1,0 +1,79 @@
+[
+  {
+    "model": "comun.Cooperativa",
+    "pk": 1,
+    "fields": {
+      "ciudad":"Cali"
+    }
+  },
+  {
+    "model": "comun.Rol",
+    "pk": 1,
+    "fields": {
+      "nombre":"Productor",
+      "descripcion":"usuario productor"
+    }
+  },
+  {
+    "model": "administrador.Categoria",
+    "pk": 1,
+    "fields": {
+      "nombre":"Frutas"
+    }
+  },
+  {
+    "model": "administrador.TipoUnidad",
+    "pk": 1,
+    "fields": {
+      "nombre":"Libra",
+      "abreviatura":"LB"
+    }
+  },
+  {
+    "model": "administrador.Producto",
+    "pk": 1,
+    "fields": {
+      "nombre":"Naranja",
+      "descripcion":"Futa dulce",
+      "foto":"images/producto/photo1.jpg",
+      "activo":"True",
+      "id_categoria":"1",
+      "id_tipo_unidad":"1"
+    }
+  },
+  {
+    "model": "productor.EstadoOferta",
+    "pk": 1,
+    "fields": {
+      "nombre":"Pendiente por Aprobacion"
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": "1",
+    "fields": {
+      "first_name": "Productor",
+      "last_name": "Uno",
+      "username": "prod1",
+      "password": "pbkdf2_sha256$36000$MOSEV7urkZFb$CYm7AsQ7jts2cC9gtMwLAOjnrgRXGqI2thrtPx9B91E="
+    }
+  },
+
+  {
+    "model": "comun.Usuario",
+    "pk": "1",
+    "fields": {
+      "foto":"images/user/photo1.jpg",
+      "descripcion":"Usuario productor",
+      "telefono":"16516",
+      "auth_user_id":"1",
+      "id_rol":"1",
+      "id_cooperativa":"1"
+    }
+  }
+
+
+
+
+
+]
