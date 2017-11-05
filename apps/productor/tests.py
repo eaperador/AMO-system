@@ -22,7 +22,8 @@ class ProductorTestCase(TestCase):
         #Usuario
         self.cooperativa = Cooperativa(ciudad="Cali")
         self.cooperativa.save()
-        self.user = User(username="prodTest",first_name="Roberto",last_name="Perez",email="cl.santana@uniandes.edu.co",password="userprodtest")
+        self.user = User(username="prodTest",first_name="Roberto",last_name="Perez",email="cl.santana@uniandes.edu.co")
+        self.user.set_password('userprodtest')
         self.user.save()
         self.rol = Rol(nombre="Productor",descripcion="usuario productor")
         self.rol.save()
