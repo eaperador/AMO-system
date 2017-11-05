@@ -78,6 +78,7 @@ class ProductorTestCase(TestCase):
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
+        print(self.browser.current_url)
         sleep(20)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
