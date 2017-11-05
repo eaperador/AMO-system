@@ -88,7 +88,7 @@ if ON_CODESHIP:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'test_postgres',
+            'NAME': 'test',
             'USER': os.environ.get('PGUSER'),
             'PASSWORD': os.environ.get('PGPASSWORD'),
             'HOST': '127.0.0.1',
