@@ -85,6 +85,7 @@ WSGI_APPLICATION = 'MercadoOrganico.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 if ON_CODESHIP:
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -94,6 +95,8 @@ if ON_CODESHIP:
             'HOST': '127.0.0.1',
         }
     }
+
+    print('iniciando local'+str(DATABASES))
 elif ON_HEROKU_TEST:
     # Configuracion de base de datos para https://amo-system-test.herokuapp.com
     DATABASES = {
