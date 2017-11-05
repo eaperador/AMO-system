@@ -11,19 +11,19 @@
 	 <script>
 
         (function () {
-            $.getJSON( "https://amo-system-test.herokuapp.com/productor/listarProductosOfertas/").done(function (data) {
+            $.getJSON( "http://localhost:8000/productor/listarProductosOfertas/").done(function (data) {
 			    var options = $("#listaProductos");
                  options.prepend($("<option />").val('').text('Todos...'));
                  $.each(data, function() {
                     options.append($("<option />").val(this.id).text(this.nombre));
                 });
 			});
-		    $.getJSON( "https://amo-system-test.herokuapp.com/productor/listarEstados/").done(function (data) {
+		    $.getJSON( "http://localhost:8000/productor/listarEstados/").done(function (data) {
 			    $.each(data, function (i, item) {
 		            $('#listaEstados').append(' <option value="'+item.pk+'">'+item.fields.nombre+'</option>');
                 });
 			});
-		    $.getJSON( "https://amo-system-test.herokuapp.com/productor/listarOfertas/").done(function (data) {
+		    $.getJSON( "http://localhost:8000/productor/listarOfertas/").done(function (data) {
 			     mostrarOfertas(data[0].ofertas, data[0].ofertasPag.first_row)
                  paginacion(data[0].ofertasPag)
                 });
@@ -42,7 +42,7 @@
 		function enviarForm(page) {
 		    $.ajax({
                 type: "POST",
-                url: "https://amo-system-test.herokuapp.com/productor/listarOfertas/?page="+page,
+                url: "http://localhost:8000/productor/listarOfertas/?page="+page,
                 data: JSON.stringify({filter: $('#listaEstados').val()}),
                 contentType: "aplication/json; charset-utf-8",
                 dataType: "json",
