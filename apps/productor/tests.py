@@ -1,8 +1,8 @@
 from time import sleep
 from unittest import TestCase
-from apps.comun.models import Usuario, Cooperativa, Rol
-from apps.administrador.models import Producto, Categoria, TipoUnidad
-from apps.productor.models import Oferta, EstadoOferta, CatalogoOfertas
+from ..comun.models import Usuario, Cooperativa, Rol
+from ..administrador.models import Producto, Categoria, TipoUnidad
+from ..productor.models import Oferta, EstadoOferta, CatalogoOfertas
 from django.contrib.auth.models import User
 
 import datetime
