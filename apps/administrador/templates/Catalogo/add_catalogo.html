@@ -21,7 +21,7 @@
             {
                 $.getJSON(location.origin+"/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
                     console.log(data);
-                    $(".image").prepend('<img src=location.origin+"/static/' + data.imagen + '" class="img-responsive" style="width: 200px; height: 100px">');
+                    $(".image").prepend("<img src='"+location.origin+"/static/"+data.imagen+"'class='img-responsive' style='width: 200px; height: 100px'>");
                     $("#description_producto").html(data.descripcion)
                     $("#lista_ofertas_producto").show();
                 });
