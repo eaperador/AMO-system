@@ -54,7 +54,7 @@ class ProductorTestCase(TestCase):
 
         self.browser.quit()
 
-    def test_filter(self):
+    def test_loguin(self):
         self.browser.get('http://localhost:8000')
 
         link = self.browser.find_element_by_id('iniciar_sesion')
@@ -72,45 +72,68 @@ class ProductorTestCase(TestCase):
 
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
-        sleep(20)
-
-        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
-        continue_link.click()
         sleep(5)
 
-        span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
-        self.assertIn('Producto:', span.text)
+        span = self.browser.find_element(By.XPATH, '//label[text()="Nombre de usuario o clave inválido"]')
+        self.assertIn('Nombre de usuario o clave inválido', span.text)
 
-        listaProductos = self.browser.find_element_by_id('listaProductos')
-        opCount = len(listaProductos.find_elements_by_tag_name("option"))
-        self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
-
-    def test_filter_a_lot_of_products(self):
-        self.browser.get('http://localhost:8000')
-
-        link = self.browser.find_element_by_id('iniciar_sesion')
-        link.click()
-
-        sleep(2)
-
-        nombreUsuario = self.browser.find_element_by_id('inputUsername')
-        nombreUsuario.send_keys('prodTest')
-        sleep(1)
-
-        clave = self.browser.find_element_by_id('inputPassword')
-        clave.send_keys('userprodtest')
-        sleep(1)
-
-        botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
-        botonLogin.click()
-        sleep(20)
-
-        continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
-        continue_link.click()
-        sleep(5)
-
-        span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
-        self.assertIn('Producto:', span.text)
-
-        listaProductos = self.browser.find_element_by_id('listaProductos')
-        self.assertTrue(len(listaProductos.find_elements_by_tag_name("option")) > 1)
+    #def test_filter(self):
+    #    self.browser.get('http://localhost:8000')
+#
+    #    link = self.browser.find_element_by_id('iniciar_sesion')
+    #    link.click()
+#
+    #    sleep(2)
+#
+    #    nombreUsuario = self.browser.find_element_by_id('inputUsername')
+    #    nombreUsuario.send_keys('prodTest')
+    #    sleep(1)
+#
+    #    clave = self.browser.find_element_by_id('inputPassword')
+    #    clave.send_keys('userprodtest')
+    #    sleep(1)
+#
+    #    botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
+    #    botonLogin.click()
+    #    sleep(20)
+#
+    #    continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+    #    continue_link.click()
+    #    sleep(5)
+#
+    #    span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
+    #    self.assertIn('Producto:', span.text)
+#
+    #    listaProductos = self.browser.find_element_by_id('listaProductos')
+    #    opCount = len(listaProductos.find_elements_by_tag_name("option"))
+    #    self.assertEquals('Todos...', listaProductos.find_elements_by_tag_name("option")[0].text)
+#
+    #def test_filter_a_lot_of_products(self):
+    #    self.browser.get('http://localhost:8000')
+#
+    #    link = self.browser.find_element_by_id('iniciar_sesion')
+    #    link.click()
+#
+    #    sleep(2)
+#
+    #    nombreUsuario = self.browser.find_element_by_id('inputUsername')
+    #    nombreUsuario.send_keys('prodTest')
+    #    sleep(1)
+#
+    #    clave = self.browser.find_element_by_id('inputPassword')
+    #    clave.send_keys('userprodtest')
+    #    sleep(1)
+#
+    #    botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
+    #    botonLogin.click()
+    #    sleep(20)
+#
+    #    continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+    #    continue_link.click()
+    #    sleep(5)
+#
+    #    span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
+    #    self.assertIn('Producto:', span.text)
+#
+    #    listaProductos = self.browser.find_element_by_id('listaProductos')
+    #    self.assertTrue(len(listaProductos.find_elements_by_tag_name("option")) > 1)
