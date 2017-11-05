@@ -14,8 +14,6 @@ class ProductorTestCase(TestCase):
 
     def setUp(self):
         #self.browser = webdriver.Chrome("C:\\Users\\CATHERIN\\Documents\\chromedriver.exe")
-        self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(2)
         #Usuario
         self.cooperativa = Cooperativa(ciudad="Cali")
         self.cooperativa.save()
@@ -39,6 +37,8 @@ class ProductorTestCase(TestCase):
         self.catalogo.save()
         self.oferta = Oferta(precio=5000,cantidad=1000,cantidad_disponible=100,fecha=datetime.datetime.today(),id_catalogo_oferta=self.catalogo,id_producto=self.producto1,id_productor=self.usuario,id_estado_oferta=self.estadoOferta)
         self.oferta.save()
+        self.browser = webdriver.Chrome()
+        self.browser.implicitly_wait(2)
 
     def test_loguin(self):
         self.browser.get('http://localhost:8000')
@@ -137,15 +137,15 @@ class ProductorTestCase(TestCase):
     #    listaProductos = self.browser.find_element_by_id('listaProductos')
     #    self.assertTrue(len(listaProductos.find_elements_by_tag_name("option")) > 1)
 
-    #def tearDown(self):
-    #    self.oferta.delete()
-    #    self.catalogo.delete()
-    #    self.estadoOferta.delete()
-    #    self.producto1.delete()
-    #    self.tipoUnidad.delete()
-    #    self.categoria.delete()
-    #    self.usuario.delete()
-    #    self.userDjango.delete()
-    #    self.rol.delete()
-    #    self.cooperativa.delete()
-    #    self.browser.quit()
+    def tearDown(self):
+        self.oferta.delete()
+        self.catalogo.delete()
+        self.estadoOferta.delete()
+        self.producto1.delete()
+        self.tipoUnidad.delete()
+        self.categoria.delete()
+        self.usuario.delete()
+        self.userDjango.delete()
+        self.rol.delete()
+        self.cooperativa.delete()
+        self.browser.quit()
