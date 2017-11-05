@@ -24,10 +24,10 @@ def login(self):
 
 
 class ProductorTestCase(TestCase):
-
     def setUp(self):
         self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
-        #self.browser = webdriver.Chrome()
+        # self.browser = webdriver.Chrome()
+
     def tearDown(self):
         self.browser.quit()
 
@@ -79,7 +79,8 @@ class ProductorTestCase(TestCase):
 class ProductorEditOfertaTestCase(TestCase):
     def setUp(self):
         self.browser = webdriver.Chrome("C:\\chromedriver\\chromedriver.exe")
-        #self.browser = webdriver.Chrome()
+        # self.browser = webdriver.Chrome()
+
     def tearDown(self):
         self.browser.quit()
 
@@ -102,8 +103,7 @@ class ProductorEditOfertaTestCase(TestCase):
 
         edit_link = self.browser.find_element_by_id('to_edit_1')
         edit_link.click()
-        labelCant = self.browser.find_element(By.XPATH, '//label[text()="Cantidad:"]')
-        self.assertIn('Cantidad:', labelCant.text)
+        sleep(1)
 
-        labelPrecio = self.browser.find_element(By.XPATH, '//label[text()="Precio:"]')
-        self.assertIn('Precio:', labelPrecio.text)
+        labelCant = self.browser.find_element(By.XPATH, '//h4[text()="Editar oferta producto"]')
+        self.assertIn('Editar oferta producto', labelCant.text)

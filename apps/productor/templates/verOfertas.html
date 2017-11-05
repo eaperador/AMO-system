@@ -70,7 +70,7 @@
                                               "<td id='editable_"+item.pk+"'>"+item.estado+"</td>"+
                                             "</tr>")
                 if (item.editable) {
-                    $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#*******'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
+                    $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#modalLogin'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
                 }
                 i++
              });
@@ -95,6 +95,11 @@
                     $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
                 }
             }
+        }
+
+        function LanzaPopup(idOferta) {
+		    console.log('oferta: ', idOferta);
+            $('#inputOferta').html(idOferta);
         }
 
     </script>
@@ -145,6 +150,28 @@
                 </div>
             </div>
          </div>
+          <!--MODAL-->
+         <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #F05F40">
+                        <h4 id="nombreProducto" class="modal-lg">Editar oferta producto</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="form-oferta">
+                            <label id="inputOferta" class="modal-lg"></label>
+                            <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
+                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
+                        </form>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="EditarOferta()">Editar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
      </section>
     </header>
 {% endblock %}
