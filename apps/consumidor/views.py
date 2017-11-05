@@ -161,3 +161,4 @@ def items_carrito(request):
 @csrf_exempt
 def confirmarCompra(request):
     return render(request, "confirmar_compra.html")
+
