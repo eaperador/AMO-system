@@ -81,7 +81,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MercadoOrganico.wsgi.application'
 
-
+'''
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 if ON_CODESHIP:
@@ -119,17 +119,17 @@ elif ON_HEROKU_PROD:
             'PORT': '5432',
         }
     }
-else:
+else:'''
     # Configuracion de base de datos local
-    DATABASES = {
-         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'test',
-            'USER': os.environ.get('PGUSER'),
-            'PASSWORD': os.environ.get('PGPASSWORD'),
-            'HOST': '127.0.0.1',
-        }
+DATABASES = {
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'test',
+        'USER': os.environ.get('PGUSER'),
+        'PASSWORD': os.environ.get('PGPASSWORD'),
+        'HOST': '127.0.0.1',
     }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
