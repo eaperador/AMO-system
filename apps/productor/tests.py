@@ -1,8 +1,8 @@
 from time import sleep
 from unittest import TestCase
-from ..comun.models import Usuario, Cooperativa, Rol
-from ..administrador.models import Producto, Categoria, TipoUnidad
-from ..productor.models import Oferta, EstadoOferta, CatalogoOfertas
+from apps.comun.models import Usuario, Cooperativa, Rol
+from apps.administrador.models import Producto, Categoria, TipoUnidad
+from apps.productor.models import Oferta, EstadoOferta, CatalogoOfertas
 from django.contrib.auth.models import User
 
 import datetime
@@ -39,20 +39,6 @@ class ProductorTestCase(TestCase):
         self.catalogo.save()
         self.oferta = Oferta(precio=5000,cantidad=1000,cantidad_disponible=100,fecha=datetime.datetime.today(),id_catalogo_oferta=self.catalogo,id_producto=self.producto1,id_productor=self.usuario,id_estado_oferta=self.estadoOferta)
         self.oferta.save()
-
-    def tearDown(self):
-        self.oferta.delete()
-        self.catalogo.delete()
-        self.estadoOferta.delete()
-        self.producto1.delete()
-        self.tipoUnidad.delete()
-        self.categoria.delete()
-        self.usuario.delete()
-        self.user.delete()
-        self.rol.delete()
-        self.cooperativa.delete()
-
-        self.browser.quit()
 
     def test_loguin(self):
         self.browser.get('http://localhost:8000')
@@ -150,3 +136,16 @@ class ProductorTestCase(TestCase):
 #
     #    listaProductos = self.browser.find_element_by_id('listaProductos')
     #    self.assertTrue(len(listaProductos.find_elements_by_tag_name("option")) > 1)
+
+    #def tearDown(self):
+    #    self.oferta.delete()
+    #    self.catalogo.delete()
+    #    self.estadoOferta.delete()
+    #    self.producto1.delete()
+    #    self.tipoUnidad.delete()
+    #    self.categoria.delete()
+    #    self.usuario.delete()
+    #    self.userDjango.delete()
+    #    self.rol.delete()
+    #    self.cooperativa.delete()
+    #    self.browser.quit()
