@@ -1,5 +1,8 @@
 from time import sleep
 from unittest import TestCase
+
+from django.contrib.auth import authenticate
+
 from ..comun.models import Usuario, Cooperativa, Rol
 from ..administrador.models import Producto, Categoria, TipoUnidad
 from ..productor.models import Oferta, EstadoOferta, CatalogoOfertas
@@ -66,6 +69,8 @@ class ProductorTestCase(TestCase):
         sleep(1)
 
         print (User.objects.get(id=1).password)
+        user = authenticate(username='prodTest', password='userprodtest')
+        print(user)
         clave = self.browser.find_element_by_id('inputPassword')
         clave.send_keys('userprodtest')
         sleep(1)
@@ -73,7 +78,7 @@ class ProductorTestCase(TestCase):
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
         sleep(20)
-
+        
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
         sleep(5)
