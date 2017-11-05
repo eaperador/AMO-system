@@ -74,10 +74,11 @@ class ProductorTestCase(TestCase):
         botonLogin.click()
         sleep(10)
 
-        self.browser.get('http://localhost:8000/')
+        self.browser.get('http://localhost:8000#id_consulatarOfertas')
         sleep(5)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
+        sleep(5)
         continue_link.click()
         sleep(5)
 
