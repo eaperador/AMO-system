@@ -157,3 +157,7 @@ def items_carrito(request):
     except:
         pass
     return JsonResponse({"sum": str(sum)})
+
+@csrf_exempt
+def confirmarCompra(request):
+    return render(request, "confirmar_compra.html")

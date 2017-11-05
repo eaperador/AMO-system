@@ -9,8 +9,33 @@
 		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
 
 		<script>
+			function evaluar()
+        	{
 
-            $.getJSON("https://amo-system-test.herokuapp.com/consumidor/seleccionarProductos/").done(function (data) {
+			}
+			$.getJSON("http://localhost:8000/isLogged/").done(function(data){
+            if(data.mensaje == "no"){
+                $("#cerrar_sesion").hide();
+                $("#iniciar_sesion").show();
+                $("#btnConfirmar").hide();
+            }else{
+                $.getJSON("http://localhost:8000/getRol/").done(function(data){
+                    if(data.mensaje == "Consumidor"){
+                         $("#cerrar_sesion").show();
+                         $("#iniciar_sesion").hide();
+                         var cantItem = document.getElementById('cantidadItems').innerHTML;
+               			 intCantItem = parseInt(cantItem);
+						 if(intCantItem == 0){
+						 	$("#btnConfirmar").hide();
+						 }else{
+						 	$("#btnConfirmar").show();
+						 }
+                    }
+                });
+          }});
+
+
+            $.getJSON("http://localhost:8000/consumidor/seleccionarProductos/").done(function (data) {
                  var options = $("#listaProducto");
                  $.each(data, function () {
                     options.append($("<option />").val(this.id).text(this.nombre));
@@ -20,15 +45,26 @@
 
 
 
-            $.getJSON("https://amo-system-test.herokuapp.com/consumidor/items_carrito/").done(function (data1) {
+            $.getJSON("http://localhost:8000/consumidor/items_carrito/").done(function (data1) {
                 $("#cantidadItems").html(data1.sum);
+                $.getJSON("http://localhost:8000/getRol/").done(function(data){
+                    if(data.mensaje == "Consumidor"){
+                         var cantItem = document.getElementById('cantidadItems').innerHTML;
+               			 intCantItem = parseInt(cantItem);
+						 if(intCantItem == 0){
+						 	$("#btnConfirmar").hide();
+						 }else{
+						 	$("#btnConfirmar").show();
+						 }
+                    }
+                });
             });
 
             //$("#productoscompra").hide();
 			function filtrarProductos(page) {
                 var selected_producto = $("#listaProducto").val();
                 console.log("id producto"+selected_producto);
-                    $.getJSON("https://amo-system-test.herokuapp.com/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
+                    $.getJSON("http://localhost:8000/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
                         var HTML = "";
                         $('#productoscompra').empty();
                         paginacion(data[0].prodCatalogoPag)
@@ -111,14 +147,13 @@
 			{
 				$.ajax({
 					type: "POST",
-					url: "https://amo-system-test.herokuapp.com/consumidor/agregar_producto/",
+					url: "http://localhost:8000/consumidor/agregar_producto/",
 					data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
 					contentType: "application/json; charset=utf-8",
 					dataType: "json",
 					success: function (data) {
 						console.log(data);
-                        alert('Producto agregado');
-                        window.location = "https://amo-system-test.herokuapp.com/consumidor/catalogo_compras/";
+                        window.location = "http://localhost:8000/consumidor/catalogo_compras/";
 					},
 					failure: function(errMsg){
 						alert("Hubo un error");
@@ -130,14 +165,13 @@
             {
                 $.ajax({
                    type: "PUT",
-                   url: "https://amo-system-test.herokuapp.com/consumidor/eliminar_producto/",
+                   url: "http://localhost:8000/consumidor/eliminar_producto/",
                    data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
                    contentType: "application/json; charset=utf-8",
                    dataType: "json",
                    success: function (data) {
                        console.log(data);
-                       alert('Producto Eliminado');
-                       window.location = "https://amo-system-test.herokuapp.com/consumidor/catalogo_compras/";
+                       window.location = "http://localhost:8000/consumidor/catalogo_compras/";
                    },
                    failure: function(errMsg){
                        alert("Hubo un error");
@@ -178,13 +212,17 @@
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                             <span id="cantidadItems"></span>
                         </button>
+						<input type="button" id="btnConfirmarCompra" class="btn_evaluar_ok buttonStyle" onclick="evaluar()">
+                            <i class="fa fa-check-square" style="font-size:24px"></i>
+                            <span id="confirmarCompra"></span>
+                        </button>
                     </div>
 				</div>
 				<div class="row" id="filtroProducto">
 					<div class="col-md-4 text-left col-centered">
 						<form method="post" action="" enctype="multipart/form-data" name="filtro">
 							<div class="form-group" >
-								<label for="listaProducto" style="color: black">Filtro:</label>
+								<label for="listaProducto" style="color: black">Productos:</label>
                                 <select name="" id="listaProducto" class="form-control" onchange="filtrarProductos(1)">
                                     <option selected value="-1">Todos... </option>
                                 </select>
