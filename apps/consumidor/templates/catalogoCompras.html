@@ -88,21 +88,22 @@
                     }
                 });
           }});
-
-
-            $.getJSON("http://localhost:8000/consumidor/seleccionarProductos/").done(function (data) {
+            $.getJSON(location.origin+"/consumidor/seleccionarProductos/").done(function (data) {
                  var options = $("#listaProducto");
                  $.each(data, function () {
                     options.append($("<option />").val(this.id).text(this.nombre));
                 });
                 filtrarProductos(1)
             });
+            $.getJSON(location.origin+"/consumidor/items_carrito/").done(function (data1) {
+                $("#cantidadItems").html(data1.sum);
+            });
 
             //$("#productoscompra").hide();
 			function filtrarProductos(page) {
                 var selected_producto = $("#listaProducto").val();
                 console.log("id producto"+selected_producto);
-                    $.getJSON("http://localhost:8000/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
+                    $.getJSON(location.origin+"/consumidor/seleccionarProducto/" + selected_producto +"/"+page).done(function (data) {
                         var HTML = "";
                         $('#productoscompra').empty();
                         paginacion(data[0].prodCatalogoPag)
@@ -133,16 +134,18 @@
                             HTML += "<div class=\"modal fade\" id=\"agregar_prod_modal" + val.id + "\" tabindex=\"-1\" role=\"dialog\" >";
                             HTML += "<div class=\"modal-dialog\" role=\"document\" id=\"" + val.id + "\">";
                             HTML += "<div class=\"modal-content\" >";
-                            HTML += "<div class=\"modal-header\" >";
-                            HTML += "<h3><span style=\"color: black\"> Agregar al carrito</span></h3>";
+                            HTML += "<div class=\"modal-header\" style=\"background-color: #F05F40\">";
+                            HTML += "<a class=\"navbar-brand js-scroll-trigger\" style=\"text-align: center; font-weight: bold\"> Agregar al carrito</a>";
                             HTML += "</div>";
                             HTML += "<div class=\"modal-body\">";
                             HTML += "<form   id=\"form\" role=\"form\" action=\"agregar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"addProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
-                            HTML += "<h4 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h4>";
-                            HTML += "<br/><div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
-                            HTML += "<input type=\"number\" min=\"0\"  id=\"cantidad" + val.idProducto + "\" value=\"0\" name=\"cantidad\" ></div>";
-                            HTML += "<div class=\"col\" style=\"text-align: left\"><h4 style=\"text-align: center; font-weight: bold; color: black\" class=\"col-md-8 col-left\" > X " + val.unidad + "</h4></div>";
+                            HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<br/><div class=\"row\">";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
+                            HTML += "<div class=\"col\">";
+                            HTML += "<input type=\"number\" min=\"0\"  id=\"cantidad" + val.idProducto + "\" value=\"0\" name=\"cantidad\" style=\"text-align: center\"></div>";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
                             HTML += "<button onclick=\"return addProducto(" + val.idProducto + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
@@ -156,16 +159,18 @@
                             HTML += "<div class=\"modal fade\" id=\"eliminar_prod_modal" + val.id + "\" tabindex=\"-1\" role=\"dialog\" >";
                             HTML += "<div class=\"modal-dialog\" role=\"document\" id=\"elp" + val.id + "\">";
                             HTML += "<div class=\"modal-content\" >";
-                            HTML += "<div class=\"modal-header\" >";
-                            HTML += "<h3><span style=\"color: black\"> Eliminar del carrito</span></h3>";
+                            HTML += "<div class=\"modal-header\" style=\"background-color: #F05F40\">";
+                            HTML += "<a class=\"navbar-brand js-scroll-trigger\" style=\"text-align: center; font-weight: bold\"> Eliminar del carrito</a>";
                             HTML += "</div>";
                             HTML += "<div class=\"modal-body\">";
                             HTML += "<form role=\"form\" action=\"eliminar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"restProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
-                            HTML += "<h4 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h4>";
-                            HTML += "<br/><div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
-                            HTML += "<input type=\"number\" min=\"0\"  id=\"restCantidad" + val.idProducto + "\" value=\"0\" name=\"restCantidad\" ></div>";
-                            HTML += "<div class=\"col\" style=\"text-align: left\"><h4 style=\"text-align: center; font-weight: bold; color: black\" class=\"col-md-8 col-left\" > X " + val.unidad + "</h4></div>";
+                            HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<br/><div class=\"row\">";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
+                            HTML += "<div class=\"col\" style=\"text-align: right\">";
+                            HTML += "<input type=\"number\" min=\"0\"  id=\"restCantidad" + val.idProducto + "\" value=\"0\" name=\"restCantidad\" style=\"text-align: center\"></div>";
+                            HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
                             HTML += "<button onclick=\"return deleteProducto(" + val.idProducto + ",document.getElementById('restCantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
@@ -185,13 +190,14 @@
 			{
 				$.ajax({
 					type: "POST",
-					url: "http://localhost:8000/consumidor/agregar_producto/",
+
+					url: location.origin+"/consumidor/agregar_producto/",
 					data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
 					contentType: "application/json; charset=utf-8",
 					dataType: "json",
 					success: function (data) {
 						console.log(data);
-                        window.location = "http://localhost:8000/consumidor/catalogo_compras/";
+                        window.location = location.origin+"/consumidor/catalogo_compras/";
 					},
 					failure: function(errMsg){
 						alert("Hubo un error");
@@ -203,13 +209,14 @@
             {
                 $.ajax({
                    type: "PUT",
-                   url: "http://localhost:8000/consumidor/eliminar_producto/",
+                   url: location.origin+"/consumidor/eliminar_producto/",
                    data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
                    contentType: "application/json; charset=utf-8",
                    dataType: "json",
                    success: function (data) {
                        console.log(data);
-                       window.location = "http://localhost:8000/consumidor/catalogo_compras/";
+                       //alert('Producto Eliminado');
+                       window.location = location.origin+"/consumidor/catalogo_compras/";
                    },
                    failure: function(errMsg){
                        alert("Hubo un error");

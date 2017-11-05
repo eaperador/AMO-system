@@ -33,11 +33,16 @@ def listarOfertas(request):
     listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
-        filter = jsonFilter.get('filter')
+        filterEstado = jsonFilter.get('filter_estado')
+        filterProducto = jsonFilter.get('filter_producto')
         user = request.user
-        if (int(filter) > 0):
-            # listaOfertas = Oferta.objects.filter(estado=filter)
-            listaOfertas = Oferta.objects.filter(id_estado_oferta=filter).filter(id_productor=usuario.id)
+        if (int(filterEstado) > 0 and int(filterProducto) > 0):
+            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado).filter(
+                id_producto=filterProducto)
+        elif (int(filterEstado) > 0):
+            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado)
+        elif (int(filterProducto) > 0):
+            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_producto=filterProducto)
 
     page = request.GET.get('page', 1)
     paginator = Paginator(listaOfertas, 3)
@@ -74,6 +79,7 @@ def listarOfertas(request):
         "estado": oferta.id_estado_oferta.nombre,
         "producto": oferta.id_producto.nombre,
         "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
+        "editable": oferta.id_estado_oferta.id == 1  # id estado pendiente,
     } for oferta in ofertas.object_list]
     json_ = [{"ofertas": listaOfertasJson,
               "ofertasPag": ofertasPag
@@ -618,8 +624,28 @@ def ver_productos(request):
     return render(request, "productosaOfertar.html")
 
 
+@csrf_exempt
 def editarOferta(request):
-    return render(request, "editarOferta.html")
+    if request.method == 'POST':
+        try:
+            usuario = Usuario.objects.get(auth_user_id=request.user.id)
+            jsonObj = json.loads(request.body)
+            precio = jsonObj['precio']
+            cantidad = jsonObj['cantidad']
+            idoferta = jsonObj['oferta']
+
+            if (int(idoferta) > 0):
+                oferta = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=1).get(id=idoferta)  # id estado pendiente
+                oferta.cantidad = cantidad
+                oferta.cantidad_disponible = cantidad
+                oferta.precio = precio
+                oferta.save()
+            json_response = [{'mensaje': "OK"}]
+            data_convert = json.dumps(json_response)
+            return HttpResponse(data_convert, content_type='application/json')
+        except Oferta.DoesNotExist:
+            return JsonResponse({'mensaje': 'No se puede modificar la oferta'})
+
 
 @csrf_exempt
 def verOfertasVendidas(request):
