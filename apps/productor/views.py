@@ -33,11 +33,16 @@ def listarOfertas(request):
     listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
-        filter = jsonFilter.get('filter')
+        filterEstado = jsonFilter.get('filter_estado')
+        filterProducto = jsonFilter.get('filter_producto')
         user = request.user
-        if (int(filter) > 0):
-            # listaOfertas = Oferta.objects.filter(estado=filter)
-            listaOfertas = Oferta.objects.filter(id_estado_oferta=filter).filter(id_productor=usuario.id)
+        if (int(filterEstado) > 0 and int(filterProducto) > 0):
+            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado).filter(
+                id_producto=filterProducto)
+        elif (int(filterEstado) > 0):
+            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado)
+        elif (int(filterProducto) > 0):
+            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_producto=filterProducto)
 
     page = request.GET.get('page', 1)
     paginator = Paginator(listaOfertas, 3)

@@ -95,9 +95,9 @@ class ProductorTestCase(TestCase):
         self.assertIn('Producto:', span.text)
 
         self.browser.find_element_by_xpath("//select[@id='listaProductos']/option[text()='Naranja']").click()
-        sleep(5)
+        sleep(1)
 
         offer_list = self.browser.find_element_by_id('listaOfertas')
         otherProds = 0
         for offer in offer_list.find_elements_by_tag_name('tr'):
-            self.assertEquals(offer.find_elements_by_tag_name('td')[1].text, 'papa')
+            self.assertEquals(offer.find_elements_by_tag_name('td')[1].text, 'Naranja')

@@ -40,6 +40,17 @@
       "id_categoria":"1",
       "id_tipo_unidad":"1"
     }
+  },{
+    "model": "administrador.Producto",
+    "pk": "2",
+    "fields": {
+      "nombre":"Fresa",
+      "descripcion":"Futa dulce",
+      "foto":"images/producto/photo1.jpg",
+      "activo":"True",
+      "id_categoria":"1",
+      "id_tipo_unidad":"1"
+    }
   },
   {
     "model": "productor.EstadoOferta",
@@ -81,6 +92,20 @@
       "id_estado_oferta":"1",
       "id_productor":"1",
       "id_producto":"1",
+      "id_catalogo_oferta":"1"
+    }
+  },
+  {
+    "model": "productor.Oferta",
+    "pk": "2",
+    "fields": {
+      "precio":"54321",
+      "cantidad":"10",
+      "cantidad_disponible":"10",
+      "fecha":"2017-11-05",
+      "id_estado_oferta":"1",
+      "id_productor":"1",
+      "id_producto":"2",
       "id_catalogo_oferta":"1"
     }
   },
