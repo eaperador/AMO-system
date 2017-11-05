@@ -61,8 +61,8 @@ def createUser(self):
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        #self.browser = webdriver.Chrome()
+        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
+        self.browser = webdriver.Chrome()
         '''self.browser.implicitly_wait(2)
         createUser(self)
         self.browser.get('http://localhost:8000/admin/logout')
