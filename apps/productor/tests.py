@@ -13,8 +13,8 @@ from selenium.webdriver.common.by import By
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\Users\\CATHERIN\\Documents\\chromedriver.exe")
-        #self.browser = webdriver.Chrome()
+        #self.browser = webdriver.Chrome("C:\\Users\\CATHERIN\\Documents\\chromedriver.exe")
+        self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
         #Usuario
         self.cooperativa = Cooperativa(ciudad="Cali")
