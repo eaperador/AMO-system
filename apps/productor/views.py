@@ -79,6 +79,7 @@ def listarOfertas(request):
         "estado": oferta.id_estado_oferta.nombre,
         "producto": oferta.id_producto.nombre,
         "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
+        "editable": oferta.id_estado_oferta.id == 1  # id estado pendiente,
     } for oferta in ofertas.object_list]
     json_ = [{"ofertas": listaOfertasJson,
               "ofertasPag": ofertasPag

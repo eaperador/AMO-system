@@ -67,8 +67,11 @@
                                               "<td>"+item.cantidad+"</td>"+
                                               "<td>"+item.unidad+"</td>"+
                                               "<td>"+item.precio+"</td>"+
-                                              "<td>"+item.estado+"</td>"+
+                                              "<td id='editable_"+item.pk+"'>"+item.estado+"</td>"+
                                             "</tr>")
+                if (item.editable) {
+                    $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#*******'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
+                }
                 i++
              });
         };
