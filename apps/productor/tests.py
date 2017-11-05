@@ -74,8 +74,10 @@ class ProductorTestCase(TestCase):
         botonLogin.click()
         sleep(5)
 
-        span = self.browser.find_element(By.XPATH, '//label[text()="Nombre de usuario o clave inválido"]')
-        self.assertIn('Nombre de usuario o clave inválido', span.text)
+        span = self.user
+        usuario = Usuario.objects.get(auth_user_id=self.user)
+        print(usuario.auth_user_id.first_name)
+        self.assertEquals("Roberto",usuario.auth_user_id.first_name)
 
     #def test_filter(self):
     #    self.browser.get('http://localhost:8000')
