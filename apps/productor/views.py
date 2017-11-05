@@ -624,8 +624,28 @@ def ver_productos(request):
     return render(request, "productosaOfertar.html")
 
 
+@csrf_exempt
 def editarOferta(request):
-    return render(request, "editarOferta.html")
+    if request.method == 'POST':
+        try:
+            usuario = Usuario.objects.get(auth_user_id=request.user.id)
+            jsonObj = json.loads(request.body)
+            precio = jsonObj['precio']
+            cantidad = jsonObj['cantidad']
+            idoferta = jsonObj['oferta']
+
+            if (int(idoferta) > 0):
+                oferta = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=1).get(id=idoferta)  # id estado pendiente
+                oferta.cantidad = cantidad
+                oferta.cantidad_disponible = cantidad
+                oferta.precio = precio
+                oferta.save()
+            json_response = [{'mensaje': "OK"}]
+            data_convert = json.dumps(json_response)
+            return HttpResponse(data_convert, content_type='application/json')
+        except Oferta.DoesNotExist:
+            return JsonResponse({'mensaje': 'No se puede modificar la oferta'})
+
 
 @csrf_exempt
 def verOfertasVendidas(request):

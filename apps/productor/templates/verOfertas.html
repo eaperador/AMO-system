@@ -28,17 +28,34 @@
                 });
 
         })();
-        function formtatDate(d) {
-            var day = ("0" + d.getDay()).slice(-2);
-            var month = d.getMonth();
-            month ++;
-            month = ("0" + month).slice(-2);
-            var year = d.getFullYear();
-            var hour = ("0" + d.getHours()).slice(-2);
-            var min = ("0" + d.getMinutes()).slice(-2);
-            return year+"-"+month+"-"+day+" "+hour+":"+min;
-        };
-		function enviarForm(page) {
+         function EditarOferta() {
+		    $.ajax({
+                type: "POST",
+                url: location.origin+"/productor/editarOferta",
+                data: JSON.stringify({ precio: $('#inputPrecio').val(),
+                                       cantidad: $('#inputCantidad').val(),
+                                       oferta: $('#inputOferta').text(),
+                                     }),
+                contentType: "aplication/json; charset-utf-8",
+                dataType: "json",
+                success: function (data) {
+                    $.each(data,function (i,item) {
+                        if (item.mensaje == 'OK') {
+                            window.location = "{% url 'productor:ver_ofertas' %}";
+                        }
+                        else {
+                            $("#mess-error").hide();
+                            $("#mensaje").html('Error');
+                        }
+                      })
+                },
+                failure: function (errMsg) {
+                    alert("Hubo un error");
+                }
+            });
+            return false;
+        }
+        function enviarForm(page) {
 		    $.ajax({
                 type: "POST",
                 url: location.origin+"/productor/listarOfertas/?page="+page,
@@ -64,13 +81,13 @@
                                               "<th scope='row'>"+(row+i)+"</th>"+
                                               "<td><p><label>"+item.fecha+"</label></p></td>" +
                                               "<td>"+item.producto+"</td>" +
-                                              "<td>"+item.cantidad+"</td>"+
+                                              "<td id='cant_"+item.pk+"'>"+item.cantidad+"</td>"+
                                               "<td>"+item.unidad+"</td>"+
-                                              "<td>"+item.precio+"</td>"+
+                                              "<td id='precio_"+item.pk+"' >"+item.precio+"</td>"+
                                               "<td id='editable_"+item.pk+"'>"+item.estado+"</td>"+
                                             "</tr>")
                 if (item.editable) {
-                    $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#modalLogin'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
+                    $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#modalLogin' onclick='LanzaPopup("+item.pk+")'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
                 }
                 i++
              });
@@ -101,6 +118,8 @@
 		    console.log('oferta: ', idOferta);
             $('#inputOferta').html(idOferta);
         }
+
+
 
     </script>
      <section id="Productor">
@@ -152,13 +171,14 @@
          </div>
           <!--MODAL-->
          <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
+             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header" style="background-color: #F05F40">
                         <h4 id="nombreProducto" class="modal-lg">Editar oferta producto</h4>
                     </div>
                     <div class="modal-body">
-                        <form method="post" id="form-oferta">
+                        <form method="post" id="form-oferta" enctype="multipart/form-data">
+                            {% csrf_token %}
                             <label id="inputOferta" class="modal-lg"></label>
                             <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
                             <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
@@ -166,8 +186,8 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="EditarOferta()">Editar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button id= "editOferBtn" type="button" class="btn btn-primary" onclick="EditarOferta()">Editar</button>
                     </div>
                 </div>
             </div>
