@@ -87,8 +87,8 @@ WSGI_APPLICATION = 'MercadoOrganico.wsgi.application'
 if ON_CODESHIP:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'test',
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'test_postgres',
             'USER': os.environ.get('PGUSER'),
             'PASSWORD': os.environ.get('PGPASSWORD'),
             'HOST': '127.0.0.1',
@@ -124,9 +124,9 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'bdMerka',
+            'NAME': 'test_postgres',
             'USER': 'postgres',
-            'PASSWORD': 'agil2017',
+            'PASSWORD': 'CONDORTIO',
             'HOST': 'localhost',
             'PORT': '5432',
         }

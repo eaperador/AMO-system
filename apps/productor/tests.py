@@ -16,7 +16,7 @@ from selenium.webdriver.common.by import By
 class ProductorTestCase(TestCase):
 
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\CATHERIN\\Documents\\chromedriver.exe")
+        self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(2)
         #Usuario
@@ -79,14 +79,14 @@ class ProductorTestCase(TestCase):
         botonLogin = self.browser.find_element_by_id('btn_iniciarSesion')
         botonLogin.click()
         print(self.browser.current_url)
-        sleep(20)
+        sleep(1)
 
         continue_link = self.browser.find_element_by_id('id_consulatarOfertas')
         continue_link.click()
-        sleep(5)
+        sleep(1)
 
-        span = self.browser.find_element(By.XPATH, '//label[text()="Producto:"]')
-        self.assertIn('Producto:', span.text)
+        span = self.browser.find_element(By.XPATH, '//label[text()="Productos:"]')
+        self.assertIn('Productos:', span.text)
 
         listaProductos = self.browser.find_element_by_id('listaProductos')
         opCount = len(listaProductos.find_elements_by_tag_name("option"))
