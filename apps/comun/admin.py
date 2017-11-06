@@ -25,7 +25,7 @@ class DireccionAdmin(admin.ModelAdmin):
     list_display = ('direccion', 'get_usuario_comprador')
 
     def get_usuario_comprador(self, obj):
-        return obj.get_usuario_comprador.id
+        return obj.id_usuario_comprador.id
 
 # Register your models here.
 admin.site.register(Rol, RolAdmin),
