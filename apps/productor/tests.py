@@ -25,8 +25,8 @@ def login(self):
 
 class ProductorTestCase(TestCase):
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\Users\\wilme\\chromedriver.exe")
+        #self.browser = webdriver.Chrome()
 
     def tearDown(self):
         self.browser.quit()
@@ -78,8 +78,8 @@ class ProductorTestCase(TestCase):
 
 class ProductorEditOfertaTestCase(TestCase):
     def setUp(self):
-        #self.browser = webdriver.Chrome("C:\\Users\\Oscar Amaya\\Documents\\tmp\\delete\\chromedriver31.exe")
-        self.browser = webdriver.Chrome()
+        self.browser = webdriver.Chrome("C:\\Users\\wilme\\chromedriver.exe")
+        #self.browser = webdriver.Chrome()
 
     def tearDown(self):
         self.browser.quit()
@@ -151,3 +151,17 @@ class ProductorEditOfertaTestCase(TestCase):
 
         labelCant = self.browser.find_element_by_id('cant_1')
         self.assertIn('5555', labelCant.text)
+
+class ProductorTemplateVisualizationTestCase(TestCase):
+    def setUp(self):
+        self.browser = webdriver.Chrome("C:\\Users\\wilme\\chromedriver.exe")
+        #self.browser = webdriver.Chrome()
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def testMenuOfertasVendidas(self):
+        self.browser.get('http://localhost:8000')
+        login(self)
+        option_menu = self.browser.find_element_by_id('consultar_ofertas_vendidas')
+        self.assertIn('Consultar Ofertas Vendidas',option_menu.text)
