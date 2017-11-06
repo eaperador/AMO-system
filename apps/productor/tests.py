@@ -164,4 +164,5 @@ class ProductorTemplateVisualizationTestCase(TestCase):
         self.browser.get('http://localhost:8000')
         login(self)
         option_menu = self.browser.find_element_by_id('consultar_ofertas_vendidas')
-        self.assertIn('Consultar Ofertas Vendidas',option_menu.text)
+        option_menu.click()
+        sleep(1)
