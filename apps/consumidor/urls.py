@@ -10,4 +10,6 @@ urlpatterns = [
     url(r'^eliminar_producto/$', views.eliminar_producto, name='eliminar_producto'),
     url(r'^items_carrito/$', views.items_carrito, name='items_carrito'),
     url(r'^confirmarCompra/$', views.confirmarCompra, name="confirmarCompra"),
-    url(r'^seleccionarProducto/(?P<id>.+)/(?P<page>.+)/$', views.select_producto, name="seleccionarProducto")]
+    url(r'^getPreciosProductos/$', views.get_Precios, name="getPreciosProductos"),
+    url(r'^seleccionarProducto/(?P<id>.+)/(?P<page>.+)/$', views.select_producto, name="seleccionarProducto"),
+    url(r'^finalizarCompra/$', views.saveCompra, name="finalizarCompra")]

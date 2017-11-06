@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import json
 
+import datetime
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
@@ -10,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from ..administrador.models import CatalogoProductos, Producto, ProductoCatalogo
 from ..consumidor.models import ItemCompra, Compra
+from ..productor.models import Usuario
 from django.shortcuts import render
 # Create your views here.
 
@@ -164,4 +166,41 @@ def items_carrito(request):
 @csrf_exempt
 def confirmarCompra(request):
     return render(request, "confirmar_compra.html")
+
+@csrf_exempt
+def get_Precios(request):
+    if request.method == "GET":
+        catalogo_productos = CatalogoProductos.objects.filter(activo=1)
+        productosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo_productos[0].id)
+        lista_productos = [{'id': catalogo.id_producto.id,
+                            'nombre': catalogo.id_producto.nombre,
+                            'precio': catalogo.precio_definido
+                            } for catalogo in productosCatalogo]
+
+    data_convert = json.dumps(lista_productos)
+    return HttpResponse(data_convert)
+
+@csrf_exempt
+def saveCompra(request):
+    if request.method == 'POST':
+        print("POST")
+        jsonUser = json.loads(request.body)
+        print("json"+ jsonUser)
+        direccion = jsonUser['dir']
+        cantidad = jsonUser['cantidadItems']
+        total = jsonUser['total']
+        usuario = Usuario.objects.get(auth_user_id=request.user.id)
+
+        compra = Compra(fecha_compra=datetime.datetime.now(),
+                        valor_total= total,
+                        cantidad_items= cantidad,
+                        fecha_entrega= datetime.datetime.now(),
+                        id_usuario_comprador = usuario.id,
+                        id_direccion_compra = 1,
+                        id_entrega =1,
+                        id_medio_pago=1);
+        compra.save()
+
+    return JsonResponse({"mensaje": "OK"})
+
 

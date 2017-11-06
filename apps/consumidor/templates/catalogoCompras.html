@@ -52,14 +52,12 @@
 			}
 
 			(function () {
-			    alert("entró");
                var cantidadTotal = 0;
 				for(var i=0;i<sessionStorage.length;i++){
                     var producto =sessionStorage.key(i);
                     var cantidad = sessionStorage.getItem(producto);
                     cantidadTotal = cantidadTotal + (parseInt(cantidad));
                 }
-                alert(cantidadTotal);
                 $("#cantidadItems").html(cantidadTotal);
             }());
 
@@ -72,18 +70,16 @@
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
                 $("#iniciar_sesion").show();
-                $("#btnConfirmar").hide();
+                $("#btnConfirmarCompra").hide();
             }else{
                 $.getJSON("http://localhost:8000/getRol/").done(function(data){
                     if(data.mensaje == "Consumidor"){
                          $("#cerrar_sesion").show();
                          $("#iniciar_sesion").hide();
-                         var cantItem = document.getElementById('cantidadItems').innerHTML;
-               			 intCantItem = parseInt(cantItem);
 						 if(intCantItem == 0){
-						 	$("#btnConfirmar").hide();
+						 	$("#btnConfirmarCompra").hide();
 						 }else{
-						 	$("#btnConfirmar").show();
+						 	$("#btnConfirmarCompra").show();
 						 }
                     }
                 });
@@ -95,11 +91,7 @@
                 });
                 filtrarProductos(1)
             });
-            $.getJSON(location.origin+"/consumidor/items_carrito/").done(function (data1) {
-                $("#cantidadItems").html(data1.sum);
-            });
 
-            //$("#productoscompra").hide();
 			function filtrarProductos(page) {
                 var selected_producto = $("#listaProducto").val();
                 console.log("id producto"+selected_producto);
@@ -116,11 +108,11 @@
                             HTML += "<i class=\"fa fa-minus\" style=\"font-size:24px\"></i>";
                             HTML += "</button></div></div>";
                             HTML += "<div style=\"height: 150px\">";
-                            HTML += "<img class='img-responsive' src='"+location.origin+"/static/"+ val.foto + "' style='margin: 0 auto; max-height: 150px'>";
+                            HTML += "<img class=\"img-responsive\" src=\"/static/" + val.foto + "\" style=\"margin: 0 auto; max-height: 150px\">";
                             HTML += "</div><br/>";
                             HTML += "<div style=\"height: 120px\">";
                             HTML += "<h3 style=\"text-align: center; font-weight: bold; color: black\">" + val.producto + "</h3>";
-                            HTML += "<span style=\"text-align: center; overflow: auto; color: black\">" + val.cantidadDisp + " Unidades disponibles </span>";
+                            HTML += "<span style=\"text-align: center; overflow: auto; color: black;\" id=\"disponible" + val.idProducto + "\" >" + val.cantidadDisp + " Unidades disponibles </span>";
                             HTML += "<br/>";
                             HTML += "<span style=\"text-align: center; overflow: auto; color: black\">$" + val.precio + "</span>";
                             HTML += "<br/>";
@@ -166,6 +158,7 @@
                             HTML += "<form role=\"form\" action=\"eliminar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"restProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
                             HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<h6 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >Unidades en el carrito("+ sessionStorage.getItem(val.idProducto)+")</h6>";
                             HTML += "<br/><div class=\"row\">";
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
                             HTML += "<div class=\"col\" style=\"text-align: right\">";
@@ -184,44 +177,6 @@
                         $('#productoscompra').append(HTML);
                         $("#productoscompra").show();
                     });
-            }
-
-			function agregar(productoId,cantidad)
-			{
-				$.ajax({
-					type: "POST",
-
-					url: location.origin+"/consumidor/agregar_producto/",
-					data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
-					contentType: "application/json; charset=utf-8",
-					dataType: "json",
-					success: function (data) {
-						console.log(data);
-                        window.location = location.origin+"/consumidor/catalogo_compras/";
-					},
-					failure: function(errMsg){
-						alert("Hubo un error");
-					}
-				});
-			};
-
-			function eliminar(productoId,cantidad)
-            {
-                $.ajax({
-                   type: "PUT",
-                   url: location.origin+"/consumidor/eliminar_producto/",
-                   data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
-                   contentType: "application/json; charset=utf-8",
-                   dataType: "json",
-                   success: function (data) {
-                       console.log(data);
-                       //alert('Producto Eliminado');
-                       window.location = location.origin+"/consumidor/catalogo_compras/";
-                   },
-                   failure: function(errMsg){
-                       alert("Hubo un error");
-                   }
-                });
             }
 
             function paginacion(prodCatalogoPag){
