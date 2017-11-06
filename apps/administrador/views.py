@@ -7,7 +7,6 @@ import time
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas
 
 
 # Create your views here.

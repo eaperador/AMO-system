@@ -1,0 +1,135 @@
+{% extends 'layout/consumidor_layout.html' %}
+
+{% block title %}
+	Confirmar Compra
+{% endblock %}
+
+{% block content %}
+	<header class="masthead" style="background: whitesmoke">
+
+		<script>
+        	$(document).ready(function () {
+        	    $("#form-facturacion").submit(function (event) {
+              		$.ajax({
+              		    type: "POST",
+              		    url: location.origin+"/consumidor/finalizarCompra/",
+              		    data: JSON.stringify({ cantidadItems: sessionStorage.length, total: document.getElementById("total").innerHTML}),
+              		    contentType: "application/json; charset=utf-8",
+              		    dataType: "json",
+              		    success: function(data){
+              		          if (data.mensaje == 'OK')
+              		          {
+              		              $("#mess-error").hide();
+              		              alert('Compra Exitosa!');
+              		              sessionStorage.clear();
+              		              window.location = "{% url 'comun:index' %}";
+              		          }
+              		    },
+              		    failure: function (errMsg) {
+              		        alert('Hubo error!');
+              		    }
+              		});
+              		event.preventDefault();
+				});
+
+
+        	     $.getJSON(location.origin+"/consumidor/getPreciosProductos/").done(function (data) {
+        	         var items = [];
+        	         var subtotalCompra = 0;
+        	         var envio = 7000;
+        	         var totalCompra =0;
+        	        $.each(data, function (key, val) {
+                        var cantidad = sessionStorage.getItem(val.id);
+                        if(cantidad != null){
+                            valorTotal = parseInt(cantidad) * parseInt(val.precio)
+							subtotalCompra += valorTotal;
+							items.push("<tr>");
+                        	items.push("<td id=''"+key+"''>"+val.nombre+" X "+cantidad+"</td>");
+                        	items.push("<td id=''"+key+"''>"+"$"+valorTotal+"</td>");
+                        	items.push("</tr>");
+						}
+                    });
+        	        totalCompra = subtotalCompra+envio;
+        	        $("<tbody/>",{html: items.join("")}).appendTo("table");
+        	        document.getElementById("subtotal").innerHTML = subtotalCompra;
+        	        document.getElementById("envio").innerHTML = envio;
+        	        document.getElementById("total").innerHTML = totalCompra;
+        	    });
+        	});
+    	</script>
+
+		<section id="ConfirmarCompra">
+			<div class="container" >
+				<div id="idResumenCompra">
+					<div class="col-centered col-md-12 ">
+						<div class="row">
+							<div class="col-centered col-md-6" style="background-color: white">
+								<br/>
+								<h3 style="text-align: center; font-weight: bold; color: black">Detalles Facturación</h3>
+								<br/>
+								<div class="panel-body">
+									<div class="col-centered col-lg-12">
+										<form class="form" method="post" id="form-facturacion">
+                        					<label for="inputNombre" class="sr-only">Nombres</label>
+                        					<input id="inputNombre" class="form-control" placeholder="Nombre" name="nombre" required autofocus ><br>
+
+                        					<label for="inputApellidos" class="sr-only">Apellidos</label>
+                        					<input id="inputApellidos" class="form-control" placeholder="Apellidos" name="apellidos" required autofocus ><br>
+
+                        					<label for="inputDireccion" class="sr-only">Dirección</label>
+                        					<input id="inputDireccion" class="form-control" placeholder="Dirección" name="direccion" required autofocus ><br>
+
+                        					<label for="inputTelefono" class="sr-only">Teléfono</label>
+                        					<input id="inputTelefono" class="form-control" placeholder="Teléfono" name="telefono" required autofocus ><br>
+
+                        					<label for="inputCorreo" class="sr-only">Correo</label>
+                        					<input id="inputCorreo" class="form-control" placeholder="Correo" name="correo" required autofocus ><br>
+
+											<br/>
+                        					<div class="float-right text-center">
+                        					    <button class="btn btn-lg btn-outline" id="btn_pagar" type="submit">Finalizar Compra</button>
+                        					</div>
+                    					</form>
+									</div>
+								</div>
+							</div>
+							<div class="col-centered col-md-6" style="background-color: white">
+								<br/>
+								<h3 style="text-align: center; font-weight: bold; color: black">Tu Pedido</h3>
+								<br/>
+								<div class="panel-body">
+									<div class="col-centered col-lg-12">
+										<table id="lista_ofertas_producto"
+											   class="table table-responsive">
+                						 <thead>
+                						     <tr style="color: black">
+                						         <th class="col-xs-4">Producto</th>
+                						         <th class="col-xs-4">Precio </th>
+                						     </tr>
+                						 </thead>
+                						</table>
+										<hr>
+										<div class="col-centered col-md-12 ">
+											<div class="row">
+												<div class="col-centered col-md-6 ">
+													<h6 style="text-align: right; font-weight: bold; color: black">Subtotal</h6>
+													<h6 style="text-align: right; font-weight: bold; color: black">Envío</h6>
+													<h6 style="text-align: right; font-weight: bold; color: black">Total</h6>
+												</div>
+												<div class="col-centered col-md-6 ">
+													<h6 style="text-align: right; color: black" id="subtotal"></h6>
+													<h6 style="text-align: right; color: black" id="envio"></h6>
+													<h6 style="text-align: right; color: black" id="total"></h6>
+												</div>
+											 </div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	</header>
+{% endblock content %}

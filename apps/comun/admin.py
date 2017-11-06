@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import Usuario,Rol,Cooperativa
+from .models import Usuario,Rol,Cooperativa,Direccion
 
 class RolAdmin(admin.ModelAdmin):
     list_display = ('id', 'nombre', )
@@ -21,7 +21,14 @@ class UsuarioAdmin(admin.ModelAdmin):
     def get_cooperativa(self, obj):
         return obj.id_cooperativa.ciudad
 
+class DireccionAdmin(admin.ModelAdmin):
+    list_display = ('direccion', 'get_usuario_comprador')
+
+    def get_usuario_comprador(self, obj):
+        return obj.get_usuario_comprador.id
+
 # Register your models here.
 admin.site.register(Rol, RolAdmin),
 admin.site.register(Cooperativa, CooperativaAdmin),
-admin.site.register(Usuario,UsuarioAdmin)
+admin.site.register(Usuario,UsuarioAdmin),
+admin.site.register(Direccion,DireccionAdmin)

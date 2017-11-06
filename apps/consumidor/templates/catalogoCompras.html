@@ -6,10 +6,84 @@
 
 {% block content %}
 	<header class="masthead" style="background: whitesmoke">
-		<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
-
 		<script>
+            function addProducto(productoId,total){
+                var valor = sessionStorage.getItem(productoId);
+                var cantidad = 0;
+                if(valor != null){
+                    cantidad = parseInt(valor);
+                    cantidad = parseInt(cantidad) + parseInt(total);
+                }else{
+                    cantidad = total;
+                }
+                sessionStorage.setItem(productoId,cantidad);
+                calcularTotalProductos();
+            }
 
+            function deleteProducto(productoId,total){
+                var valor = sessionStorage.getItem(productoId);
+                var cantidad = 0;
+                if(valor != null){
+                    cantidad = parseInt(valor);
+                    if(cantidad == 0){
+                        alert("No hay items del carrito para eliminar.");
+                    }else{
+                        cantidad = parseInt(cantidad) - parseInt(total);
+                        if(cantidad < 0){
+                            cantidad = 0;
+                        }
+                        sessionStorage.setItem(productoId,cantidad);
+                        calcularTotalProductos();
+                    }
+                }else{
+                    alert("No hay items del carrito para eliminar.");
+                }
+            }
+
+            function calcularTotalProductos()
+        	{
+        	    var cantidadTotal = 0;
+				for(var i=0;i<sessionStorage.length;i++){
+                    var producto =sessionStorage.key(i);
+                    var cantidad = sessionStorage.getItem(producto);
+                    cantidadTotal = cantidadTotal + (parseInt(cantidad));
+                }
+                $("#cantidadItems").html(cantidadTotal);
+			}
+
+			(function () {
+               var cantidadTotal = 0;
+				for(var i=0;i<sessionStorage.length;i++){
+                    var producto =sessionStorage.key(i);
+                    var cantidad = sessionStorage.getItem(producto);
+                    cantidadTotal = cantidadTotal + (parseInt(cantidad));
+                }
+                $("#cantidadItems").html(cantidadTotal);
+            }());
+
+			function redirectConfirmar()
+        	{
+				window.location = "{% url 'consumidor:confirmarCompra' %}";
+			}
+
+			$.getJSON("http://localhost:8000/isLogged/").done(function(data){
+            if(data.mensaje == "no"){
+                $("#cerrar_sesion").hide();
+                $("#iniciar_sesion").show();
+                $("#btnConfirmarCompra").hide();
+            }else{
+                $.getJSON("http://localhost:8000/getRol/").done(function(data){
+                    if(data.mensaje == "Consumidor"){
+                         $("#cerrar_sesion").show();
+                         $("#iniciar_sesion").hide();
+						 if(intCantItem == 0){
+						 	$("#btnConfirmarCompra").hide();
+						 }else{
+						 	$("#btnConfirmarCompra").show();
+						 }
+                    }
+                });
+          }});
             $.getJSON(location.origin+"/consumidor/seleccionarProductos/").done(function (data) {
                  var options = $("#listaProducto");
                  $.each(data, function () {
@@ -18,13 +92,6 @@
                 filtrarProductos(1)
             });
 
-
-
-            $.getJSON(location.origin+"/consumidor/items_carrito/").done(function (data1) {
-                $("#cantidadItems").html(data1.sum);
-            });
-
-            //$("#productoscompra").hide();
 			function filtrarProductos(page) {
                 var selected_producto = $("#listaProducto").val();
                 console.log("id producto"+selected_producto);
@@ -41,11 +108,11 @@
                             HTML += "<i class=\"fa fa-minus\" style=\"font-size:24px\"></i>";
                             HTML += "</button></div></div>";
                             HTML += "<div style=\"height: 150px\">";
-                            HTML += "<img class='img-responsive' src='"+location.origin+"/static/"+ val.foto + "' style='margin: 0 auto; max-height: 150px'>";
+                            HTML += "<img class=\"img-responsive\" src=\"/static/" + val.foto + "\" style=\"margin: 0 auto; max-height: 150px\">";
                             HTML += "</div><br/>";
                             HTML += "<div style=\"height: 120px\">";
                             HTML += "<h3 style=\"text-align: center; font-weight: bold; color: black\">" + val.producto + "</h3>";
-                            HTML += "<span style=\"text-align: center; overflow: auto; color: black\">" + val.cantidadDisp + " Unidades disponibles </span>";
+
                             HTML += "<br/>";
                             HTML += "<span style=\"text-align: center; overflow: auto; color: black\">$" + val.precio + "</span>";
                             HTML += "<br/>";
@@ -73,7 +140,7 @@
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
-                            HTML += "<button onclick=\"return agregar(" + val.id + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
+                            HTML += "<button onclick=\"return addProducto(" + val.idProducto + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
                             HTML += "<i class=\"fa fa-check\" style=\"font-size:24px\"></i> Agregar";
                             HTML += "</button>";
                             HTML += "<button type=\"submit\" class=\"btn btn-default pull-right\" data-dismiss=\"modal\" style=\"margin-left: 5px; background-color: lightgrey\">";
@@ -91,6 +158,7 @@
                             HTML += "<form role=\"form\" action=\"eliminar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"restProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
                             HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<h6 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >Unidades en el carrito("+ sessionStorage.getItem(val.idProducto)+")</h6>";
                             HTML += "<br/><div class=\"row\">";
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
                             HTML += "<div class=\"col\" style=\"text-align: right\">";
@@ -98,7 +166,7 @@
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
-                            HTML += "<button onclick=\"return eliminar(" + val.id + ",document.getElementById('restCantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_eliminar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
+                            HTML += "<button onclick=\"return deleteProducto(" + val.idProducto + ",document.getElementById('restCantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
                             HTML += "<i class=\"fa fa-check\" style=\"font-size:24px\"></i> Eliminar";
                             HTML += "</button>";
                             HTML += "<button type=\"submit\" class=\"btn btn-default pull-right\" data-dismiss=\"modal\" style=\"margin-left: 5px; background-color: lightgrey\" >";
@@ -111,46 +179,6 @@
                     });
             }
 
-			function agregar(productoId,cantidad)
-			{
-				$.ajax({
-					type: "POST",
-					url: location.origin+"/consumidor/agregar_producto/",
-					data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
-					contentType: "application/json; charset=utf-8",
-					dataType: "json",
-					success: function (data) {
-						console.log(data);
-                        //alert('Producto agregado');
-                        window.location = location.origin+"/consumidor/catalogo_compras/";
-
-					},
-					failure: function(errMsg){
-						alert("Hubo un error");
-					}
-				});
-			};
-
-			function eliminar(productoId,cantidad)
-            {
-                $.ajax({
-                   type: "PUT",
-                   url: location.origin+"/consumidor/eliminar_producto/",
-                   data: JSON.stringify({ productoId : productoId , cantidad : cantidad }),
-                   contentType: "application/json; charset=utf-8",
-                   dataType: "json",
-                   success: function (data) {
-                       console.log(data);
-                       //alert('Producto Eliminado');
-                       window.location = "http://localhost:8000/consumidor/catalogo_compras/";
-                       window.location = location.origin+"/consumidor/catalogo_compras/";
-                   },
-                   failure: function(errMsg){
-                       alert("Hubo un error");
-                   }
-                });
-            }
-            
             function paginacion(prodCatalogoPag){
 		    $('#pagination').empty()
 		    if (prodCatalogoPag.has_other_pages){
@@ -174,15 +202,17 @@
         }
 		</script>
 		<section id="Consumidor">
-			<div class="container" >
+			<div class="container">
 				<div class="row">
-                    <div class="col" style="text-align: left">
-					    <h1 style="color: black">Compras</h1>
-                    </div>
                     <div class="col" style="text-align: right">
                         <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px">
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                             <span id="cantidadItems"></span>
+                        </button>
+						<button type="button" id="btnConfirmarCompra" class="btn_evaluar_ok buttonStyle"
+								style="padding:0; margin-top: 10px; height: 50px; width: 70px" onclick="redirectConfirmar()">
+                            <i class="fa fa-check-square" style="font-size:24px"></i>
+                            <span id="confirmarCompra"></span>
                         </button>
                     </div>
 				</div>
@@ -190,7 +220,7 @@
 					<div class="col-md-4 text-left col-centered">
 						<form method="post" action="" enctype="multipart/form-data" name="filtro">
 							<div class="form-group" >
-								<label for="listaProducto" style="color: black">Filtro:</label>
+								<label for="listaProducto" style="color: black">Productos:</label>
                                 <select name="" id="listaProducto" class="form-control" onchange="filtrarProductos(1)">
                                     <option selected value="-1">Todos... </option>
                                 </select>

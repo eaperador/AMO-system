@@ -80,7 +80,6 @@
               });
               event.preventDefault();
           });
-
           $.getJSON(location.origin+"/isLogged/").done(function(data){
               if(data.mensaje == "no"){
                   $("#cerrar_sesion").hide();
