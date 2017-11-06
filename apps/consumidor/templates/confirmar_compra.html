@@ -13,18 +13,17 @@
               		$.ajax({
               		    type: "POST",
               		    url: location.origin+"/consumidor/finalizarCompra/",
-              		    data: JSON.stringify({ dir: $('#imputdireccion').val(), cantidadItems: sessionStorage.length, total: $('#total').val()}),
+              		    data: JSON.stringify({ cantidadItems: sessionStorage.length, total: document.getElementById("total").innerHTML}),
               		    contentType: "application/json; charset=utf-8",
               		    dataType: "json",
               		    success: function(data){
-              		        $.each(data,function (i,item) {
-              		          if (item.mensaje == 'OK')
+              		          if (data.mensaje == 'OK')
               		          {
               		              $("#mess-error").hide();
               		              alert('Compra Exitosa!');
+              		              sessionStorage.clear();
               		              window.location = "{% url 'comun:index' %}";
               		          }
-              		        })
               		    },
               		    failure: function (errMsg) {
               		        alert('Hubo error!');
@@ -52,9 +51,9 @@
                     });
         	        totalCompra = subtotalCompra+envio;
         	        $("<tbody/>",{html: items.join("")}).appendTo("table");
-        	        document.getElementById("subtotal").innerHTML = "$"+ subtotalCompra;
-        	        document.getElementById("envio").innerHTML = "$"+envio;
-        	        document.getElementById("total").innerHTML = "$"+totalCompra;
+        	        document.getElementById("subtotal").innerHTML = subtotalCompra;
+        	        document.getElementById("envio").innerHTML = envio;
+        	        document.getElementById("total").innerHTML = totalCompra;
         	    });
         	});
     	</script>

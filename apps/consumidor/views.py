@@ -10,8 +10,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse, HttpResponse
 from ..administrador.models import CatalogoProductos, Producto, ProductoCatalogo
-from ..consumidor.models import ItemCompra, Compra
+from ..consumidor.models import ItemCompra, Compra, MedioPago
 from ..productor.models import Usuario
+from ..comun.models import Direccion
+from ..distribuidor.models import Entrega
 from django.shortcuts import render
 # Create your views here.
 
@@ -183,22 +185,22 @@ def get_Precios(request):
 @csrf_exempt
 def saveCompra(request):
     if request.method == 'POST':
-        print("POST")
         jsonUser = json.loads(request.body)
-        print("json"+ jsonUser)
-        direccion = jsonUser['dir']
         cantidad = jsonUser['cantidadItems']
         total = jsonUser['total']
         usuario = Usuario.objects.get(auth_user_id=request.user.id)
+        direccion = Direccion.objects.get(id=1)
+        medio = MedioPago.objects.get(id=1)
+        entrega = Entrega.objects.get(id=1)
 
         compra = Compra(fecha_compra=datetime.datetime.now(),
                         valor_total= total,
                         cantidad_items= cantidad,
                         fecha_entrega= datetime.datetime.now(),
-                        id_usuario_comprador = usuario.id,
-                        id_direccion_compra = 1,
-                        id_entrega =1,
-                        id_medio_pago=1);
+                        id_usuario_comprador = usuario,
+                        id_direccion_compra = direccion,
+                        id_entrega = entrega,
+                        id_medio_pago=medio);
         compra.save()
 
     return JsonResponse({"mensaje": "OK"})
