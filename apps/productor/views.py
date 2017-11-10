@@ -30,6 +30,7 @@ def listarEstadosOferta(request):
 def listarOfertas(request):
     # listaOfertas = Oferta.objects.all()
     usuario = Usuario.objects.get(auth_user_id=request.user.id)
+
     listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
@@ -122,7 +123,6 @@ def crearOferta(request):
 
             # Consulta catalogo de ofertas para la semana
             _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
-            catalogo = CatalogoOfertas()
             if _catalogoOferta.count() > 0:
                 print('Existe catálogo oferta para esta semana')
                 catalogo = _catalogoOferta
@@ -132,6 +132,7 @@ def crearOferta(request):
                                              fecha_fin=_diaFinOferta,
                                              activo=True)
                 catalogo.save()
+                _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
                 print('Creacion correcta del catálogo')
 
         #Se crea el objeto oferta a guardar
@@ -142,11 +143,11 @@ def crearOferta(request):
         producto = Producto.objects.get(id=idproducto)
         idproductor = jsonObj['user']
         print('id productor: ', idproductor)
-        productor = Usuario.objects.get(id=idproductor)
+        productor = Usuario.objects.get(auth_user_id=idproductor)
 
         #cantidad_disponible***
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=10, id_estado_oferta=estadoOferta,
-                              id_producto=producto, id_productor=productor, id_catalogo_oferta=catalogo.first())
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=cantidad, id_estado_oferta=estadoOferta,
+                              id_producto=producto, id_productor=productor, id_catalogo_oferta=_catalogoOferta.first())
         oferta_model.save()
         print('Creacion correcta de la oferta')
         json_response = [{'mensaje': "OK"}]
@@ -211,10 +212,32 @@ def diaSemana(day):
 def ConsultarProductosaOfertar(request):
     # filtrar para obtener productos que NO estén en las ofertas hechas
 
-    listaProductos = Producto.objects.filter(activo=True)
-    if (listaProductos.count() > 0):
+    listaProductos = list(Producto.objects.filter(activo=True))
+    if (len(listaProductos) > 0):
+
+        for item in listaProductos:
+            try:
+                dias = CalculoDiasCatalogoOfertas()
+                # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
+                # hoy = dias[0]
+                # Fecha inicio Oferta
+                _diaInicioOferta = dias[1]
+                _diaFinOferta = dias[2]
+                # Se le adiciona un día a la fecha porque en el filtro
+                # los registros de la fechaFin son tomados hasta las 00:00.1
+                # Si se le suma un dìa al afecha fin, se tiene en cuenta
+                # en el filtro las 24 hrs del día de la fecha fin.
+                nuevafechaFin = _diaFinOferta + timedelta(days=1)
+                print('Nueva fecha fin: ', nuevafechaFin)
+                Ofertas = Oferta.objects.filter(id_producto=item.id).filter(fecha__range=(_diaInicioOferta, nuevafechaFin))
+                if (Ofertas.count() > 0):
+                    print('El producto', item.nombre, ' ya ha sido ofertado')
+                    listaProductos.remove(item)
+            except Oferta.DoesNotExist:
+                print('El producto no ha sido ofertado')
+
         page = request.GET.get('page', 1)
-        paginator = Paginator(listaProductos, 3)
+        paginator = Paginator(listaProductos, 6)
 
         try:
             productos = paginator.page(page)
@@ -240,37 +263,16 @@ def ConsultarProductosaOfertar(request):
                         "current_page": productos.number,
                         "first_row": productos.start_index()}
 
-        listaProductos = [{
+        listaProductosJson = [{
             "pk": producto.id,
             "nombre": producto.nombre,
             "descripcion": producto.descripcion,
-            #"tipoUnidad": producto.tipoUnidad.abreviatura,
+            # "tipoUnidad": producto.tipoUnidad.abreviatura,
             "tipoUnidad": producto.id_tipo_unidad.abreviatura,
             "categoria": producto.id_categoria.nombre,
         } for producto in productos.object_list]
 
-        for item in listaProductos:
-            try:
-                dias = CalculoDiasCatalogoOfertas()
-                # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
-                # hoy = dias[0]
-                # Fecha inicio Oferta
-                _diaInicioOferta = dias[1]
-                _diaFinOferta = dias[2]
-                # Se le adiciona un día a la fecha porque en el filtro
-                # los registros de la fechaFin son tomados hasta las 00:00.1
-                # Si se le suma un dìa al afecha fin, se tiene en cuenta
-                # en el filtro las 24 hrs del día de la fecha fin.
-                nuevafechaFin = _diaFinOferta + timedelta(days=1)
-                print('Nueva fecha fin: ', nuevafechaFin)
-                Ofertas = Oferta.objects.filter(id_producto=item['pk']).filter(fecha__range=(_diaInicioOferta, nuevafechaFin))
-                if (Ofertas.count() > 0):
-                    print('El producto', item['nombre'], ' ya ha sido ofertado')
-                    listaProductos.remove(item)
-            except Oferta.DoesNotExist:
-                print('El producto no ha sido ofertado')
-
-        jsonReturn = [{"productos": listaProductos,
+        jsonReturn = [{"productos": listaProductosJson,
                        "productosPag": productosPag
                        }]
 

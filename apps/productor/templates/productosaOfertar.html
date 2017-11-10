@@ -33,7 +33,6 @@
         }
 
 		function mostrarProductos(productos, current){
-		    console.log(productos);
 		    $('#listaProductos').empty();
             $.each(productos, function (i, item) {
                 var nombreProducto = item.nombre;
@@ -44,15 +43,17 @@
                                               "<td class='text-left'>"+item.descripcion+"</td>" +
                                               "<td>"+item.tipoUnidad+"</td>"+
                                               "<td>"+item.categoria+"</td>"+
-                                              "<td>"+"<button onclick=LanzaPopup("+item.pk+") data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
+                                              "<td>"+"<button onclick='LanzaPopup("+item.pk+",\""+item.tipoUnidad.trim()+"\")' data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
                                             "</tr>");
                 i++
              });
         }
 
-		function LanzaPopup(idProducto) {
+		function LanzaPopup(idProducto, unidad) {
 		    console.log('producto: ', idProducto);
             $('#inputProducto').html(idProducto);
+            $('#inputCantidad').attr("placeholder", "Cantidad en "+unidad);
+            $('#inputPrecio').attr("placeholder", "Precio por "+unidad);
         }
 
         function Ofertar() {
@@ -143,9 +144,8 @@
                     <div class="modal-body">
                         <form method="post" id="form-oferta">
                             <label id="inputProducto" class="modal-lg"></label>
-                            <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
-
-                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
+                            <input id="inputPrecio" class="form-control" required autofocus ><br>
+                            <input id="inputCantidad" class="form-control" required>
                         </form>
 
                     </div>

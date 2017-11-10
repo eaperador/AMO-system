@@ -18,8 +18,8 @@ INSERT INTO administrador_tipounidad (id, nombre, abreviatura) VALUES (1, 'Libra
 INSERT INTO administrador_tipounidad (id, nombre, abreviatura) VALUES (2, 'Kilogramo', 'Kg');
 INSERT INTO administrador_tipounidad (id, nombre, abreviatura) VALUES (3, 'Unidad', 'Und');
 INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (1, 'Fresa', 'Fresas deliciosas', 'images/fresas.jpg', true, 1, 1);
-INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (2, 'Manzana', 'Deliciosas manzanas', 'images/manzana.jpg', true, 1, 2);
-INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (3, 'Pera', 'Deliciosas peras', 'images/pera.jpg', true, 1, 2);
+INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (2, 'Manzana', 'Deliciosas manzanas', 'images/manzana.jpg', true, 1, 3);
+INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (3, 'Pera', 'Deliciosas peras', 'images/pera.jpg', true, 1, 3);
 INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (4, 'Apio', 'Delicioso apio', 'images/apio.jpg', true, 2, 1);
 INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (5, 'Acelga', 'Deliciosas acelgas', 'images/acelga.jpg', true, 2, 1);
 INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (6, 'Lechuga', 'Deliciosas lechugas', 'images/lechuga.jpg', true, 2, 3);
