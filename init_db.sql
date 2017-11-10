@@ -1,0 +1,26 @@
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (1, 'pbkdf2_sha256$36000$Y9MELM4gjh9W$EVnQFYm/rFcA89022nwq3gMK0lbvBBIfZps7KNbVtbk=', '2017-11-05 17:39:16', true, 'admin', '', '', '', true, true, '2017-11-05 16:58:32');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (3, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor', 'Productor', 'Usuario', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (4, 'pbkdf2_sha256$36000$M0WdMy2pAszA$3355CP3aEX0v1bIbg/R5Hw6x8UKaen9jKkxvW1+QQ9k=', '2017-11-05 17:49:27', false, 'administrador', 'Administrador', 'Usuario', '', false, true, '2017-11-05 17:11:48');
+INSERT INTO comun_cooperativa (id, ciudad) VALUES (1, 'Bogotá');
+INSERT INTO comun_rol (id, nombre, descripcion) VALUES (1, 'Productor', 'Productor');
+INSERT INTO comun_rol (id, nombre, descripcion) VALUES (2, 'Administrador', 'Administrador');
+INSERT INTO comun_rol (id, nombre, descripcion) VALUES (3, 'Consumidor', 'Consumidor');
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (1, 'images/user/test.jpg', 'Productor', 5554433, 3, 1, 1);
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (2, 'images/user/test_0qaslcp.jpg', 'Administrador', 5554433, 4, 1, 2);
+INSERT INTO administrador_categoria (id, nombre) VALUES (1, 'Fruta');
+INSERT INTO administrador_tipounidad (id, nombre, abreviatura) VALUES (1, 'Libra', 'Lb');
+INSERT INTO administrador_tipounidad (id, nombre, abreviatura) VALUES (2, 'Unidad', 'Und');
+INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (1, 'Fresa', 'Fresas deliciosas', 'images/fresas.jpg', true, 1, 1);
+INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (2, 'Manzana', 'Deliciosas manzanas', 'images/manzana.jpg', true, 1, 2);
+INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_categoria_id, id_tipo_unidad_id) VALUES (3, 'Pera', 'Deliciosas peras', 'images/pera.jpg', true, 1, 2);
+INSERT INTO productor_estadooferta (id, nombre) VALUES (1, 'Pendiente');
+INSERT INTO productor_estadooferta (id, nombre) VALUES (2, 'Aprobada');
+INSERT INTO productor_estadooferta (id, nombre) VALUES (3, 'Rechazada');
+INSERT INTO productor_catalogoofertas (id, fecha_inicio, fecha_fin, activo) VALUES (1, '2017-11-01', '2017-11-12', true);
+INSERT INTO productor_catalogoofertas (id, fecha_inicio, fecha_fin, activo) VALUES (2, '2017-09-01', '2017-09-12', true);
+INSERT INTO productor_oferta (id, precio, cantidad, cantidad_disponible, fecha, id_catalogo_oferta_id, id_estado_oferta_id, id_producto_id, id_productor_id) VALUES (1, 8000, 20, 20, '2017-11-05 17:32:39', 1, 2, 1, 1);
+INSERT INTO productor_oferta (id, precio, cantidad, cantidad_disponible, fecha, id_catalogo_oferta_id, id_estado_oferta_id, id_producto_id, id_productor_id) VALUES (2, 20000, 15, 15, '2017-11-05 17:35:39', 1, 1, 2, 1);
+INSERT INTO productor_oferta (id, precio, cantidad, cantidad_disponible, fecha, id_catalogo_oferta_id, id_estado_oferta_id, id_producto_id, id_productor_id) VALUES (3, 3000, 9, 9, '2017-09-05 17:35:39', 1, 3, 3, 1);
+
+INSERT INTO administrador_catalogoproductos (id, fecha_inicio, fecha_fin, activo) VALUES (1, '2017-11-12', '2017-11-11', true);
+INSERT INTO administrador_productocatalogo (id, precio_definido, cantidad_definida, cantidad_disponible, id_catalogo_id, id_producto_id) VALUES (1, 1000.0, 20, 20, 1, 1);
