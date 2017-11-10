@@ -13,6 +13,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Variable de entrono para CI
 ON_CODESHIP = os.getenv('ON_CODESHIP', False)
+ON_HEROKU_BUG = os.getenv('ON_HEROKU_BUG', False)
 ON_HEROKU_TEST = os.getenv('ON_HEROKU_TEST', False)
 ON_HEROKU_PROD = os.getenv('ON_HEROKU_PROD', False)
 
@@ -116,6 +117,18 @@ elif ON_HEROKU_PROD:
             'USER': 'kykrhryvappeeo',
             'PASSWORD': '43daabedf8d79c96e2cb686bbec2dd975ae28c208ccfcc093e4812385f176d2d',
             'HOST': 'ec2-204-236-236-188.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
+elif ON_HEROKU_BUG:
+    # Configuracion de base de datos para https://amo-system.herokuapp.com/
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'd9hjftllnl4620',
+            'USER': 'aypvxlsnxeqxyg',
+            'PASSWORD': '85fec2ae3f372a03809e5ed08043551ceea8344cb543bb727bc7249b73df545f',
+            'HOST': 'ec2-50-17-235-5.compute-1.amazonaws.com',
             'PORT': '5432',
         }
     }
