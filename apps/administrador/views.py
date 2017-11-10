@@ -65,7 +65,7 @@ def select_catalogos(request):
 @csrf_exempt
 def select_productos(request):
     if request.method == "GET":
-        productos = Producto.objects.filter(activo=True)
+        productos = Producto.objects.filter(activo=True).order_by('nombre')
         lista_productos = [{'id': producto.id,
                             'nombre': producto.nombre,
                             'descripcion': producto.descripcion,

@@ -66,13 +66,13 @@
 				window.location = "{% url 'consumidor:confirmarCompra' %}";
 			}
 
-			$.getJSON("http://localhost:8000/isLogged/").done(function(data){
+			$.getJSON(location.origin+"/isLogged/").done(function(data){
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
                 $("#iniciar_sesion").show();
                 $("#btnConfirmarCompra").hide();
             }else{
-                $.getJSON("http://localhost:8000/getRol/").done(function(data){
+                $.getJSON(location.origin+"/getRol/").done(function(data){
                     if(data.mensaje == "Consumidor"){
                          $("#cerrar_sesion").show();
                          $("#iniciar_sesion").hide();
@@ -108,7 +108,7 @@
                             HTML += "<i class=\"fa fa-minus\" style=\"font-size:24px\"></i>";
                             HTML += "</button></div></div>";
                             HTML += "<div style=\"height: 150px\">";
-                            HTML += "<img class=\"img-responsive\" src=\"/static/" + val.foto + "\" style=\"margin: 0 auto; max-height: 150px\">";
+                            HTML += "<img class='img-responsive' src=\"/static/" + val.foto + "\" style=\"margin: 0 auto; max-height: 120px\">";
                             HTML += "</div><br/>";
                             HTML += "<div style=\"height: 120px\">";
                             HTML += "<h3 style=\"text-align: center; font-weight: bold; color: black\">" + val.producto + "</h3>";

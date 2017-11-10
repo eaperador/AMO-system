@@ -33,11 +33,11 @@
                     $.each(data, function (key,val) {
                         items.push("<tr>");
                         items.push("<td>"+val.productor+"</td>");
-                        items.push("<td>"+val.cantidad+"</td>");
+                        items.push("<td>"+val.cantidad+" "+val.unidad+"</td>");
                         items.push("<td>"+val.precio+"</td>");
                         items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
                         items.push("<td>"
-                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'>"
+                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'> "+val.unidad
                                     +"</td>");
                         items.push("</tr>");
                     });

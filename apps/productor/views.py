@@ -212,7 +212,7 @@ def diaSemana(day):
 def ConsultarProductosaOfertar(request):
     # filtrar para obtener productos que NO estén en las ofertas hechas
 
-    listaProductos = list(Producto.objects.filter(activo=True))
+    listaProductos = list(Producto.objects.filter(activo=True).order_by('nombre'))
     if (len(listaProductos) > 0):
 
         for item in listaProductos:

@@ -64,8 +64,9 @@ def listar_productos_catalogo_view(request):
 
 @csrf_exempt
 def select_productos(request):
+    # Filtrar por los productos que existen dentro del catálogo
     if request.method == "GET":
-        productos = Producto.objects.filter(activo=1)
+        productos = Producto.objects.filter(activo=True).order_by('nombre')
         lista_productos = [{'id': producto.id,
                             'nombre': producto.nombre,
                             'descripcion': producto.descripcion,
