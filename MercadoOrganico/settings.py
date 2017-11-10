@@ -26,7 +26,7 @@ SECRET_KEY = 'ec*%#&9wh7^s%kv1(or3=zio8egzxi--v+)2^_9vn)7%*8f4x^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['amo-system-test.herokuapp.com','amo-system.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['amo-bugs.herokuapp.com','amo-system-test.herokuapp.com','amo-system.herokuapp.com','localhost']
 
 
 # Application definition
@@ -137,10 +137,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'MerkaOrganico',
-            'USER': 'postgres',
-            'PASSWORD': '1072661319',
-            'HOST': 'localhost',
+            'NAME': 'd9hjftllnl4620',
+            'USER': 'aypvxlsnxeqxyg',
+            'PASSWORD': '85fec2ae3f372a03809e5ed08043551ceea8344cb543bb727bc7249b73df545f',
+            'HOST': 'ec2-50-17-235-5.compute-1.amazonaws.com',
             'PORT': '5432',
         }
     }
