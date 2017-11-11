@@ -22,27 +22,37 @@
                 $.getJSON(location.origin+"/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
                     console.log(data);
                     $(".image").prepend("<img src='"+location.origin+"/static/"+data.imagen+"'class='img-responsive' style='width: 200px; height: 100px'>");
-                    $("#description_producto").html(data.descripcion)
+                    $("#description_producto").html(data.descripcion);
                     $("#lista_ofertas_producto").show();
                 });
 
                 $("#table_productos_oferta").find("tr:gt(0)").remove();
                 $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
-                    console.log(data)
+                    console.log(data);
                     var items = [];
-                    $.each(data, function (key,val) {
-                        items.push("<tr>");
-                        items.push("<td>"+val.productor+"</td>");
-                        items.push("<td>"+val.cantidad+" "+val.unidad+"</td>");
-                        items.push("<td>"+val.precio+"</td>");
-                        items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
-                        items.push("<td>"
-                                    +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'> "+val.unidad
-                                    +"</td>");
-                        items.push("</tr>");
-                    });
+                    if (data)
+                    {
+                        $.each(data, function (key,val) {
+                            items.push("<tr>");
+                            items.push("<td>"+val.productor+"</td>");
+                            items.push("<td>"+val.cantidad+" "+val.unidad+"</td>");
+                            items.push("<td>"+val.precio+"</td>");
+                            items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
+                            items.push("<td>"
+                                +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'> "+val.unidad
+                                +"</td>");
+                            items.push("</tr>");
+                        });
 
-                    $("<tbody/>",{html: items.join("")}).appendTo("#table_productos_oferta");
+                        $("<tbody/>",{html: items.join("")}).appendTo("#table_productos_oferta");
+                        $('#prec_def').show();
+                        $('#but_cat').show();
+                    }
+                    if(data == "")
+                    {
+                        $('#prec_def').hide();
+                        $('#but_cat').hide();
+                    }
                 });
             }
         });
