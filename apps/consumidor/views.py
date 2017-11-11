@@ -66,13 +66,13 @@ def listar_productos_catalogo_view(request):
 def select_productos(request):
     # Filtrar por los productos que existen dentro del catálogo
     if request.method == "GET":
-        productos = Producto.objects.filter(activo=True).order_by('nombre')
-        lista_productos = [{'id': producto.id,
-                            'nombre': producto.nombre,
-                            'descripcion': producto.descripcion,
-                            'imagen': str(producto.foto),
-                            'activo': producto.activo} for producto in productos]
-
+        catalogo = CatalogoProductos.objects.filter(activo = True)
+        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id)
+        lista_productos = [{'id': productoCat.id_producto.id,
+                            'nombre': productoCat.id_producto.nombre,
+                            'descripcion': productoCat.id_producto.descripcion,
+                            'imagen': str(productoCat.id_producto.foto),
+                            'activo': productoCat.id_producto.activo} for productoCat in productos]
         data_convert = json.dumps(lista_productos)
         return HttpResponse(data_convert)
 
