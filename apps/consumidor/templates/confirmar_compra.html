@@ -8,6 +8,11 @@
 	<header class="masthead" style="background: whitesmoke">
 
 		<script>
+			function redirectCompra()
+        	{
+        	    window.location = "{% url 'consumidor:catalogo_compras' %}";
+			}
+
         	$(document).ready(function () {
         	    $("#form-facturacion").submit(function (event) {
               		$.ajax({
@@ -87,6 +92,7 @@
 
 											<br/>
                         					<div class="float-right text-center">
+												<button class="btn btn-lg btn-outline" id="btn_volver" onclick="redirectCompra()">Volver al catálogo</button>
                         					    <button class="btn btn-lg btn-outline" id="btn_pagar" type="submit">Finalizar Compra</button>
                         					</div>
                     					</form>
