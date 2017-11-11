@@ -59,6 +59,9 @@
         function Ofertar() {
 		    var id = document.getElementById('inputProducto');
             var idproducto = id.innerText || id.textContent;
+            document.getElementById("inputCantidad").value = "";
+            document.getElementById("inputPrecio").value = "";
+            
             $.ajax({
                 type: "POST",
                 url: location.origin+"/productor/crearOferta",
@@ -81,6 +84,7 @@
                     alert("Hubo un error");
                 }
             });
+
             return false;
         }
 
@@ -104,6 +108,11 @@
                     $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
                 }
             }
+        }
+
+        function limpiarCampos() {
+             document.getElementById("inputPrecio").value = "";
+             document.getElementById("inputCantidad").value = "";
         }
     </script>
      <section id="Productor">
@@ -150,7 +159,7 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="limpiarCampos()">Cancelar</button>
                         <button type="button" class="btn btn-primary" onclick="Ofertar()">Ofertar</button>
                     </div>
                 </div>
