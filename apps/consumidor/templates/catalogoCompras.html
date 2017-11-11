@@ -51,36 +51,31 @@
                 $("#cantidadItems").html(cantidadTotal);
 			}
 
-			(function () {
-               var cantidadTotal = 0;
-				for(var i=0;i<sessionStorage.length;i++){
-                    var producto =sessionStorage.key(i);
-                    var cantidad = sessionStorage.getItem(producto);
-                    cantidadTotal = cantidadTotal + (parseInt(cantidad));
-                }
-                $("#cantidadItems").html(cantidadTotal);
-            }());
-
 			function redirectConfirmar()
         	{
-				window.location = "{% url 'consumidor:confirmarCompra' %}";
+        	  $.getJSON(location.origin+"/isLogged/").done(function(data) {
+                if (data.mensaje == "no") {
+                    alert("No es posible confirmar la compra si el usuario no está logueado en el sistema")
+                } else {
+                     productosCarrito = sessionStorage.length;
+                     if(parseInt(productosCarrito) > 0) {
+                        window.location = "{% url 'consumidor:confirmarCompra' %}";
+                      }else {
+                         alert("Al menos es necesario agregar un producto al carrito de compras para confirmar.");
+                     }
+                 }
+              });
 			}
 
 			$.getJSON(location.origin+"/isLogged/").done(function(data){
             if(data.mensaje == "no"){
                 $("#cerrar_sesion").hide();
                 $("#iniciar_sesion").show();
-                $("#btnConfirmarCompra").hide();
             }else{
                 $.getJSON(location.origin+"/getRol/").done(function(data){
                     if(data.mensaje == "Consumidor"){
                          $("#cerrar_sesion").show();
                          $("#iniciar_sesion").hide();
-						 if(intCantItem == 0){
-						 	$("#btnConfirmarCompra").hide();
-						 }else{
-						 	$("#btnConfirmarCompra").show();
-						 }
                     }
                 });
           }});
@@ -200,19 +195,26 @@
                 }
             }
         }
+
+        	$(document).ready(function () {
+        	    (function () {
+               		var cantidadTotal = 0;
+						for(var i=0;i<sessionStorage.length;i++){
+               		     var producto =sessionStorage.key(i);
+               		     var cantidad = sessionStorage.getItem(producto);
+               		     cantidadTotal = cantidadTotal + (parseInt(cantidad));
+               		 }
+               		 $("#cantidadItems").html(cantidadTotal);
+            	}());
+			});
 		</script>
 		<section id="Consumidor">
 			<div class="container">
 				<div class="row">
                     <div class="col" style="text-align: right">
-                        <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px">
+                        <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px" onclick="redirectConfirmar()">
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                             <span id="cantidadItems"></span>
-                        </button>
-						<button type="button" id="btnConfirmarCompra" class="btn_evaluar_ok buttonStyle"
-								style="padding:0; margin-top: 10px; height: 50px; width: 70px" onclick="redirectConfirmar()">
-                            <i class="fa fa-check-square" style="font-size:24px"></i>
-                            <span id="confirmarCompra"></span>
                         </button>
                     </div>
 				</div>

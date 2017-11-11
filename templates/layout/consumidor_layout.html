@@ -41,7 +41,7 @@
         function logout(){
             $.getJSON(location.origin+"/logout").done(function (data) {
                 if(data.mensaje == "ok"){
-                    location.reload();
+                    window.location = "{% url 'comun:index' %}";
                 }
                 else {
                     alert("Hubo un error.")
@@ -65,7 +65,7 @@
                         if (item.mensaje == 'OK')
                         {
                             $("#mess-error").hide();
-                            window.location = "{% url 'comun:index' %}";
+                            location.reload();
                         }
                         else
                         {
