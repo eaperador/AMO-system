@@ -114,7 +114,7 @@ def crearOferta(request):
             data_convert_s = json.dumps(json_response_s)
             return HttpResponse(data_convert_s, content_type='application/json')
         elif (dia == 'Sabado'):
-            print('Las ofertas solo pueden realizarse de Lunes a sábado')
+            print('Las ofertas solo pueden realizarse de Lunes a viernes')
             # return mensaje
             json_response_s = [{'mensaje': "Las ofertas solo pueden realizarse de Lunes a viernes"}]
             data_convert_s = json.dumps(json_response_s)
