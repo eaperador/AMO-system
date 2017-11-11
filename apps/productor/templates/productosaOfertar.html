@@ -60,6 +60,16 @@
         function Ofertar() {
 		    var id = document.getElementById('inputProducto');
             var idproducto = id.innerText || id.textContent;
+
+            var today = new Date();
+            var dia = today.getDay();
+            var mes = today.getMonth();
+            var ano = today.getYear();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            console.log('Hoy: ', dia, '/', mes, '/', ano, ' ', h,':', m)
+
             document.getElementById("inputCantidad").value = "";
             document.getElementById("inputPrecio").value = "";
 
