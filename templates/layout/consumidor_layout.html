@@ -89,7 +89,7 @@
                   $("#armar_catalogo").hide();
                   $("#iniciar_sesion").show();
               }else {
-                  $.getJSON("http://localhost:8000/getRol/").done(function(data){
+                  $.getJSON(location.origin+"/getRol/").done(function(data){
                       if(data.mensaje == "Productor"){
                           $("#consultar_ofertas").show();
                           $("#ofertar").show();
