@@ -110,11 +110,15 @@ def crearOferta(request):
         if (dia == 'Domingo'):
             print('Las ofertas solo pueden realizarse de Lunes a viernes')
             # return mensaje
-            return JsonResponse({'mensaje': 'Las ofertas solo pueden realizarse de Lunes a viernes'})
+            json_response_s = [{'mensaje': "Las ofertas solo pueden realizarse de Lunes a viernes"}]
+            data_convert_s = json.dumps(json_response_s)
+            return HttpResponse(data_convert_s, content_type='application/json')
         elif (dia == 'Sabado'):
             print('Las ofertas solo pueden realizarse de Lunes a sábado')
             # return mensaje
-            return JsonResponse({'mensaje': 'Las ofertas solo pueden realizarse de Lunes a viernes'})
+            json_response_s = [{'mensaje': "Las ofertas solo pueden realizarse de Lunes a viernes"}]
+            data_convert_s = json.dumps(json_response_s)
+            return HttpResponse(data_convert_s, content_type='application/json')
         else:
             print('Dia disponible para realizar ofertas')
             # Fecha inicio Oferta
@@ -168,13 +172,12 @@ def CalculoDiasCatalogoOfertas():
     _numeroDiasOferta = 4
 
     if (dia == 'Domingo'):
-        #print 'Las ofertas solo pueden realizarse de Lunes a sábado'
-
+        #print 'Las ofertas solo pueden realizarse de Lunes a viernes'
         #Fecha inicio Oferta
         _diaInicioOferta = hoy + timedelta(days=1)
         print('Inicio de Oferta (domingo): ', _diaInicioOferta)
     elif (dia == 'Sabado'):
-        #print 'Las ofertas solo pueden realizarse de Lunes a sábado'
+        #print 'Las ofertas solo pueden realizarse de Lunes a viernes'
         #print 'Inicio de Oferta: ', hoy + timedelta(days=2)
         # Fecha inicio Oferta
         _diaInicioOferta = hoy + timedelta(days=2)
