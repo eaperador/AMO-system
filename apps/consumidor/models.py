@@ -23,4 +23,14 @@ class Compra(models.Model):
 class ItemCompra(models.Model):
     cantidad = models.IntegerField()
     id_producto_catalogo = models.ForeignKey(ProductoCatalogo, null=False)
-    id_compra = models.ForeignKey(Compra, null=True)
+    id_compra = models.ForeignKey(Compra, null=False)
+
+class Carrito(models.Model):
+    valor_total = models.FloatField()
+    cantidad_items = models.IntegerField()
+    fecha_hora = models.DateTimeField(auto_now_add=True, editable=False)
+
+class ItemCarrito(models.Model):
+    cantidad = models.IntegerField()
+    id_producto_catalogo = models.ForeignKey(ProductoCatalogo, null=False)
+    id_carrito = models.ForeignKey(Carrito, null=False)
