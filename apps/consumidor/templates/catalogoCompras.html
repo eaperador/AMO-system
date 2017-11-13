@@ -5,10 +5,9 @@
 {% endblock %}
 
 {% block content %}
-	<header class="masthead" style="background: whitesmoke">
+	<header class="masthead" style="background: white">
 		<script>
             function addProducto(productoId, cantidad){
-
                 console.log(productoId)
                 disp = $("#disp_"+productoId).val()
                 console.log(disp)
@@ -79,7 +78,7 @@
                     itemList = JSON.parse(sessionStorage.items)
                     for (i = 0; i < itemList.length; i++) {
                         item = itemList[i]
-                       $("#boton_del_"+item.producto).css('display', 'flex')
+                       $("#boton_del_"+item.producto).css('visibility', 'visible')
                     }
                 }
             }
@@ -129,10 +128,10 @@
                         paginacion(data[0].prodCatalogoPag)
                         $.each(data[0].prodCatalogo, function (key, val) {
                             HTML += "<input type='hidden' id='disp_"+val.id+"' value='"+val.cantidadDisp+"'>"
-                            HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px\">";
+                            HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px; border: 1px solid #6c757d \">";
                             HTML += "<div class=\"panel panel-default\" style=\"padding:0; height: 395px; background-color: white\">";
                             HTML += "<div class=\"panel-body\">";
-                            HTML += "<div id='boton_del_"+val.id+"' class=\"row\" style='display:none'><div class=\"col\" style=\"text-align: right\" >";
+                            HTML += "<div id='boton_del_"+val.id+"' class=\"row\" style='visibility:hidden'><div class=\"col\" style=\"text-align: right\" >";
                             HTML += "<button type=\"button\" class=\"btn btn-primary\" data-toggle=\"modal\" data-target='#eliminar_prod_modal" + val.id + "'>";
                             HTML += "<i class=\"fa fa-trash-o\" style=\"font-size:24px\"></i>";
                             HTML += "</button></div></div>";
@@ -236,8 +235,9 @@
 			<div class="container">
 				<div class="row">
                     <div class="col" style="text-align: left">
-                        <h2 style="color: black">Catálogo #{{ catalogo.id }}</h2>
-                        <label style="color: black">Vigencia: {{catalogo.fecha_inicio}} - {{catalogo.fecha_fin}}</label>
+						<label style="font-weight:bold; color: black">CATÁLOGO #{{ catalogo.id }}:
+							<label style="color: black; font-weight:inherit">{{catalogo.fecha_inicio}} - {{catalogo.fecha_fin}}</label>
+						</label>
                     </div>
                     <div class="col" style="text-align: right">
                         <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px" onclick="redirectConfirmar()">
