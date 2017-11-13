@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 import json
 
 import datetime
+
+import os
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
@@ -138,8 +140,16 @@ def select_producto(request, id, page):
             listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(id_producto=producto.id).order_by('id')
         else:
             listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).order_by('id')
+        ON_CODESHIP = os.getenv('ON_CODESHIP', False)
+        ON_HEROKU_BUG = os.getenv('ON_HEROKU_BUG', False)
+        ON_HEROKU_TEST = os.getenv('ON_HEROKU_TEST', False)
+        ON_HEROKU_PROD = os.getenv('ON_HEROKU_PROD', False)
+        if (ON_CODESHIP or  ON_HEROKU_BUG or ON_HEROKU_TEST or ON_HEROKU_PROD):
+            hoursDelta = 0
+        else:
+            hoursDelta = 5
+        limit_date = datetime.datetime.now() - datetime.timedelta(minutes=5) + datetime.timedelta(hours=hoursDelta)
 
-        limit_date = datetime.datetime.now() - datetime.timedelta(minutes=5) + datetime.timedelta(hours=5)
         for prod in listaProductosCatalogo:
             itemsReserva = ItemCarrito.objects.filter(id_producto_catalogo=prod.id).filter(id_carrito__fecha_hora__gte=limit_date)
             reserved = 0
