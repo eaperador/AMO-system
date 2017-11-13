@@ -28,7 +28,7 @@ class ItemCompra(models.Model):
 class Carrito(models.Model):
     valor_total = models.FloatField()
     cantidad_items = models.IntegerField()
-    fecha_hora = models.DateTimeField(auto_now_add=True, editable=False)
+    fecha_hora = models.DateTimeField(auto_now=True, editable=False)
 
 class ItemCarrito(models.Model):
     cantidad = models.IntegerField()

@@ -7,49 +7,82 @@
 {% block content %}
 	<header class="masthead" style="background: whitesmoke">
 		<script>
-            function addProducto(productoId,total){
-                var valor = sessionStorage.getItem(productoId);
-                var cantidad = 0;
-                if(valor != null){
-                    cantidad = parseInt(valor);
-                    cantidad = parseInt(cantidad) + parseInt(total);
-                }else{
-                    cantidad = total;
-                }
-                sessionStorage.setItem(productoId,cantidad);
-                calcularTotalProductos();
-            }
+            function addProducto(productoId, cantidad){
 
-            function deleteProducto(productoId,total){
-                var valor = sessionStorage.getItem(productoId);
-                var cantidad = 0;
-                if(valor != null){
-                    cantidad = parseInt(valor);
-                    if(cantidad == 0){
-                        alert("No hay items del carrito para eliminar.");
-                    }else{
-                        cantidad = parseInt(cantidad) - parseInt(total);
-                        if(cantidad < 0){
-                            cantidad = 0;
-                        }
-                        sessionStorage.setItem(productoId,cantidad);
-                        calcularTotalProductos();
+                console.log(productoId)
+                disp = $("#disp_"+productoId).val()
+                console.log(disp)
+                console.log(cantidad)
+                console.log(parseInt(disp) < cantidad)
+                if (parseInt(disp) < cantidad) {
+                    alert("Puede ordenar máximo "+parseInt(disp)+" productos")
+                } else {
+                    $.ajax({
+                    type: "POST",
+                    url: location.origin+"/consumidor/agregar_producto/",
+                    data: JSON.stringify({ productoId : productoId ,
+                                           cantidad : cantidad,
+                                           catalogo : {{catalogo.id}},
+                                           carrito: sessionStorage.getItem('carrito')
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        sessionStorage.setItem('carrito', data.carrito_id)
+                        sessionStorage.setItem('items', JSON.stringify(data.items));
+                        alert('Producto agregado');
+                        window.location = location.origin+"/consumidor/catalogo_compras/";
+                    },
+                    failure: function(errMsg){
+                       alert("Hubo un error");
                     }
-                }else{
-                    alert("No hay items del carrito para eliminar.");
+                 });
                 }
             }
 
-            function calcularTotalProductos()
-        	{
-        	    var cantidadTotal = 0;
-				for(var i=0;i<sessionStorage.length;i++){
-                    var producto =sessionStorage.key(i);
-                    var cantidad = sessionStorage.getItem(producto);
-                    cantidadTotal = cantidadTotal + (parseInt(cantidad));
+            function deleteProducto(productoId, cantidad){
+                 $.ajax({
+                    type: "PUT",
+                    url: location.origin+"/consumidor/eliminar_producto/",
+                    data: JSON.stringify({ productoId : productoId ,
+                                           cantidad : cantidad,
+                                           catalogo : {{catalogo.id}},
+                                           carrito: sessionStorage.getItem('carrito')
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        alert('Producto eliminado');
+                        sessionStorage.setItem('carrito', data.carrito_id)
+                        sessionStorage.setItem('items', JSON.stringify(data.items));
+                        window.location = location.origin+"/consumidor/catalogo_compras/";
+                    },
+                    failure: function(errMsg){
+                       alert("Hubo un error");
+                    }
+                 });
+            }
+            function getCantidad(prodId){
+                if (sessionStorage.items !== undefined) {
+                    itemList = JSON.parse(sessionStorage.items)
+                    for (i = 0; i < itemList.length; i++) {
+                        item = itemList[i]
+                        if (parseInt(item.producto) == prodId) {
+                            return item.cantidad
+                        }
+                    }
                 }
-                $("#cantidadItems").html(cantidadTotal);
-			}
+                return 0;
+            }
+            function getDelHide(){
+               if (sessionStorage.items !== undefined) {
+                    itemList = JSON.parse(sessionStorage.items)
+                    for (i = 0; i < itemList.length; i++) {
+                        item = itemList[i]
+                       $("#boton_del_"+item.producto).css('display', 'flex')
+                    }
+                }
+            }
 
 			function redirectConfirmar()
         	{
@@ -67,18 +100,6 @@
               });
 			}
 
-			$.getJSON(location.origin+"/isLogged/").done(function(data){
-            if(data.mensaje == "no"){
-                $("#cerrar_sesion").hide();
-                $("#iniciar_sesion").show();
-            }else{
-                $.getJSON(location.origin+"/getRol/").done(function(data){
-                    if(data.mensaje == "Consumidor"){
-                         $("#cerrar_sesion").show();
-                         $("#iniciar_sesion").hide();
-                    }
-                });
-          }});
             $.getJSON(location.origin+"/consumidor/seleccionarProductos/").done(function (data) {
                  var options = $("#listaProducto");
                  $.each(data, function () {
@@ -86,7 +107,19 @@
                 });
                 filtrarProductos(1)
             });
-
+            $.ajax({
+                    type: "GET",
+                    url: location.origin+"/consumidor/items_carrito/",
+                    data: { carrito: sessionStorage.getItem('carrito')},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        $("#cantidadItems").html(data.sum);
+                    },
+                    failure: function(errMsg){
+                       alert("Hubo un error");
+                    }
+                 });
 			function filtrarProductos(page) {
                 var selected_producto = $("#listaProducto").val();
                 console.log("id producto"+selected_producto);
@@ -94,13 +127,14 @@
                         var HTML = "";
                         $('#productoscompra').empty();
                         paginacion(data[0].prodCatalogoPag)
-                        $.each(data[0].prodCatalogo, function (key,val) {
+                        $.each(data[0].prodCatalogo, function (key, val) {
+                            HTML += "<input type='hidden' id='disp_"+val.id+"' value='"+val.cantidadDisp+"'>"
                             HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px\">";
                             HTML += "<div class=\"panel panel-default\" style=\"padding:0; height: 390px; background-color: white\">";
                             HTML += "<div class=\"panel-body\">";
-                            HTML += "<div class=\"row\"><div class=\"col\" style=\"text-align: right\">";
-                            HTML += "<button type=\"button\" class=\"btn btn-danger btn-circle\" data-toggle=\"modal\" data-target=\"#eliminar_prod_modal" + val.id + "\">";
-                            HTML += "<i class=\"fa fa-minus\" style=\"font-size:24px\"></i>";
+                            HTML += "<div id='boton_del_"+val.id+"' class=\"row\" style='display:none'><div class=\"col\" style=\"text-align: right\" >";
+                            HTML += "<button type=\"button\" class=\"btn btn-danger btn-circle\" data-toggle=\"modal\" data-target='#eliminar_prod_modal" + val.id + "'>";
+                            HTML += "<i class=\"fa fa-remove\" style=\"font-size:24px\"></i>";
                             HTML += "</button></div></div>";
                             HTML += "<div style=\"height: 150px\">";
                             HTML += "<img class='img-responsive' src=\"/static/" + val.foto + "\" style=\"margin: 0 auto; max-height: 120px\">";
@@ -135,7 +169,7 @@
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
-                            HTML += "<button onclick=\"return addProducto(" + val.idProducto + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
+                            HTML += "<button onclick=\"return addProducto(" + val.id + ",document.getElementById('cantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
                             HTML += "<i class=\"fa fa-check\" style=\"font-size:24px\"></i> Agregar";
                             HTML += "</button>";
                             HTML += "<button type=\"submit\" class=\"btn btn-default pull-right\" data-dismiss=\"modal\" style=\"margin-left: 5px; background-color: lightgrey\">";
@@ -153,7 +187,7 @@
                             HTML += "<form role=\"form\" action=\"eliminar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"restProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
                             HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
-                            HTML += "<h6 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >Unidades en el carrito("+ sessionStorage.getItem(val.idProducto)+")</h6>";
+                            HTML += "<h6 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >Unidades en el carrito ("+ getCantidad(val.id)+")</h6>";
                             HTML += "<br/><div class=\"row\">";
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
                             HTML += "<div class=\"col\" style=\"text-align: right\">";
@@ -171,6 +205,7 @@
 
                         $('#productoscompra').append(HTML);
                         $("#productoscompra").show();
+                        getDelHide()
                     });
             }
 
@@ -196,21 +231,16 @@
             }
         }
 
-        	$(document).ready(function () {
-        	    (function () {
-               		var cantidadTotal = 0;
-						for(var i=0;i<sessionStorage.length;i++){
-               		     var producto =sessionStorage.key(i);
-               		     var cantidad = sessionStorage.getItem(producto);
-               		     cantidadTotal = cantidadTotal + (parseInt(cantidad));
-               		 }
-               		 $("#cantidadItems").html(cantidadTotal);
-            	}());
-			});
 		</script>
 		<section id="Consumidor">
 			<div class="container">
 				<div class="row">
+                    <div class="col" style="text-align: left">
+                        <h1 style="color: black">Catálogo #{{ catalogo.id }}</h1>
+                        <br>
+                        <label style="color: black">Vigente desde: {{catalogo.fecha_inicio}}</label>
+                        <label style="color: black">Vigente hasta: {{catalogo.fecha_fin}}</label>
+                    </div>
                     <div class="col" style="text-align: right">
                         <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px" onclick="redirectConfirmar()">
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>

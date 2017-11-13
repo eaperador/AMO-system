@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse, HttpResponse
 from ..administrador.models import CatalogoProductos, Producto, ProductoCatalogo
-from ..consumidor.models import ItemCompra, Compra, MedioPago
+from ..consumidor.models import ItemCompra, Compra, MedioPago, ItemCarrito, Carrito
 from ..productor.models import Usuario
 from ..comun.models import Direccion
 from ..distribuidor.models import Entrega
@@ -20,33 +20,85 @@ from django.shortcuts import render
 @csrf_exempt
 def catalogo_compras(request):
     listaCatalogoProductos = CatalogoProductos.objects.filter(activo=1)
-    listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=listaCatalogoProductos[0].id)
-    return render(request, "catalogoCompras.html", {'productos':listaProductosCatalogo})
+    if request.method == 'GET':
+        try:
+            carrito_id = request.GET.get('carrito')
+            itemsList = [{'id': item.id,
+                          'cantidad': item.cantidad,
+                          'producto': item.id_producto_catalogo.id}
+                         for item in ItemCarrito.objects.filter(id_carrito=carrito_id)]
+        except ItemCarrito.DoesNotExist:
+            itemsList = []
+        istemsJson = json.dumps(itemsList)
+    return render(request, "catalogoCompras.html", {'catalogo':listaCatalogoProductos[0],
+                                                    'items': istemsJson})
 
 @csrf_exempt
 def agregar_producto(request):
     if request.method == 'POST':
         jsonOferta = json.loads(request.body)
-        productoId = jsonOferta['productoId']
+        producto_cat_id = jsonOferta['productoId']
         cantidad = jsonOferta['cantidad']
-        producto = ProductoCatalogo.objects.get(id=productoId)
+        catalogo_id = jsonOferta['catalogo']
+        carrito_id = jsonOferta['carrito']
+        producto = ProductoCatalogo.objects.filter(id=producto_cat_id).filter(id_catalogo=catalogo_id).first()
+        if (carrito_id is not None):
+            carrito = Carrito.objects.get(id = carrito_id)
+            itemCompras = ItemCarrito.objects.filter(id_producto_catalogo=producto).filter(id_carrito=carrito_id)
+            if (len(itemCompras) > 0):
+                itemCompra = itemCompras.first()
+                itemCompra.cantidad = itemCompra.cantidad + int(cantidad)
+            else:
+                itemCompra = ItemCarrito(cantidad=cantidad,
+                                         id_producto_catalogo=producto,
+                                         id_carrito = Carrito.objects.get(id = carrito_id))
+        else:
+            carrito = Carrito(cantidad_items = int(cantidad),
+                              valor_total = producto.precio_definido * int(cantidad))
+            carrito.save()
+            itemCompra = ItemCarrito(cantidad=int(cantidad),
+                                     id_producto_catalogo=producto,
+                                     id_carrito = carrito)
+        carrito.save();
+        itemCompra.save()
+        itemsList = [{'id': item.id,
+                      'cantidad': item.cantidad,
+                      'producto': item.id_producto_catalogo.id}
+                     for item in ItemCarrito.objects.filter(id_carrito=carrito.id)]
 
-        if int(cantidad) > int(producto.cantidad_disponible):
-            cantidad = str(int(producto.cantidad_disponible))
+        istemsJson = json.dumps(itemsList)
+    return JsonResponse({"mensaje": "ok",
+                         "carrito_id": carrito.id,
+                         "items": itemsList})
+@csrf_exempt
+def eliminar_producto(request):
+    if request.method == 'PUT':
+        jsonOferta = json.loads(request.body)
+        producto_id = jsonOferta['productoId']
+        cantidad = jsonOferta['cantidad']
+        catalogo_id = jsonOferta['catalogo']
+        carrito_id = jsonOferta['carrito']
+        producto = ProductoCatalogo.objects.filter(id_producto_id=producto_id).filter(id_catalogo=catalogo_id).first()
+        itemsList = []
+        if (carrito_id is not None):
+            carrito = Carrito.objects.get(id=carrito_id)
+            itemCompras = ItemCarrito.objects.filter(id_producto_catalogo=producto).filter(id_carrito=carrito_id)
+            if (len(itemCompras) > 0):
+                itemCompra = itemCompras.first()
+                itemCompra.cantidad = itemCompra.cantidad - int(cantidad)
+            carrito.save();
+            if (itemCompra.cantidad > 0):
+                itemCompra.save()
+            else:
+                itemCompra.delete()
+            itemsList = [{'id': item.id,
+                          'cantidad': item.cantidad,
+                          'producto': item.id_producto_catalogo.id}
+                         for item in ItemCarrito.objects.filter(id_carrito=carrito.id)]
 
-        try:
-            itemCompra = ItemCompra.objects.get(id_producto_catalogo=producto)
-            itemCompra.cantidad = str(int(itemCompra.cantidad) + int(cantidad))
-            itemCompra.save()
-        except ItemCompra.DoesNotExist:
-            prodAdd = ItemCompra(cantidad=cantidad,
-                                 id_producto_catalogo=producto)
-            prodAdd.save()
-
-        producto.cantidad_disponible = str(int(producto.cantidad_disponible) - int(cantidad))
-        producto.save()
-
-    return JsonResponse({"mensaje": "ok"})
+    return JsonResponse({"mensaje": "ok",
+                         "carrito_id": carrito.id,
+                         "items": itemsList})
 
 @csrf_exempt
 def listar_productos_catalogo_view(request):
@@ -80,12 +132,27 @@ def select_productos(request):
 def select_producto(request, id, page):
     if request.method == "GET":
         listaCatalogoProductos = CatalogoProductos.objects.filter(activo=1)
+        catalogo = listaCatalogoProductos.first()
         if (int(id) > 0):
             producto = Producto.objects.get(pk=id)
-            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=listaCatalogoProductos[0].id).filter(id_producto=producto.id).order_by('id')
+            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(id_producto=producto.id).order_by('id')
         else:
-            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=listaCatalogoProductos[0].id).order_by('id')
-        
+            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).order_by('id')
+
+        limit_date = datetime.datetime.now() - datetime.timedelta(minutes=5) + datetime.timedelta(hours=5)
+        for prod in listaProductosCatalogo:
+            itemsReserva = ItemCarrito.objects.filter(id_producto_catalogo=prod.id).filter(id_carrito__fecha_hora__gte=limit_date)
+            reserved = 0
+            for item in itemsReserva:
+                reserved += item.cantidad
+            prod.cantidad_disponible -= reserved
+            # TODO revisar esto respecto a la compra
+            itemsCompra = ItemCompra.objects.filter(id_producto_catalogo=prod.id).filter(id_producto_catalogo__id_catalogo=catalogo.id)
+            compra = 0
+            for item in itemsCompra:
+                compra += item.cantidad
+            prod.cantidad_disponible -= compra
+
         #paginacion
         #page = request.GET.get('page', 1)
         paginator = Paginator(listaProductosCatalogo, 4)
@@ -130,37 +197,15 @@ def select_producto(request, id, page):
 
     return HttpResponse(json.dumps(json_))
 
-@csrf_exempt
-def eliminar_producto(request):
-    if request.method == 'PUT':
-        jsonOferta = json.loads(request.body)
-        productoId = jsonOferta['productoId']
-        cantidad = jsonOferta['cantidad']
-        producto = ProductoCatalogo.objects.get(id=productoId)
-        try:
-            itemCompra = ItemCompra.objects.get(id_producto_catalogo=producto)
-            if(int(itemCompra.cantidad) != 0 and int(cantidad) <= int(itemCompra.cantidad)):
-                itemCompra.cantidad = str(int(itemCompra.cantidad) - int(cantidad))
-                itemCompra.save()
-
-                producto.cantidad_disponible = str(int(producto.cantidad_disponible) + int(cantidad))
-                producto.save()
-            else:
-                producto.cantidad_disponible = str(int(producto.cantidad_disponible) + int(itemCompra.cantidad))
-                producto.save()
-
-                itemCompra.delete()
-        except ItemCompra.DoesNotExist:
-           pass
-    return JsonResponse({"mensaje": "ok"})
 
 @csrf_exempt
 def items_carrito(request):
     sum = 0
     try:
         if request.method == 'GET':
-            itemsCompra = ItemCompra.objects.all()
-            for item in itemsCompra:
+            carrito_id = request.GET.get('carrito')
+            itemsCarrito = ItemCarrito.objects.filter(id_carrito=carrito_id)
+            for item in itemsCarrito:
                 sum += int(item.cantidad)
     except:
         pass
@@ -179,7 +224,6 @@ def get_Precios(request):
                             'nombre': catalogo.id_producto.nombre,
                             'precio': catalogo.precio_definido
                             } for catalogo in productosCatalogo]
-
     data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)
 
