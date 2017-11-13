@@ -18,7 +18,8 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 
-
+### Variable para obtener el estado de oferta activo ###
+estado_oferta = EstadoOferta.objects.filter(pk=1)
 
 @csrf_exempt
 def listarEstadosOferta(request):
@@ -96,7 +97,6 @@ def ver_ofertas(request):
 
 @csrf_exempt
 def crearOferta(request):
-    estadoOferta = EstadoOferta.objects.get(id=1) #Ofertas activas
 
     if request.method == 'POST':
         dias = CalculoDiasCatalogoOfertas()
@@ -150,7 +150,7 @@ def crearOferta(request):
         productor = Usuario.objects.get(auth_user_id=idproductor)
 
         #cantidad_disponible***
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=cantidad, id_estado_oferta=estadoOferta,
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=cantidad, id_estado_oferta=estado_oferta,
                               id_producto=producto, id_productor=productor, id_catalogo_oferta=_catalogoOferta.first())
         oferta_model.save()
         print('Creacion correcta de la oferta')
@@ -292,10 +292,9 @@ def ConsultaOfertasporProductor(request):
 
         #Se obtiene información de request
         productor = Usuario.objects.get(auth_user_id=request.user.id)
-
         #Consulta información de ofertas por productor
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor)
+            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(id_estado_oferta=estado_oferta)
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
 
@@ -377,7 +376,7 @@ def ConsultaOfertasporFechayProductor(request):
         #Consulta información de ofertas por productor y rango de fechas
         try:
             #listaOfertas = Oferta.objects.filter(id_productor=idproductor).filter(fecha_gte=fechaInicio, fecha__lte=fechaFin)
-            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(fecha__range=(fechaInicio, nuevafechaFin))
+            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(fecha__range=(fechaInicio, nuevafechaFin)).filter(id_estado_oferta=estado_oferta)
             print('Lista de ofertas: ', listaOfertas.count())
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
@@ -461,7 +460,7 @@ def ConsultaOfertasporFechaProductoyProductor(request):
 
         #Consulta información de ofertas por productor y rango de fechas
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto= producto).filter(fecha__range=(fechaInicio, nuevafechaFin))
+            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto= producto).filter(fecha__range=(fechaInicio, nuevafechaFin)).filter(id_estado_oferta=estado_oferta)
             print('Lista de ofertas: ', listaOfertas.count())
             page = request.GET.get('page', 1)
             paginator = Paginator(listaOfertas, 3)
@@ -536,7 +535,7 @@ def ConsultaOfertasporProductoyProductor(request):
         producto = Producto.objects.get(pk=_idProducto)
         #Consulta información de ofertas por productor y producto
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto=producto)
+            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto=producto).filter(id_estado_oferta=estado_oferta)
             print('Lista de ofertas: ', listaOfertas.count())
 
             page = request.GET.get('page', 1)
@@ -604,7 +603,7 @@ def ConsultaProductosporProductor(request):
         # Se obtiene información de request
         productor = Usuario.objects.get(auth_user_id=request.user.id)
         try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor)
+            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(id_estado_oferta=estado_oferta)
 
             if listaOfertas.count() > 0:
                 #return HttpResponse(serializers.serialize("json", listaProductos), content_type='application/json')
