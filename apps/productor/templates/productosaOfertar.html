@@ -62,16 +62,13 @@
             var idproducto = id.innerText || id.textContent;
 
             var today = new Date();
-            var dia = today.getDay();
-            var mes = today.getMonth();
-            var ano = today.getYear();
+            var dia = today.getDate();
+            var mes = today.getMonth()+1;
+            var ano = today.getFullYear();
             var h = today.getHours();
             var m = today.getMinutes();
             var s = today.getSeconds();
             console.log('Hoy: ', dia, '/', mes, '/', ano, ' ', h,':', m)
-
-            document.getElementById("inputCantidad").value = "";
-            document.getElementById("inputPrecio").value = "";
 
             $.ajax({
                 type: "POST",
@@ -83,10 +80,14 @@
                 success: function (data) {
                     $.each(data,function (i,item) {
                         if (item.mensaje == 'OK') {
+                            document.getElementById("inputCantidad").value = "";
+                            document.getElementById("inputPrecio").value = "";
                             $("#mess-error").hide();
                             window.location = "{% url 'productor:ver_productos' %}";
                         }
                         else {
+                            document.getElementById("inputCantidad").value = "";
+                            document.getElementById("inputPrecio").value = "";
                             console.log('Entra al else, mensaje rta: ', item.mensaje)
                             $("#mess-error").show();
                             $("#mensaje").html(item.mensaje);
@@ -94,6 +95,8 @@
                       })
                 },
                 failure: function (errMsg) {
+                    document.getElementById("inputCantidad").value = "";
+                    document.getElementById("inputPrecio").value = "";
                     alert("Hubo un error");
                 }
             });
