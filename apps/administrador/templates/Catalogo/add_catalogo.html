@@ -14,55 +14,77 @@
         //Mostrar listado de ofertas solo si se escoge un producto
         $("#lista_ofertas_producto").hide();
         var productos = $("#select_productos");
-        $(productos).change(function () {
-            $(".image").empty();
-            var selected_producto = productos.val();
-            if (selected_producto)
-            {
-                $.getJSON(location.origin+"/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
-                    console.log(data);
-                    $(".image").prepend("<img src='"+location.origin+"/static/"+data.imagen+"'class='img-responsive' style='width: 200px; height: 100px'>");
-                    $("#description_producto").html(data.descripcion);
-                    $("#lista_ofertas_producto").show();
-                });
+        var catalogo = $("#select_catalogos");
 
-                $("#table_productos_oferta").find("tr:gt(0)").remove();
-                $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+        $(productos).change(function () {
+
+            $(".image").empty();
+
+            var selected_producto = productos.val();
+            var selected_catalogo = catalogo.val();
+
+            if (selected_producto && selected_catalogo)
+            {
+                var mensaje = "";
+                $.post( location.origin+"/catalogo/getCatalogoProducto/", JSON.stringify({ catalogo: selected_catalogo, producto: selected_producto })).done(function(data) {
                     console.log(data);
-                    var items = [];
-                    if (data)
+                    mensaje = data.mensaje;
+                    console.log(mensaje);
+                    if(data.mensaje === "No")
                     {
-                        $.each(data, function (key,val) {
-                            items.push("<tr>");
-                            items.push("<td>"+val.productor+"</td>");
-                            items.push("<td>"+val.cantidad+" "+val.unidad+"</td>");
-                            items.push("<td>"+val.precio+"</td>");
-                            items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
-                            items.push("<td>"
-                                +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'> "+val.unidad
-                                +"</td>");
-                            items.push("</tr>");
+                        $.getJSON(location.origin+"/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
+                            console.log(data);
+                            $(".image").prepend("<img src='"+location.origin+"/static/"+data.imagen+"'class='img-responsive' style='width: 200px; height: 100px'>");
+                            $("#description_producto").html(data.descripcion);
+                            $("#lista_ofertas_producto").show();
                         });
 
-                        $("<tbody/>",{html: items.join("")}).appendTo("#table_productos_oferta");
-                        $('#prec_def').show();
-                        $('#but_cat').show();
+                        $("#table_productos_oferta").find("tr:gt(0)").remove();
+                        $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                            console.log(data);
+                            var items = [];
+                            if (data)
+                            {
+                                $.each(data, function (key,val) {
+                                    items.push("<tr>");
+                                    items.push("<td>"+val.productor+"</td>");
+                                    items.push("<td>"+val.cantidad+" "+val.unidad+"</td>");
+                                    items.push("<td>"+val.precio+"</td>");
+                                    items.push("<td>"+(parseInt(val.cantidad) * parseInt(val.precio))+"</td>");
+                                    items.push("<td>"
+                                        +"<input type='text' name='"+val.id+"' value='' class='valores_aceptados' id='input_valores'> "+val.unidad
+                                        +"</td>");
+                                    items.push("</tr>");
+                                });
+
+                                $("<tbody/>",{html: items.join("")}).appendTo("#table_productos_oferta");
+                                $('#prec_def').show();
+                                $('#but_cat').show();
+                            }
+                            if(data == "")
+                            {
+                                $('#prec_def').hide();
+                                $('#but_cat').hide();
+                            }
+                        });
                     }
-                    if(data == "")
+                    else
                     {
-                        $('#prec_def').hide();
-                        $('#but_cat').hide();
+                        alert("El producto seleccionado ya ha sido ingresado al catalogo");
                     }
                 });
+            }
+            else
+            {
+                alert("Seleccione el catalogo al que quiere agregar el producto!");
+                location.reload();
             }
         });
 
         //Ingresar Catalogo
         $("#ingreso_catalogo").click(function () {
             inputValues = $('.valores_aceptados').val();
-            catalogo = $('#select_catalogos').val();
-            producto = $('#select_productos').val();
-            if(catalogo)
+            if(catalogo.val())
             {
                 var valor;
                 var cantidad_definida = 0;
@@ -75,7 +97,7 @@
                 $.ajax({
                     type: "POST",
                     url: location.origin+"/catalogo/guardarCatalogoOferta/",
-                    data: JSON.stringify({ precio_definido: $('#precio_definido').val(), cantidad_definida: cantidad_definida, catalogo: catalogo, producto: producto }),
+                    data: JSON.stringify({ precio_definido: $('#precio_definido').val(), cantidad_definida: cantidad_definida, catalogo: catalogo.val(), producto: productos.val() }),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (data) {

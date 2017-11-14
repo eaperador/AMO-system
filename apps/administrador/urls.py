@@ -13,5 +13,6 @@ urlpatterns = (
     url(r'^evaluarOfertas/$', views.evaluarOfertas, name="evaluarOfertas"),
     url(r'^guardarOferta/$', views.guardarOferta, name="guardarOferta"),
     url(r'^guardarCatalogoOferta/$', views.ingresarCatalogoOferta, name="guardarCatalogoOferta"),
-    url(r'^getCatalogoOfertaActivo/$', views.get_CatalogoOfertaActivo, name="getCatalogoOfertaActivo")
+    url(r'^getCatalogoOfertaActivo/$', views.get_CatalogoOfertaActivo, name="getCatalogoOfertaActivo"),
+    url(r'^getCatalogoProducto/$', views.getCatalogoProducto, name="getCatalogoProducto")
 )

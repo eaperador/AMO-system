@@ -154,3 +154,21 @@ def get_CatalogoOfertaActivo(request):
         data_catalogoOferta = {'fecha_inicio': catalogoOferta.fecha_inicio.strftime('%Y-%m-%d'), 'fecha_fin': catalogoOferta.fecha_fin.strftime('%Y-%m-%d')}
         data_convert = json.dumps(data_catalogoOferta)
     return HttpResponse(data_convert)
+
+@csrf_exempt
+def getCatalogoProducto(request):
+    if request.method == 'POST':
+        jsonData = json.loads(request.body)
+        id_catalogo = jsonData['catalogo']
+        catalogo = CatalogoProductos.objects.get(pk=id_catalogo)
+        id_producto = jsonData['producto']
+        producto = Producto.objects.get(pk=id_producto)
+
+        producto_catalogo = ProductoCatalogo.objects.filter(id_producto=producto,id_catalogo=catalogo)
+
+        if producto_catalogo:
+            message = "Si"
+        else:
+            message = "No"
+
+    return JsonResponse({"mensaje": message})
