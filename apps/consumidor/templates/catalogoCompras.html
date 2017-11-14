@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<header class="masthead" style="background: white">
+	<header class="masthead" style="background: whitesmoke">
 		<script>
             function addProducto(productoId, cantidad){
                 disp = $("#disp_"+productoId).val()
@@ -89,7 +89,7 @@
                 if (data.mensaje == "no") {
                     $("#mensaje").html('Por favor ingrese al sistema con un usuario registrado');
                 } else {
-                     productosCarrito = $("#cantidadItems").val();
+                     productosCarrito = $("#cantidadItems").html();
                      if(parseInt(productosCarrito) > 0) {
                         window.location = "{% url 'consumidor:confirmarCompra' %}";
                       }else {
@@ -130,7 +130,7 @@
                         $.each(data[0].prodCatalogo, function (key, val) {
                             HTML += "<input type='hidden' id='disp_"+val.id+"' value='"+val.cantidadDisp+"'>"
                             HTML += "<input type='hidden' id='carr_" + val.id + "' value='" + getCantidad(val.id) + "'>"
-                            HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px; border: 1px solid #6c757d \">";
+                            HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px\">";
                             HTML += "<div class=\"panel panel-default\" style=\"padding:0; height: 395px; background-color: white\">";
                             HTML += "<div class=\"panel-body\">";
                             HTML += "<div id='boton_del_"+val.id+"' class=\"row\" style='visibility:hidden'><div class=\"col\" style=\"text-align: right\" >";
@@ -238,23 +238,22 @@
 			<div class="container">
 				<div class="row">
                     <div class="col" style="text-align: left">
-						<label style="font-weight:bold; color: black">CATÁLOGO #{{ catalogo.id }}:
-							<label style="color: black; font-weight:inherit">{{catalogo.fecha_inicio}} - {{catalogo.fecha_fin}}</label>
-						</label>
+						<h3 style="font-weight:bold; color: black">CATÁLOGO #{{ catalogo.id }}:</h3>
+                        <label style="color: black; font-weight:inherit">{{catalogo.fecha_inicio}} - {{catalogo.fecha_fin}}</label>
                     </div>
                     <div class="col" style="text-align: right">
-                        <button type="button" class='btn btn-primary' style="padding:0; height: 45px; width: 70px" onclick="redirectConfirmar()">
+                        <button type="button" class='btn btn-primary' style="padding:0; height: 40px; width: 60px" onclick="redirectConfirmar()">
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                             <span id="cantidadItems"></span>
                         </button>
-                        <br/><label id="mensaje" style="color: darkred"></label>
+                        <br/><label id="mensaje" style="color: darkred; font-weight:inherit"></label>
                     </div>
 				</div>
 				<div class="row" id="filtroProducto">
 					<div class="col-md-4 text-left col-centered">
 						<form method="post" action="" enctype="multipart/form-data" name="filtro">
 							<div class="form-group" >
-								<label for="listaProducto" style="color: black">Productos:</label>
+								<br/><label for="listaProducto" style="color: black">Productos:</label>
                                 <select name="" id="listaProducto" class="form-control" onchange="filtrarProductos(1)">
                                     <option selected value="-1">Todos... </option>
                                 </select>
