@@ -13,9 +13,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from ..administrador.models import CatalogoProductos, Producto, ProductoCatalogo
 from ..consumidor.models import ItemCompra, Compra, MedioPago, ItemCarrito, Carrito
-from ..productor.models import Usuario
+from ..productor.models import Usuario, Oferta, CatalogoOfertas, CompraOfertado
 from ..comun.models import Direccion
-from ..distribuidor.models import Entrega
+from ..distribuidor.models import Entrega, Ruta
 from django.shortcuts import render
 # Create your views here.
 
@@ -228,36 +228,90 @@ def confirmarCompra(request):
 @csrf_exempt
 def get_Precios(request):
     if request.method == "GET":
-        catalogo_productos = CatalogoProductos.objects.filter(activo=1)
-        productosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo_productos[0].id)
-        lista_productos = [{'id': catalogo.id_producto.id,
-                            'nombre': catalogo.id_producto.nombre,
-                            'precio': catalogo.precio_definido
-                            } for catalogo in productosCatalogo]
+        carrito_id = request.GET.get('carrito')
+        itemsCarrito = ItemCarrito.objects.filter(id_carrito=carrito_id)
+        lista_productos = [{'id': item.id,
+                            'nombre': item.id_producto_catalogo.id_producto.nombre,
+                            'precio': item.id_producto_catalogo.precio_definido,
+                            'cantidad': item.cantidad,
+                            'unidad': item.id_producto_catalogo.id_producto.id_tipo_unidad.abreviatura
+                            } for item in itemsCarrito]
+
     data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)
 
 @csrf_exempt
 def saveCompra(request):
     if request.method == 'POST':
-        jsonUser = json.loads(request.body)
-        cantidad = jsonUser['cantidadItems']
-        total = jsonUser['total']
-        usuario = Usuario.objects.get(auth_user_id=request.user.id)
-        direccion = Direccion.objects.get(id=1)
-        medio = MedioPago.objects.get(id=1)
-        entrega = Entrega.objects.get(id=1)
+        jsonData = json.loads(request.body)
+        usuario = Usuario.objects.get(auth_user_id=request.user)
+        carrito_id = jsonData['carrito']
+        dir = jsonData['direccion']
+        carroCompra = Carrito.objects.get(id=carrito_id)
+        itemsCarrito = ItemCarrito.objects.filter(id_carrito=carrito_id)
+        dirUsuario = Direccion.objects.get(id_usuario_comprador=usuario.id)
+        if not Direccion.objects.filter(id_usuario_comprador=usuario.id).exists():
+            dirUsuario = Direccion(direccion=dir,
+                                   id_usuario_comprador=usuario)
+            dirUsuario.save()
+        medioPago = MedioPago.objects.get(id_usuario_comprador=usuario.id)
+        if not MedioPago.objects.filter(id_usuario_comprador=usuario.id).exists():
+            medioPago = MedioPago(nombre='Efectivo',
+                                  id_usuario_comprador=usuario)
+            medioPago.save()
+        ruta = Ruta(descripcion='Ruta',
+                    id_usuario_distribuidor=usuario)
+        ruta.save()
+        entrega = Entrega(estado='Pendiente',
+                          id_ruta=ruta)
+        entrega.save()
 
         compra = Compra(fecha_compra=datetime.datetime.now(),
-                        valor_total= total,
-                        cantidad_items= cantidad,
-                        fecha_entrega= datetime.datetime.now(),
-                        id_usuario_comprador = usuario,
-                        id_direccion_compra = direccion,
-                        id_entrega = entrega,
-                        id_medio_pago=medio);
+                        valor_total=0,
+                        cantidad_items=0,
+                        fecha_entrega=datetime.datetime.now(),
+                        id_usuario_comprador=usuario,
+                        id_direccion_compra=dirUsuario,
+                        id_entrega=entrega,
+                        id_medio_pago=medioPago);
         compra.save()
 
+        vTotal = 0.0;
+        canIt = 0;
+        for item in itemsCarrito:
+            vTotal += float(item.id_producto_catalogo.precio_definido) * int(item.cantidad)
+            canIt += int(item.cantidad)
+            itemCompra = ItemCompra(cantidad=item.cantidad,
+                                    id_producto_catalogo=item.id_producto_catalogo,
+                                    id_compra=compra)
+            pCatalog = ProductoCatalogo.objects.get(id=item.id_producto_catalogo_id)
+            pCatalog.cantidad_disponible -= int(item.cantidad)
+            pCatalog.save()
+            itemCompra.save()
+
+            catalogoOf = CatalogoOfertas.objects.filter(activo=True).order_by('fecha_inicio')
+            ofertas = Oferta.objects.filter(id_catalogo_oferta=catalogoOf[catalogoOf.count()-1].id, id_producto=item.id_producto_catalogo.id_producto.id).order_by('precio')
+            print catalogoOf[catalogoOf.count()-1].id
+
+            cantOfr = int(item.cantidad)
+            for oferta in ofertas:
+                if oferta.id_producto.id == item.id_producto_catalogo.id_producto.id and cantOfr > 0:
+                    if int(cantOfr) >= int(oferta.cantidad_disponible):
+                        oferta.cantidad_disponible = 0
+                        cantOfr -= int(oferta.cantidad_disponible)
+                    else:
+                        oferta.cantidad_disponible -= int(cantOfr)
+                        cantOfr = 0
+                    cOfertado = CompraOfertado(cantidad=item.cantidad,
+                                               id_item_compra=itemCompra,
+                                               id_oferta=oferta)
+                    cOfertado.save()
+                    oferta.save()
+            item.delete()
+
+        compra.valor_total=vTotal
+        compra.cantidad_items=canIt
+        compra.save()
+        carroCompra.delete()
+
     return JsonResponse({"mensaje": "OK"})
-
-

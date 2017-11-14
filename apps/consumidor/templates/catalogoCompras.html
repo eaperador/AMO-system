@@ -8,13 +8,9 @@
 	<header class="masthead" style="background: white">
 		<script>
             function addProducto(productoId, cantidad){
-                console.log(productoId)
                 disp = $("#disp_"+productoId).val()
-                console.log(disp)
-                console.log(cantidad)
-                console.log(parseInt(disp) < cantidad)
                 if (parseInt(disp) < cantidad) {
-                    alert("Puede ordenar máximo "+parseInt(disp)+" productos")
+                    $("#mensaje").html('Puede ordenar máximo '+parseInt(disp)+' productos');
                 } else {
                     $.ajax({
                     type: "POST",
@@ -29,7 +25,6 @@
                     success: function (data) {
                         sessionStorage.setItem('carrito', data.carrito_id)
                         sessionStorage.setItem('items', JSON.stringify(data.items));
-                        alert('Producto agregado');
                         window.location = location.origin+"/consumidor/catalogo_compras/";
                     },
                     failure: function(errMsg){
@@ -39,27 +34,32 @@
                 }
             }
 
-            function deleteProducto(productoId, cantidad){
-                 $.ajax({
-                    type: "PUT",
-                    url: location.origin+"/consumidor/eliminar_producto/",
-                    data: JSON.stringify({ productoId : productoId ,
-                                           cantidad : cantidad,
-                                           catalogo : {{catalogo.id}},
-                                           carrito: sessionStorage.getItem('carrito')
-                    }),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        alert('Producto eliminado');
-                        sessionStorage.setItem('carrito', data.carrito_id)
-                        sessionStorage.setItem('items', JSON.stringify(data.items));
-                        window.location = location.origin+"/consumidor/catalogo_compras/";
-                    },
-                    failure: function(errMsg){
-                       alert("Hubo un error");
-                    }
-                 });
+            function deleteProducto(productoId, cantidad, itemId){
+                enCarrito = $("#carr_"+itemId).val()
+                if (parseInt(enCarrito) < cantidad) {
+                    $("#mensaje").html('Puede eliminar máximo '+parseInt(enCarrito)+' productos');
+                } else {
+                    $.ajax({
+                        type: "PUT",
+                        url: location.origin + "/consumidor/eliminar_producto/",
+                        data: JSON.stringify({
+                            productoId: productoId,
+                            cantidad: cantidad,
+                            catalogo: {{catalogo.id}},
+                            carrito: sessionStorage.getItem('carrito')
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            sessionStorage.setItem('carrito', data.carrito_id)
+                            sessionStorage.setItem('items', JSON.stringify(data.items));
+                            window.location = location.origin + "/consumidor/catalogo_compras/";
+                        },
+                        failure: function (errMsg) {
+                            alert("Hubo un error");
+                        }
+                    });
+                }
             }
             function getCantidad(prodId){
                 if (sessionStorage.items !== undefined) {
@@ -87,13 +87,13 @@
         	{
         	  $.getJSON(location.origin+"/isLogged/").done(function(data) {
                 if (data.mensaje == "no") {
-                    alert("No es posible confirmar la compra si el usuario no está logueado en el sistema")
+                    $("#mensaje").html('Por favor ingrese al sistema con un usuario registrado');
                 } else {
-                     productosCarrito = sessionStorage.length;
+                     productosCarrito = $("#cantidadItems").val();
                      if(parseInt(productosCarrito) > 0) {
                         window.location = "{% url 'consumidor:confirmarCompra' %}";
                       }else {
-                         alert("Al menos es necesario agregar un producto al carrito de compras para confirmar.");
+                         $("#mensaje").html('Por favor ingrese al menos un producto al carrito para realizar una compra.');
                      }
                  }
               });
@@ -114,6 +114,7 @@
                     dataType: "json",
                     success: function (data) {
                         $("#cantidadItems").html(data.sum);
+                        $("#mensaje").html('');
                     },
                     failure: function(errMsg){
                        alert("Hubo un error");
@@ -128,6 +129,7 @@
                         paginacion(data[0].prodCatalogoPag)
                         $.each(data[0].prodCatalogo, function (key, val) {
                             HTML += "<input type='hidden' id='disp_"+val.id+"' value='"+val.cantidadDisp+"'>"
+                            HTML += "<input type='hidden' id='carr_" + val.id + "' value='" + getCantidad(val.id) + "'>"
                             HTML += "<div class=\"col-md-3 col-sm-6 col-lg-3\" style=\"padding:0 5px 0 5px; border: 1px solid #6c757d \">";
                             HTML += "<div class=\"panel panel-default\" style=\"padding:0; height: 395px; background-color: white\">";
                             HTML += "<div class=\"panel-body\">";
@@ -161,6 +163,7 @@
                             HTML += "<form   id=\"form\" role=\"form\" action=\"agregar_producto\" method=\"post\" enctype=\"multipart/form-data\" id=\"addProd-form\" novalidate=\"novalidate\">";
                             HTML += "{% csrf_token %}";
                             HTML += "<h3 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >" + val.producto + "</h3>";
+                            HTML += "<h6 id=\"nombre\" style=\"text-align: center; font-weight: bold; color: black\" >Unidades en el carrito ("+ getCantidad(val.id)+")</h6>";
                             HTML += "<br/><div class=\"row\">";
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\">Cantidad: </span></div>";
                             HTML += "<div class=\"col\">";
@@ -194,7 +197,7 @@
                             HTML += "<div class=\"col\"><span style=\"text-align: center; overflow: auto; color: black; font-weight: bold\"> X " + val.unidad + "</span></div>";
                             HTML += "</div><br/><br/>";
                             HTML += "<div class=\"modal-footer btn-toolbar\">";
-                            HTML += "<button onclick=\"return deleteProducto(" + val.idProducto + ",document.getElementById('restCantidad" + val.idProducto + "').value)\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
+                            HTML += "<button onclick=\"return deleteProducto(" + val.idProducto + ",document.getElementById('restCantidad" + val.idProducto + "').value," + val.id + ")\" type=\"submit\" id=\"id_agregar\" class=\"btn btn-primary btn-success\"  data-dismiss=\"modal\">";
                             HTML += "<i class=\"fa fa-check\" style=\"font-size:24px\"></i> Eliminar";
                             HTML += "</button>";
                             HTML += "<button type=\"submit\" class=\"btn btn-default pull-right\" data-dismiss=\"modal\" style=\"margin-left: 5px; background-color: lightgrey\" >";
@@ -240,10 +243,11 @@
 						</label>
                     </div>
                     <div class="col" style="text-align: right">
-                        <button type="button" class='btn btn-primary' style="padding:0; height: 50px; width: 70px" onclick="redirectConfirmar()">
+                        <button type="button" class='btn btn-primary' style="padding:0; height: 45px; width: 70px" onclick="redirectConfirmar()">
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                             <span id="cantidadItems"></span>
                         </button>
+                        <br/><label id="mensaje" style="color: darkred"></label>
                     </div>
 				</div>
 				<div class="row" id="filtroProducto">

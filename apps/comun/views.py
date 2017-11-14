@@ -9,7 +9,7 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from sendgrid import Email
 from sendgrid.helpers.mail import Content, Mail
-from .models import Usuario
+from .models import Usuario, Direccion
 
 @csrf_exempt
 def Home(request):
@@ -63,5 +63,20 @@ def logged_view(request):
 @csrf_exempt
 def get_rol_view(request):
     usuario = Usuario.objects.get(auth_user_id=request.user)
-    print ("rolll"+usuario.id_rol.nombre)
     return JsonResponse({'mensaje': usuario.id_rol.nombre})
+
+@csrf_exempt
+def get_usuario(request):
+    if request.method == "GET":
+        usuario = Usuario.objects.get(auth_user_id=request.user)
+        direccion = Direccion.objects.get(id_usuario_comprador=usuario)
+        datos_usuario = [{'id': usuario.id,
+                            'nombres': usuario.auth_user_id.first_name,
+                            'apellidos': usuario.auth_user_id.last_name,
+                            'telefono': usuario.telefono,
+                            'direccion': direccion.direccion,
+                            'correo': usuario.auth_user_id.email
+                            }]
+
+    data_convert = json.dumps(datos_usuario)
+    return HttpResponse(data_convert)
