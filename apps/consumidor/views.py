@@ -156,12 +156,6 @@ def select_producto(request, id, page):
             for item in itemsReserva:
                 reserved += item.cantidad
             prod.cantidad_disponible -= reserved
-            # TODO revisar esto respecto a la compra
-            itemsCompra = ItemCompra.objects.filter(id_producto_catalogo=prod.id).filter(id_producto_catalogo__id_catalogo=catalogo.id)
-            compra = 0
-            for item in itemsCompra:
-                compra += item.cantidad
-            prod.cantidad_disponible -= compra
 
         #paginacion
         #page = request.GET.get('page', 1)

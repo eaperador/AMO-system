@@ -6,18 +6,16 @@
 
 {% block content %}
 	<header class="masthead" style="background: whitesmoke">
-
 		<script>
-			function redirectCompra()
-        	{
-        	    window.location = "{% url 'consumidor:catalogo_compras' %}";
-			}
+			function redirectCompra(){
+			    window.location = "{% url 'consumidor:catalogo_compras' %}";
+			};
 
         	$(document).ready(function () {
         	    $("#form-facturacion").submit(function (event) {
         	        var dir = $("#inputDireccion").val();
         	        var tel = $("#inputDireccion").val();
-              		$.ajax({
+        	        $.ajax({
               		    type: "POST",
               		    url: location.origin+"/consumidor/finalizarCompra/",
               		    data: JSON.stringify({ carrito : sessionStorage.getItem('carrito') ,
@@ -158,7 +156,7 @@
 
 											<br/>
                         					<div class="float-right text-center">
-												<button class="btn btn-default btn-outline" id="btn_volver" onclick="redirectCompra()">Seguir comprando</button>
+												<a class="btn btn-default btn-outline" onclick="redirectCompra()" style="color: black">Seguir comprando</a>
                         					    <button class="btn btn-primary btn-success" id="btn_pagar" type="submit">Finalizar Compra</button>
                         						<br/>
 												<br/>
