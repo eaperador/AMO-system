@@ -191,12 +191,6 @@ def CalculoDiasCatalogoOfertas():
         #Fecha inicio Oferta
         _diaInicioOferta = hoy + timedelta(days=1)
         print('Inicio de Oferta: ', _diaInicioOferta)
-    elif (dia == 'Sabado'):
-        #print 'Las ofertas solo pueden realizarse de Lunes a viernes'
-        #print 'Inicio de Oferta: ', hoy + timedelta(days=2)
-        # Fecha inicio Oferta
-        _diaInicioOferta = hoy + timedelta(days=2)
-        print('Inicio de Oferta: ', _diaInicioOferta)
     else:
         #print 'Dia disponible para realizar ofertas'
         # Fecha inicio Oferta
