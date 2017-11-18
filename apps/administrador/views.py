@@ -91,9 +91,9 @@ def listarOfertas(request, productoId):
         if productoId == '0':
             data_oferta = []
         else:
-            estado_oferta = EstadoOferta.objects.filter(pk=1)
+            #estado_oferta = EstadoOferta.objects.filter(pk=1)
             listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
-            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id).filter(id_estado_oferta=estado_oferta)
+            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id) #.filter(id_estado_oferta=estado_oferta)
             data_oferta = [{'id': oferta.id,
                             'producto': oferta.id_producto.nombre,
                             'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
