@@ -15,7 +15,7 @@
                  //Productos vendidos por el productor
                  $.post( location.origin+"/productor/listaProductos/productor/").done(function( data ) {
                      var options = $("#productos");
-                     if(data)
+                     if(!data.mensaje)
                      {
                          console.log(data);
                          producto = data[0]['productos'];
