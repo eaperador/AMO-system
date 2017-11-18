@@ -31,23 +31,40 @@ def listarEstadosOferta(request):
 def listarOfertas(request):
     # listaOfertas = Oferta.objects.all()
     usuario = Usuario.objects.get(auth_user_id=request.user.id)
-
+    catalogo_list = CatalogoOfertas.objects.all()
     listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
+    ofertas_catalogo = [{
+        "catalogo" : catalogo,
+        "ofertas" : listaOfertas.filter(id_catalogo_oferta = catalogo.id)
+    } for catalogo in catalogo_list]
+    
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
         filterEstado = jsonFilter.get('filter_estado')
         filterProducto = jsonFilter.get('filter_producto')
-        user = request.user
         if (int(filterEstado) > 0 and int(filterProducto) > 0):
-            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado).filter(
-                id_producto=filterProducto)
+            ofertas_catalogo = [{
+                "catalogo" : catalogo,
+                "ofertas" : listaOfertas.filter(id_estado_oferta=filterEstado)
+                                        .filter(id_producto=filterProducto)
+                                        .filter(id_catalogo_oferta=catalogo.id),
+            }
+            for catalogo in catalogo_list]
         elif (int(filterEstado) > 0):
-            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado)
+            ofertas_catalogo = [{
+                "catalogo" : catalogo,
+                "ofertas": listaOfertas.filter(id_estado_oferta=filterEstado)
+                                       .filter(id_catalogo_oferta=catalogo.id),
+            }for catalogo in catalogo_list]
         elif (int(filterProducto) > 0):
-            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_producto=filterProducto)
+            ofertas_catalogo = [{
+                "catalogo" : catalogo,
+                "ofertas": listaOfertas.filter(id_producto=filterProducto)
+                                        .filter(id_catalogo_oferta=catalogo.id),
+            } for catalogo in catalogo_list]
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(listaOfertas, 3)
+    paginator = Paginator(ofertas_catalogo, 3)
 
     try:
         ofertas = paginator.page(page)
@@ -72,17 +89,23 @@ def listarOfertas(request):
                   "next_page_number": nextPage,
                   "current_page": ofertas.number,
                   "first_row": ofertas.start_index()}
-
+    print(ofertas.object_list)
     listaOfertasJson = [{
-        "pk": oferta.id,
-        "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-        "precio": oferta.precio,
-        "cantidad": oferta.cantidad,
-        "estado": oferta.id_estado_oferta.nombre,
-        "producto": oferta.id_producto.nombre,
-        "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-        "editable": oferta.id_estado_oferta.id == 1  # id estado pendiente,
-    } for oferta in ofertas.object_list]
+        "catalogo" : { "id" : oferta_catalogo.get('catalogo').id,
+                       "fecha_ini" : oferta_catalogo.get('catalogo').fecha_inicio.strftime('%Y-%m-%d %H:%M'),
+                       "fecha_fin" : oferta_catalogo.get('catalogo').fecha_fin.strftime('%Y-%m-%d %H:%M')
+                        },
+        "ofertas" : [{
+                    "pk": oferta.id,
+                    "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
+                    "precio": oferta.precio,
+                    "cantidad": oferta.cantidad,
+                    "estado": oferta.id_estado_oferta.nombre,
+                    "producto": oferta.id_producto.nombre,
+                    "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
+                    "editable": oferta.id_estado_oferta.id == 1  # id estado pendiente,
+                }for oferta in oferta_catalogo.get('ofertas')]
+    } for oferta_catalogo in ofertas.object_list]
     json_ = [{"ofertas": listaOfertasJson,
               "ofertasPag": ofertasPag
               }]
