@@ -152,7 +152,7 @@ def crearOferta(request):
         producto = Producto.objects.get(id=idproducto)
         idproductor = jsonObj['user']
         print('id productor: ', idproductor)
-        productor = Usuario.objects.get(pk=idproductor)
+        productor = Usuario.objects.get(auth_user_id=idproductor)
 
 
         #cantidad_disponible***
