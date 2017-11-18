@@ -17,13 +17,14 @@
                      var options = $("#productos");
                      if(data)
                      {
+                         console.log(data);
                          producto = data[0]['productos'];
                          options.append($("<option />").val('').text('Seleccione producto'));
                          $.each(producto, function() {
                              options.append($("<option />").val(this.id).text(this.producto));
                          });
                      }
-                     else 
+                     else
                      {
                          options.append($("<option />").val('').text('Seleccione producto'));
                      }
