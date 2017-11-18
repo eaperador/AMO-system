@@ -15,11 +15,18 @@
                  //Productos vendidos por el productor
                  $.post( location.origin+"/productor/listaProductos/productor/").done(function( data ) {
                      var options = $("#productos");
-                     producto = data[0]['productos'];
-                     options.append($("<option />").val('').text('Seleccione producto'));
-                     $.each(producto, function() {
-                         options.append($("<option />").val(this.id).text(this.producto));
-                     });
+                     if(data)
+                     {
+                         producto = data[0]['productos'];
+                         options.append($("<option />").val('').text('Seleccione producto'));
+                         $.each(producto, function() {
+                             options.append($("<option />").val(this.id).text(this.producto));
+                         });
+                     }
+                     else 
+                     {
+                         options.append($("<option />").val('').text('Seleccione producto'));
+                     }
                  });
 
                  //Submit del formulario de busqueda
