@@ -40,7 +40,7 @@
                         });
 
                         $("#table_productos_oferta").find("tr:gt(0)").remove();
-                        $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
+                        $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto + "/2").done(function (data) {
                             console.log(data);
                             var items = [];
                             if (data)

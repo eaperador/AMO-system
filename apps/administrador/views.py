@@ -86,14 +86,18 @@ def select_producto(request, id):
 
 ### Listar ofertas de los productores ###
 @csrf_exempt
-def listarOfertas(request, productoId):
+def listarOfertas(request, productoId, filtro):
     if request.method == 'GET':
         if productoId == '0':
             data_oferta = []
         else:
-            #estado_oferta = EstadoOferta.objects.filter(pk=1)
+            estado_oferta = EstadoOferta.objects.filter(pk=1)
             listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
-            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id) #.filter(id_estado_oferta=estado_oferta)
+            if filtro == '1':
+                listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
+            elif filtro == '2':
+                listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id).filter(id_estado_oferta=estado_oferta)
+
             data_oferta = [{'id': oferta.id,
                             'producto': oferta.id_producto.nombre,
                             'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
@@ -103,7 +107,7 @@ def listarOfertas(request, productoId):
                             'estadoId': oferta.id_estado_oferta.id,
                             'estadoNombre': oferta.id_estado_oferta.nombre,
                             'unidad': oferta.id_producto.id_tipo_unidad.abreviatura} for oferta in listaOfertas]
-    data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
+            data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
 
 def enviarNotificacion(oferta):
