@@ -85,8 +85,8 @@
                   $("#iniciar_sesion").show();
               }else {
                   $.getJSON(location.origin+"/getRol/").done(function(data){
+                      $("#cerrar_sesion").show();
                       if(data.mensaje == "Consumidor"){
-                          $("#cerrar_sesion").show();
                           $("#iniciar_sesion").hide();
                       }
                     });

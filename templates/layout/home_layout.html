@@ -86,17 +86,15 @@
                   $("#iniciar_sesion").show();
               }else {
                   $.getJSON(location.origin+"/getRol/").done(function(data){
+                      $("#cerrar_sesion").show();
                       if(data.mensaje == "Productor"){
                           $("#consultar_ofertas").show();
                           $("#ofertar").show();
                           $("#consultar_ofertas_vendidas").show();
-                          $("#cerrar_sesion").show();
                       }else if(data.mensaje == "Administrador"){
                           $("#evaluar_ofertas").show();
                           $("#armar_catalogo").show();
-                          $("#cerrar_sesion").show();
                       }else if(data.mensaje == "Consumidor"){
-                          $("#cerrar_sesion").show();
                       }
                     });
                 }

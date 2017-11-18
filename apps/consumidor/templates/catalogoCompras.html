@@ -10,7 +10,7 @@
             function addProducto(productoId, cantidad){
                 disp = $("#disp_"+productoId).val()
                 if (parseInt(disp) < cantidad) {
-                    $("#mensaje").html('Puede ordenar máximo '+parseInt(disp)+' productos');
+                    $("#mensaje_carrito").html('Puede ordenar máximo '+parseInt(disp)+' productos');
                 } else {
                     $.ajax({
                     type: "POST",
@@ -37,7 +37,7 @@
             function deleteProducto(productoId, cantidad, itemId){
                 enCarrito = $("#carr_"+itemId).val()
                 if (parseInt(enCarrito) < cantidad) {
-                    $("#mensaje").html('Puede eliminar máximo '+parseInt(enCarrito)+' productos');
+                    $("#mensaje_carrito").html('Puede eliminar máximo '+parseInt(enCarrito)+' productos');
                 } else {
                     $.ajax({
                         type: "PUT",
@@ -87,13 +87,13 @@
         	{
         	  $.getJSON(location.origin+"/isLogged/").done(function(data) {
                 if (data.mensaje == "no") {
-                    $("#mensaje").html('Por favor ingrese al sistema con un usuario registrado');
+                    $("#mensaje_carrito").html('Por favor ingrese al sistema con un usuario registrado');
                 } else {
                      productosCarrito = $("#cantidadItems").html();
                      if(parseInt(productosCarrito) > 0) {
                         window.location = "{% url 'consumidor:confirmarCompra' %}";
                       }else {
-                         $("#mensaje").html('Por favor ingrese al menos un producto al carrito para realizar una compra.');
+                         $("#mensaje_carrito").html('Por favor ingrese al menos un producto al carrito para realizar una compra.');
                      }
                  }
               });
@@ -114,7 +114,7 @@
                     dataType: "json",
                     success: function (data) {
                         $("#cantidadItems").html(data.sum);
-                        $("#mensaje").html('');
+                        $("#mensaje_carrito").html('');
                     },
                     failure: function(errMsg){
                        alert("Hubo un error");
@@ -246,7 +246,7 @@
                             <i class="fa fa-shopping-cart" style="font-size:24px"></i>
                             <span id="cantidadItems"></span>
                         </button>
-                        <br/><label id="mensaje" style="color: darkred; font-weight:inherit"></label>
+                        <br/><label id="mensaje_carrito" style="color: darkred; font-weight:inherit"></label>
                     </div>
 				</div>
 				<div class="row" id="filtroProducto">
