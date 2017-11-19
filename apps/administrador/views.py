@@ -95,7 +95,7 @@ def listarOfertas(request, productoId, filtro):
         if productoId == '0':
             listaOfertas = Oferta.objects.filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
         else:
-            estado_oferta = EstadoOferta.objects.filter(pk=1)
+            estado_oferta = EstadoOferta.objects.filter(pk=2)# estado 2 es activa
             if filtro == '1':
                 listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
             elif filtro == '2':
