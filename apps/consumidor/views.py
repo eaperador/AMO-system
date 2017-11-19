@@ -121,7 +121,7 @@ def select_productos(request):
     # Filtrar por los productos que existen dentro del catálogo
     if request.method == "GET":
         catalogo = CatalogoProductos.objects.filter(activo = True)
-        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id)
+        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id).order_by('id_producto__nombre')
         lista_productos = [{'id': productoCat.id_producto.id,
                             'nombre': productoCat.id_producto.nombre,
                             'descripcion': productoCat.id_producto.descripcion,
