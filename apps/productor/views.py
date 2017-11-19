@@ -260,13 +260,14 @@ def ConsultarProductosaOfertar(request):
         data_convert_s = json.dumps(json_response_s)
         return HttpResponse(data_convert_s, content_type='application/json')
     else:
-        listaProductos = list(Producto.objects.filter(activo=True).order_by('nombre'))
-        if (len(listaProductos) > 0):
+        productos_ini = list(Producto.objects.filter(activo=True).order_by('nombre'))
+        listaProductos = list()
+        if (len(productos_ini) > 0):
             _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
             if (_catalogoOferta.count() > 0):
                 ofertas = Oferta.objects.filter(id_catalogo_oferta_id=_catalogoOferta,
                                                 id_productor__auth_user_id=request.user.id)
-            for item in listaProductos:
+            for item in productos_ini:
                 try:
                     # Fecha inicio Oferta
                     # Se le adiciona un día a la fecha porque en el filtro
@@ -279,9 +280,10 @@ def ConsultarProductosaOfertar(request):
                         producto = ofertas.filter(id_producto_id=item)
                         if (producto.count() > 0):
                             print('El producto', item.nombre, ' ya ha sido ofertado')
-                            listaProductos.remove(item)
+
                         else:
                             print('El producto', item.nombre, ' no ha sido ofertado')
+                            listaProductos.append(item)
                 except Oferta.DoesNotExist:
                     print('No existen ofertas')
                 except CatalogoOfertas.DoesNotExist:
