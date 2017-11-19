@@ -203,8 +203,8 @@ def crearOferta(request):
 def CalculoDiasCatalogoOfertas():
     # Hoy
     hoy = datetime.now().date()
-    # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
-    #print("hoy: ", hoy)
+    hoy = hoy - timedelta(2) ##Para lanzar ejemplo con cualquier dia
+    print ('Hoy TEST: ', hoy)
     intdia = hoy.strftime("%w")
     dia = diaSemana(intdia)
     #print("Dia de la semana: ", dia)
@@ -221,10 +221,10 @@ def CalculoDiasCatalogoOfertas():
         _intDiaInicioOferta = int(intdia) - (int(intdia) - 1)
         #print('int inicio oferta', _intDiaInicioOferta)
         _diaInicioOferta = hoy - timedelta(days=int(intdia) - 1)
-        print('Inicio de Oferta: ', _diaInicioOferta)
+        #print('Inicio de Oferta: ', _diaInicioOferta)
 
     _diaFinOferta = _diaInicioOferta + timedelta(days=_numeroDiasOferta)
-    print('Fin de Oferta: ', _diaFinOferta)
+    #print('Fin de Oferta: ', _diaFinOferta)
     return (hoy, _diaInicioOferta, _diaFinOferta)
 
 # Metodo que retorna el nombre del día
@@ -273,8 +273,6 @@ def ConsultarProductosaOfertar(request):
     dias = CalculoDiasCatalogoOfertas()
     hoy = dias[0]
     print ('Hoy: ', hoy)
-    #hoy = hoy - timedelta(2) ##Para lanzar ejemplo con cualquier dia
-    #print ('Hoy TEST: ', hoy)
     intdia = hoy.strftime("%w")
     dia = diaSemana(intdia)
     print("Dia de la semana: ", dia)
@@ -297,15 +295,20 @@ def ConsultarProductosaOfertar(request):
                     # los registros de la fechaFin son tomados hasta las 00:00.1
                     # Si se le suma un dìa al afecha fin, se tiene en cuenta
                     # en el filtro las 24 hrs del día de la fecha fin.
-                    nuevafechaFin = _diaFinOferta + timedelta(days=1)
-                    #print('Nueva fecha fin: ', nuevafechaFin)
-                    Ofertas = Oferta.objects.filter(id_producto=item.id).filter(fecha__range=(_diaInicioOferta, nuevafechaFin))
-                    if (Ofertas.count() > 0):
-                        print('El producto', item.nombre, ' ya ha sido ofertado')
-                        listaProductos.remove(item)
+                    #nuevafechaFin = _diaFinOferta + timedelta(days=1)
+                    #Se busca el id de catálogo de la semana
+                    _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
+                    if (_catalogoOferta.count() > 0):
+                        Ofertas = Oferta.objects.filter(id_producto_id=item, id_catalogo_oferta_id=_catalogoOferta)
+                        if (Ofertas.count() > 0):
+                            print('El producto', item.nombre, ' ya ha sido ofertado')
+                            listaProductos.remove(item)
+                        else:
+                            print('El producto', item.nombre, ' no ha sido ofertado')
                 except Oferta.DoesNotExist:
-                    print('El producto', item.nombre, ' no ha sido ofertado')
-
+                    print('No existen ofertas')
+                except _catalogoOferta.DoesNotExist:
+                    print('No existen Catalogos de ofertas')
             page = request.GET.get('page', 1)
             paginator = Paginator(listaProductos, 5)
 
