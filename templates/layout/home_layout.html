@@ -90,7 +90,6 @@
                       if(data.mensaje == "Productor"){
                           $("#consultar_ofertas").show();
                           $("#ofertar").show();
-                          $("#consultar_ofertas_vendidas").show();
                       }else if(data.mensaje == "Administrador"){
                           $("#evaluar_ofertas").show();
                           $("#armar_catalogo").show();
@@ -118,7 +117,6 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item" id ="consultar_ofertas" style="display: none" ><a class="nav-link" id="id_consulatarOfertas" href="{% url 'productor:ver_ofertas' %}">Consultar Ofertas</a></li>
-            <li class="nav-item" id ="consultar_ofertas_vendidas" style="display: none" ><a class="nav-link" href="{% url 'productor:ver_ofertas_vendidas' %}">Consultar Ofertas Vendidas</a></li>
             <li class="nav-item" id ="ofertar" style="display: none" ><a class="nav-link" href="{% url 'productor:ver_productos' %}">Ofertar</a></li>
             <li class="nav-item" id ="evaluar_ofertas" style="display: none" ><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
             <li class="nav-item" id ="armar_catalogo" style="display: none" ><a class="nav-link" href="{% url 'catalogo:index' %}">Armar Catálogo</a></li>
