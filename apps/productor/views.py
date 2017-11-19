@@ -262,32 +262,32 @@ def ConsultarProductosaOfertar(request):
     else:
         listaProductos = list(Producto.objects.filter(activo=True).order_by('nombre'))
         if (len(listaProductos) > 0):
+            _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
+            if (_catalogoOferta.count() > 0):
+                ofertas = Oferta.objects.filter(id_catalogo_oferta_id=_catalogoOferta,
+                                                id_productor__auth_user_id=request.user.id)
             for item in listaProductos:
                 try:
                     # Fecha inicio Oferta
-                    _diaInicioOferta = dias[1]
-                    _diaFinOferta = dias[2]
                     # Se le adiciona un día a la fecha porque en el filtro
                     # los registros de la fechaFin son tomados hasta las 00:00.1
                     # Si se le suma un dìa al afecha fin, se tiene en cuenta
                     # en el filtro las 24 hrs del día de la fecha fin.
                     #nuevafechaFin = _diaFinOferta + timedelta(days=1)
                     #Se busca el id de catálogo de la semana
-                    _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
                     if (_catalogoOferta.count() > 0):
-                        Ofertas = Oferta.objects.filter(id_producto_id=item, id_catalogo_oferta_id=_catalogoOferta)
-                        if (Ofertas.count() > 0):
+                        producto = ofertas.filter(id_producto_id=item)
+                        if (producto.count() > 0):
                             print('El producto', item.nombre, ' ya ha sido ofertado')
                             listaProductos.remove(item)
                         else:
                             print('El producto', item.nombre, ' no ha sido ofertado')
                 except Oferta.DoesNotExist:
                     print('No existen ofertas')
-                except _catalogoOferta.DoesNotExist:
+                except CatalogoOfertas.DoesNotExist:
                     print('No existen Catalogos de ofertas')
             page = request.GET.get('page', 1)
             paginator = Paginator(listaProductos, 5)
-
             try:
                 productos = paginator.page(page)
             except PageNotAnInteger:
@@ -316,7 +316,6 @@ def ConsultarProductosaOfertar(request):
                 "pk": producto.id,
                 "nombre": producto.nombre,
                 "descripcion": producto.descripcion,
-                # "tipoUnidad": producto.tipoUnidad.abreviatura,
                 "tipoUnidad": producto.id_tipo_unidad.abreviatura,
                 "categoria": producto.id_categoria.nombre,
             } for producto in productos.object_list]
