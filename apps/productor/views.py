@@ -94,7 +94,7 @@ def listarOfertas(request):
 def ver_ofertas(request):
     return render(request, "verOfertas.html")
 
-
+# Método que realiza la creación de la oferta
 @csrf_exempt
 def crearOferta(request):
     estadoOferta = EstadoOferta.objects.get(id=1)  # Ofertas pendientes
@@ -108,7 +108,7 @@ def crearOferta(request):
         print("Dia de la semana: ", dia)
 
         if (dia == 'Domingo'):
-            print('Las ofertas solo pueden realizarse de Lunes a viernes')
+            print('Las ofertas solo pueden realizarse de Lunes a Sabado')
             # return mensaje
             json_response_s = [{'mensaje': "Las ofertas solo pueden realizarse de Lunes a viernes"}]
             data_convert_s = json.dumps(json_response_s)
@@ -174,7 +174,7 @@ def crearOferta(request):
         return HttpResponse(data_convert, content_type='application/json')
 
 
-#Método que calcula los días en que la oferta estaría
+#Metodo que calcula los días en que la oferta estaría
 # disponible de acuerdo al día actual de la consult
 def CalculoDiasCatalogoOfertas():
     # Hoy
@@ -184,28 +184,26 @@ def CalculoDiasCatalogoOfertas():
     intdia = hoy.strftime("%w")
     dia = diaSemana(intdia)
     #print("Dia de la semana: ", dia)
-    _numeroDiasOferta = 4
+    _numeroDiasOferta = 5
 
     if (dia == 'Domingo'):
         #print 'Las ofertas solo pueden realizarse de Lunes a viernes'
         #Fecha inicio Oferta
         _diaInicioOferta = hoy + timedelta(days=1)
-        print('Inicio de Oferta: ', _diaInicioOferta)
+        #print('Inicio de Oferta: ', _diaInicioOferta)
     else:
         #print 'Dia disponible para realizar ofertas'
         # Fecha inicio Oferta
         _intDiaInicioOferta = int(intdia) - (int(intdia) - 1)
-        print('int inicio oferta', _intDiaInicioOferta)
+        #print('int inicio oferta', _intDiaInicioOferta)
         _diaInicioOferta = hoy - timedelta(days=int(intdia) - 1)
         print('Inicio de Oferta: ', _diaInicioOferta)
-        #print 'Inicio de Oferta: ', _diaInicioOferta
-        #print 'Fin de la oferta: ', _diaFinOferta
 
     _diaFinOferta = _diaInicioOferta + timedelta(days=_numeroDiasOferta)
     print('Fin de Oferta: ', _diaFinOferta)
     return (hoy, _diaInicioOferta, _diaFinOferta)
 
-# Método que retorna el nombre del día
+# Metodo que retorna el nombre del día
 # cuando se envía el id del día.
 def diaSemana(day):
         return {
@@ -218,81 +216,119 @@ def diaSemana(day):
             '6': 'Sabado'
         }.get(day, 'No es un dia de la semana')
 
-# Método que realiza la consulta de lista de productos
+
+#Metodo que realiza la consulta de la semana actual de oferta
+@csrf_exempt
+def ConsultaFechaSemanaOferta(request):
+    if request.method == 'GET':
+        try:
+            diasOferta = CalculoDiasCatalogoOfertas()
+            #_hoy = diasOferta[0]
+            _diaInicioOferta = diasOferta[1]
+            #print('Fecha Inicio: ', _diaInicioOferta)
+            _diaFinOferta = diasOferta[2]
+            #print('Fecha Fin: ', _diaFinOferta)
+            json_response = \
+                [{'semanaOferta': ' ' + _diaInicioOferta.strftime(" %d/%m/%Y") + ' a ' + _diaFinOferta.strftime(" %d/%m/%Y")}]
+            data_convert = json.dumps(json_response)
+            return HttpResponse(data_convert, content_type='application/json')
+        except:
+            json_response = [{'mensaje': "Fail"}]
+            data_convert = json.dumps(json_response)
+            return HttpResponse(data_convert, content_type='application/json')
+    else:
+        json_response = [{'mensaje': "Fail"}]
+        data_convert = json.dumps(json_response)
+        return HttpResponse(data_convert, content_type='application/json')
+
+# Metodo que realiza la consulta de lista de productos
 # por listos para ofertar
 @csrf_exempt
 def ConsultarProductosaOfertar(request):
     # filtrar para obtener productos que NO estén en las ofertas hechas
+    dias = CalculoDiasCatalogoOfertas()
+    hoy = dias[0]
+    print ('Hoy: ', hoy)
+    #hoy = hoy - timedelta(2) ##Para lanzar ejemplo con cualquier dia
+    #print ('Hoy TEST: ', hoy)
+    intdia = hoy.strftime("%w")
+    dia = diaSemana(intdia)
+    print("Dia de la semana: ", dia)
 
-    listaProductos = list(Producto.objects.filter(activo=True).order_by('nombre'))
-    if (len(listaProductos) > 0):
-
-        for item in listaProductos:
-            try:
-                dias = CalculoDiasCatalogoOfertas()
-                # hoy = hoy - timedelta(4) ##Para lanzar ejemplo con cualquier dia
-                # hoy = dias[0]
-                # Fecha inicio Oferta
-                _diaInicioOferta = dias[1]
-                _diaFinOferta = dias[2]
-                # Se le adiciona un día a la fecha porque en el filtro
-                # los registros de la fechaFin son tomados hasta las 00:00.1
-                # Si se le suma un dìa al afecha fin, se tiene en cuenta
-                # en el filtro las 24 hrs del día de la fecha fin.
-                nuevafechaFin = _diaFinOferta + timedelta(days=1)
-                print('Nueva fecha fin: ', nuevafechaFin)
-                Ofertas = Oferta.objects.filter(id_producto=item.id).filter(fecha__range=(_diaInicioOferta, nuevafechaFin))
-                if (Ofertas.count() > 0):
-                    print('El producto', item.nombre, ' ya ha sido ofertado')
-                    listaProductos.remove(item)
-            except Oferta.DoesNotExist:
-                print('El producto no ha sido ofertado')
-
-        page = request.GET.get('page', 1)
-        paginator = Paginator(listaProductos, 6)
-
-        try:
-            productos = paginator.page(page)
-        except PageNotAnInteger:
-            productos = paginator.page(1)
-        except EmptyPage:
-            productos = paginator.page(paginator.num_pages)
-
-        prevPage = 0
-        nextPage = 0
-        if (productos.has_previous()):
-            prevPage = productos.previous_page_number()
-
-        if (productos.has_next()):
-            nextPage = productos.next_page_number()
-
-        productosPag = {"has_other_pages": productos.has_other_pages(),
-                        "has_previous": productos.has_previous(),
-                        "previous_page_number": prevPage,
-                        "page_range": productos.paginator.num_pages,
-                        "has_next": productos.has_next(),
-                        "next_page_number": nextPage,
-                        "current_page": productos.number,
-                        "first_row": productos.start_index()}
-
-        listaProductosJson = [{
-            "pk": producto.id,
-            "nombre": producto.nombre,
-            "descripcion": producto.descripcion,
-            # "tipoUnidad": producto.tipoUnidad.abreviatura,
-            "tipoUnidad": producto.id_tipo_unidad.abreviatura,
-            "categoria": producto.id_categoria.nombre,
-        } for producto in productos.object_list]
-
-        jsonReturn = [{"productos": listaProductosJson,
-                       "productosPag": productosPag
-                       }]
-
-        return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
+    if (dia == 'Domingo'):
+        print('Las ofertas solo pueden realizarse de Lunes a Sabado')
+        # return mensaje
+        json_response_s = [{'mensaje': "Las ofertas solo pueden realizarse de Lunes a Sabado"}]
+        data_convert_s = json.dumps(json_response_s)
+        return HttpResponse(data_convert_s, content_type='application/json')
     else:
-        return JsonResponse({'mensaje': 'No hay productos para ofertar'})
+        listaProductos = list(Producto.objects.filter(activo=True).order_by('nombre'))
+        if (len(listaProductos) > 0):
+            for item in listaProductos:
+                try:
+                    # Fecha inicio Oferta
+                    _diaInicioOferta = dias[1]
+                    _diaFinOferta = dias[2]
+                    # Se le adiciona un día a la fecha porque en el filtro
+                    # los registros de la fechaFin son tomados hasta las 00:00.1
+                    # Si se le suma un dìa al afecha fin, se tiene en cuenta
+                    # en el filtro las 24 hrs del día de la fecha fin.
+                    nuevafechaFin = _diaFinOferta + timedelta(days=1)
+                    #print('Nueva fecha fin: ', nuevafechaFin)
+                    Ofertas = Oferta.objects.filter(id_producto=item.id).filter(fecha__range=(_diaInicioOferta, nuevafechaFin))
+                    if (Ofertas.count() > 0):
+                        print('El producto', item.nombre, ' ya ha sido ofertado')
+                        listaProductos.remove(item)
+                except Oferta.DoesNotExist:
+                    print('El producto', item.nombre, ' no ha sido ofertado')
 
-# Método que realiza la consulta de lista de ofertas
+            page = request.GET.get('page', 1)
+            paginator = Paginator(listaProductos, 5)
+
+            try:
+                productos = paginator.page(page)
+            except PageNotAnInteger:
+                productos = paginator.page(1)
+            except EmptyPage:
+                productos = paginator.page(paginator.num_pages)
+
+            prevPage = 0
+            nextPage = 0
+            if (productos.has_previous()):
+                prevPage = productos.previous_page_number()
+
+            if (productos.has_next()):
+                nextPage = productos.next_page_number()
+
+            productosPag = {"has_other_pages": productos.has_other_pages(),
+                            "has_previous": productos.has_previous(),
+                            "previous_page_number": prevPage,
+                            "page_range": productos.paginator.num_pages,
+                            "has_next": productos.has_next(),
+                            "next_page_number": nextPage,
+                            "current_page": productos.number,
+                            "first_row": productos.start_index()}
+
+            listaProductosJson = [{
+                "pk": producto.id,
+                "nombre": producto.nombre,
+                "descripcion": producto.descripcion,
+                # "tipoUnidad": producto.tipoUnidad.abreviatura,
+                "tipoUnidad": producto.id_tipo_unidad.abreviatura,
+                "categoria": producto.id_categoria.nombre,
+            } for producto in productos.object_list]
+
+            jsonReturn = [{"productos": listaProductosJson,
+                           "productosPag": productosPag
+                           }]
+
+            return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
+        else:
+            json_response = [{'mensaje': "No hay productos para ofertar"}]
+            data_convert = json.dumps(json_response)
+            return HttpResponse(data_convert, content_type='application/json')
+
+# Metodo que realiza la consulta de lista de ofertas
 # por productor
 @csrf_exempt
 def ConsultaOfertasporProductor(request):
@@ -362,7 +398,7 @@ def ConsultaOfertasporProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene ofertas'})
 
-# Método que realiza la consulta de lista de ofertas
+# Metodo que realiza la consulta de lista de ofertas
 # por productor y rango de fechas (fecha inicio - fecha fin)
 @csrf_exempt
 def ConsultaOfertasporFechayProductor(request):
@@ -444,7 +480,7 @@ def ConsultaOfertasporFechayProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
 
-# Método que realiza la consulta de lista de ofertas
+# Metodo que realiza la consulta de lista de ofertas
 # por productor, rango de fechas y producto
 @csrf_exempt
 def ConsultaOfertasporFechaProductoyProductor(request):
@@ -529,7 +565,7 @@ def ConsultaOfertasporFechaProductoyProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
 
-# Método que realiza la consulta de la lista de ofertas
+# Metodo que realiza la consulta de la lista de ofertas
 # por productor y producto
 @csrf_exempt
 def ConsultaOfertasporProductoyProductor(request):
@@ -604,7 +640,7 @@ def ConsultaOfertasporProductoyProductor(request):
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
 
-# Método que realiza la consulta la lista de
+# Metodo que realiza la consulta la lista de
 # productos que un productor ha ofertado
 @csrf_exempt
 def ConsultaProductosporProductor(request):
