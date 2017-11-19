@@ -11,9 +11,17 @@
 	 <script>
         (function () {
 		    $.getJSON( location.origin+"/productor/listaProductos/").done(function (data) {
-			     mostrarProductos(data[0].productos, data[0].productosPag.first_row)
-                 paginacion(data[0].productosPag)
-                });
+		        console.log('Lista Productos a Ofertar', data)
+		        if ("mensaje" in data[0]){
+		            console.log('No es posible obtener los productos a ofertar')
+                    alert(data[0].mensaje)
+                }
+                else {
+		            console.log('Consulta de productos Ok')
+                    mostrarProductos(data[0].productos, data[0].productosPag.first_row)
+                    paginacion(data[0].productosPag)
+                }
+            });
         })();
 
 		function enviarForm(page) {
@@ -130,15 +138,45 @@
              document.getElementById("inputPrecio").value = "";
              document.getElementById("inputCantidad").value = "";
         }
+
+        $(document).ready(function () {
+             $.ajax({
+                type: "GET",
+                url: location.origin+"/productor/ConsultaSemanaOferta/",
+                contentType: "aplication/json; charset-utf-8",
+                success: function(data){
+                      if(data[0].mensaje == "fail"){
+                          console.log(data)
+                          alert('Error consultando la semana de ofertas');
+                          $("#lblSemanaOferta").html("- - -");
+                      }else {
+                        console.log(data)
+                        //document.getElementById("lblSemanaOferta").value = data[0].semanaOferta;
+                        $("#lblSemanaOferta").html(data[0].semanaOferta);
+                      }
+                  },
+                  failure: function (errMsg) {
+                      alert('Error consultando la semana de ofertas');
+                  }
+            });
+        });
     </script>
      <section id="Productor">
          <div class="container" >
             <div class="row">
                 <h1 style="color: black">Productos a Ofertar</h1>
             </div>
-            <!--<div class="row">
-                <h4 style="color: black">Nov 11 - Nov 16</h4>
-            </div>-->
+            <div class="row">
+                <br/>
+            </div>
+            <div class="row">
+                <h6 style="color: black"><strong> Semana : </strong></h6>
+                <h6 id="lblSemanaOferta" style="color: black"></h6>
+                <br/>
+            </div>
+            <div class="row">
+                <br/>
+            </div>
             <div class="row">
                 <table class="table table-hover table-responsive">
                     <thead>
