@@ -705,12 +705,13 @@ def verOfertasVendidas(request):
 @csrf_exempt
 def listarProductosOfertas(request):
     usuario = Usuario.objects.get(auth_user_id=request.user.id)
-    listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
+    listaOfertas = Oferta.objects.filter(id_productor=usuario.id)\
+                                  .distinct('id_producto__nombre')\
+                                  .order_by('id_producto__nombre')
     if request.method == "GET":
         lista_productos = [{'id': oferta.id_producto.id,
                             'nombre': oferta.id_producto.nombre,
                             'descripcion': oferta.id_producto.descripcion,
                             'activo': oferta.id_producto.activo} for oferta in listaOfertas]
-        unique_lista_productos = {each['id']: each for each in lista_productos}.values()
-    data_convert = json.dumps(unique_lista_productos)
+    data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)
