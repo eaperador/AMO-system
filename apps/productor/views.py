@@ -165,7 +165,7 @@ def crearOferta(request):
         print ('id_productor: ', productor)
         print ('id_catalogo_oferta: ', catalogo)
 
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=50, id_estado_oferta=estadoOferta,
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=cantidad, id_estado_oferta=estadoOferta,
                               id_producto=producto, id_productor=productor, id_catalogo_oferta=catalogo)
         oferta_model.save()
         print('Oferta creada exitosamente')

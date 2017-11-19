@@ -291,8 +291,8 @@ def saveCompra(request):
             for oferta in ofertas:
                 if oferta.id_producto.id == item.id_producto_catalogo.id_producto.id and cantOfr > 0:
                     if int(cantOfr) >= int(oferta.cantidad_disponible):
-                        oferta.cantidad_disponible = 0
                         cantOfr -= int(oferta.cantidad_disponible)
+                        oferta.cantidad_disponible = 0
                     else:
                         oferta.cantidad_disponible -= int(cantOfr)
                         cantOfr = 0
