@@ -103,6 +103,7 @@
                     "                 <th class='col-xs-1'>Producto</th>" +
                     "                 <th class='col-xs-1'>Cantidad</th>" +
                     "                 <th class='col-xs-1'>Unidad</th>" +
+                    "                 <th class='col-xs-1'>Vendidos</th>" +
                     "                 <th class='col-xs-1'>Precio</th>" +
                     "                 <th class='col-xs-1'>Estado</th>" +
                     "               </tr>" +
@@ -120,12 +121,13 @@
                     $('#ofertas_catlogo_'+item.catalogo_id).append(
                         "       <tr style='color: black'style='color: black'> " +
                         "          <th scope='row'>"+(row+i)+"</th>"+
-                        "          <td><p><label>"+item.fecha+"</label></p></td>" +
-                        "          <td>"+item.producto+"</td>" +
-                        "          <td id='cant_"+item.pk+"'>"+item.cantidad+"</td>"+
-                        "          <td>"+item.unidad+"</td>"+
-                        "          <td id='precio_"+item.pk+"' >"+item.precio+"</td>"+
-                        "          <td id='editable_"+item.pk+"'>"+item.estado+"</td>"+
+                        "          <td align='center'><p><label>"+item.fecha+"</label></p></td>" +
+                        "          <td align='center'>"+item.producto+"</td>" +
+                        "          <td id='cant_"+item.pk+"' align='center'>"+item.cantidad+"</td>"+
+                        "          <td align='center'>"+item.unidad+"</td>" +
+                        "          <td align='center'>"+item.vendido+" "+item.unidad+"</td>"+
+                        "          <td align='center' id='precio_"+item.pk+"' >"+item.precio+"</td>"+
+                        "          <td align='center' id='editable_"+item.pk+"'>"+item.estado+"</td>"+
                         "       </tr>");
 
                         if (item.editable) {
@@ -208,7 +210,7 @@
                     <div class="modal-body">
                         <form method="post" id="form-oferta" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <label id="inputOferta" class="modal-lg"></label>
+                            <label id="inputOferta" class="modal-lg" hidden></label>
                             <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
                             <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
                         </form>

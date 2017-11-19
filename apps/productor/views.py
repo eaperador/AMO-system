@@ -100,6 +100,7 @@ def listarOfertas(request):
                     "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
                     "precio": oferta.precio,
                     "cantidad": oferta.cantidad,
+                    "vendido": oferta.cantidad-oferta.cantidad_disponible,
                     "estado": oferta.id_estado_oferta.nombre,
                     "producto": oferta.id_producto.nombre,
                     "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
