@@ -66,7 +66,7 @@
             $(productos).change(function () {
                 $("#lista_ofertas_producto").find("tr:gt(0)").remove();
                 var selected_producto = productos.val();
-                if(selected_producto == ''){
+                if(selected_producto == '' || selected_producto == null){
                     selected_producto = 0
                 }
                 listar_ofertas(selected_producto)
