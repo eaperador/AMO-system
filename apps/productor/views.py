@@ -31,7 +31,7 @@ def listarEstadosOferta(request):
 def listarOfertas(request):
     # listaOfertas = Oferta.objects.all()
     usuario = Usuario.objects.get(auth_user_id=request.user.id)
-    catalogo_list = CatalogoOfertas.objects.all()
+    catalogo_list = CatalogoOfertas.objects.all().order_by('-id')
     listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
     ofertas_catalogo = [{
         "catalogo" : catalogo,
@@ -92,8 +92,8 @@ def listarOfertas(request):
     print(ofertas.object_list)
     listaOfertasJson = [{
         "catalogo" : { "id" : oferta_catalogo.get('catalogo').id,
-                       "fecha_ini" : oferta_catalogo.get('catalogo').fecha_inicio.strftime('%Y-%m-%d %H:%M'),
-                       "fecha_fin" : oferta_catalogo.get('catalogo').fecha_fin.strftime('%Y-%m-%d %H:%M')
+                       "fecha_ini" : oferta_catalogo.get('catalogo').fecha_inicio.strftime('%Y-%m-%d'),
+                       "fecha_fin" : oferta_catalogo.get('catalogo').fecha_fin.strftime('%Y-%m-%d')
                         },
         "ofertas" : [{
                     "pk": oferta.id,
@@ -103,7 +103,8 @@ def listarOfertas(request):
                     "estado": oferta.id_estado_oferta.nombre,
                     "producto": oferta.id_producto.nombre,
                     "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                    "editable": oferta.id_estado_oferta.id == 1  # id estado pendiente,
+                    "editable": oferta.id_estado_oferta.id == 1,   # id estado pendiente
+                    "catalogo_id": oferta.id_catalogo_oferta.id
                 }for oferta in oferta_catalogo.get('ofertas')]
     } for oferta_catalogo in ofertas.object_list]
     json_ = [{"ofertas": listaOfertasJson,
