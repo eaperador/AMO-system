@@ -189,7 +189,7 @@ def crearOferta(request):
         print ('id_productor: ', productor)
         print ('id_catalogo_oferta: ', catalogo)
 
-        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=50, id_estado_oferta=estadoOferta,
+        oferta_model = Oferta(precio=precio, cantidad=cantidad, cantidad_disponible=cantidad, id_estado_oferta=estadoOferta,
                               id_producto=producto, id_productor=productor, id_catalogo_oferta=catalogo)
         oferta_model.save()
         print('Oferta creada exitosamente')
@@ -284,34 +284,36 @@ def ConsultarProductosaOfertar(request):
         data_convert_s = json.dumps(json_response_s)
         return HttpResponse(data_convert_s, content_type='application/json')
     else:
-        listaProductos = list(Producto.objects.filter(activo=True).order_by('nombre'))
-        if (len(listaProductos) > 0):
-            for item in listaProductos:
+        productos_ini = list(Producto.objects.filter(activo=True).order_by('nombre'))
+        listaProductos = list()
+        if (len(productos_ini) > 0):
+            _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
+            if (_catalogoOferta.count() > 0):
+                ofertas = Oferta.objects.filter(id_catalogo_oferta_id=_catalogoOferta,
+                                                id_productor__auth_user_id=request.user.id)
+            for item in productos_ini:
                 try:
                     # Fecha inicio Oferta
-                    _diaInicioOferta = dias[1]
-                    _diaFinOferta = dias[2]
                     # Se le adiciona un día a la fecha porque en el filtro
                     # los registros de la fechaFin son tomados hasta las 00:00.1
                     # Si se le suma un dìa al afecha fin, se tiene en cuenta
                     # en el filtro las 24 hrs del día de la fecha fin.
                     #nuevafechaFin = _diaFinOferta + timedelta(days=1)
                     #Se busca el id de catálogo de la semana
-                    _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
                     if (_catalogoOferta.count() > 0):
-                        Ofertas = Oferta.objects.filter(id_producto_id=item, id_catalogo_oferta_id=_catalogoOferta)
-                        if (Ofertas.count() > 0):
+                        producto = ofertas.filter(id_producto_id=item)
+                        if (producto.count() > 0):
                             print('El producto', item.nombre, ' ya ha sido ofertado')
-                            listaProductos.remove(item)
+
                         else:
                             print('El producto', item.nombre, ' no ha sido ofertado')
+                            listaProductos.append(item)
                 except Oferta.DoesNotExist:
                     print('No existen ofertas')
-                except _catalogoOferta.DoesNotExist:
+                except CatalogoOfertas.DoesNotExist:
                     print('No existen Catalogos de ofertas')
             page = request.GET.get('page', 1)
             paginator = Paginator(listaProductos, 5)
-
             try:
                 productos = paginator.page(page)
             except PageNotAnInteger:
@@ -340,7 +342,6 @@ def ConsultarProductosaOfertar(request):
                 "pk": producto.id,
                 "nombre": producto.nombre,
                 "descripcion": producto.descripcion,
-                # "tipoUnidad": producto.tipoUnidad.abreviatura,
                 "tipoUnidad": producto.id_tipo_unidad.abreviatura,
                 "categoria": producto.id_categoria.nombre,
             } for producto in productos.object_list]
@@ -730,12 +731,13 @@ def verOfertasVendidas(request):
 @csrf_exempt
 def listarProductosOfertas(request):
     usuario = Usuario.objects.get(auth_user_id=request.user.id)
-    listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
+    listaOfertas = Oferta.objects.filter(id_productor=usuario.id)\
+                                  .distinct('id_producto__nombre')\
+                                  .order_by('id_producto__nombre')
     if request.method == "GET":
         lista_productos = [{'id': oferta.id_producto.id,
                             'nombre': oferta.id_producto.nombre,
                             'descripcion': oferta.id_producto.descripcion,
                             'activo': oferta.id_producto.activo} for oferta in listaOfertas]
-        unique_lista_productos = {each['id']: each for each in lista_productos}.values()
-    data_convert = json.dumps(unique_lista_productos)
+    data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)

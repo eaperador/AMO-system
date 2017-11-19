@@ -121,7 +121,7 @@ def select_productos(request):
     # Filtrar por los productos que existen dentro del catálogo
     if request.method == "GET":
         catalogo = CatalogoProductos.objects.filter(activo = True)
-        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id)
+        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id).order_by('id_producto__nombre')
         lista_productos = [{'id': productoCat.id_producto.id,
                             'nombre': productoCat.id_producto.nombre,
                             'descripcion': productoCat.id_producto.descripcion,
@@ -291,8 +291,8 @@ def saveCompra(request):
             for oferta in ofertas:
                 if oferta.id_producto.id == item.id_producto_catalogo.id_producto.id and cantOfr > 0:
                     if int(cantOfr) >= int(oferta.cantidad_disponible):
-                        oferta.cantidad_disponible = 0
                         cantOfr -= int(oferta.cantidad_disponible)
+                        oferta.cantidad_disponible = 0
                     else:
                         oferta.cantidad_disponible -= int(cantOfr)
                         cantOfr = 0

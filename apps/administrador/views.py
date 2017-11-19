@@ -65,14 +65,17 @@ def select_catalogos(request):
 @csrf_exempt
 def select_productos(request):
     if request.method == "GET":
-        productos = Producto.objects.filter(activo=True).order_by('nombre')
-        lista_productos = [{'id': producto.id,
-                            'nombre': producto.nombre,
-                            'descripcion': producto.descripcion,
-                            'foto': str(producto.foto),
-                            'activo': producto.activo} for producto in productos]
-
+        catalogo = CatalogoOfertas.objects.filter(activo=True)
+        listaOfertas = Oferta.objects.filter(id_catalogo_oferta=catalogo.first().id)\
+                                     .distinct('id_producto__nombre')\
+                                     .order_by('id_producto__nombre')
+        if request.method == "GET":
+            lista_productos = [{'id': oferta.id_producto.id,
+                                'nombre': oferta.id_producto.nombre,
+                                'descripcion': oferta.id_producto.descripcion,
+                                'activo': oferta.id_producto.activo} for oferta in listaOfertas]
     data_convert = json.dumps(lista_productos)
+
     return HttpResponse(data_convert)
 
 ### Seleccionar un producto en especifico ###
@@ -88,26 +91,26 @@ def select_producto(request, id):
 @csrf_exempt
 def listarOfertas(request, productoId, filtro):
     if request.method == 'GET':
+        listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
         if productoId == '0':
-            data_oferta = []
+            listaOfertas = Oferta.objects.filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
         else:
-            estado_oferta = EstadoOferta.objects.filter(pk=1)
-            listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
+            estado_oferta = EstadoOferta.objects.filter(pk=2)# estado 2 es activa
             if filtro == '1':
                 listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
             elif filtro == '2':
                 listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id).filter(id_estado_oferta=estado_oferta)
 
-            data_oferta = [{'id': oferta.id,
-                            'producto': oferta.id_producto.nombre,
-                            'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-                            'productor': oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
-                            'cantidad': oferta.cantidad,
-                            'precio': oferta.precio,
-                            'estadoId': oferta.id_estado_oferta.id,
-                            'estadoNombre': oferta.id_estado_oferta.nombre,
-                            'unidad': oferta.id_producto.id_tipo_unidad.abreviatura} for oferta in listaOfertas]
-            data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
+        data_oferta = [{'id': oferta.id,
+                        'producto': oferta.id_producto.nombre,
+                        'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
+                        'productor': oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
+                        'cantidad': oferta.cantidad,
+                        'precio': oferta.precio,
+                        'estadoId': oferta.id_estado_oferta.id,
+                        'estadoNombre': oferta.id_estado_oferta.nombre,
+                        'unidad': oferta.id_producto.id_tipo_unidad.abreviatura} for oferta in listaOfertas.order_by('id_producto__nombre', 'precio')]
+        data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
 
 def enviarNotificacion(oferta):
