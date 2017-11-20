@@ -31,23 +31,40 @@ def listarEstadosOferta(request):
 def listarOfertas(request):
     # listaOfertas = Oferta.objects.all()
     usuario = Usuario.objects.get(auth_user_id=request.user.id)
-
+    catalogo_list = CatalogoOfertas.objects.all().order_by('-id')
     listaOfertas = Oferta.objects.filter(id_productor=usuario.id)
+    ofertas_catalogo = [{
+        "catalogo" : catalogo,
+        "ofertas" : listaOfertas.filter(id_catalogo_oferta = catalogo.id)
+    } for catalogo in catalogo_list]
+    
     if (request.method == 'POST'):
         jsonFilter = json.loads(request.body)
         filterEstado = jsonFilter.get('filter_estado')
         filterProducto = jsonFilter.get('filter_producto')
-        user = request.user
         if (int(filterEstado) > 0 and int(filterProducto) > 0):
-            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado).filter(
-                id_producto=filterProducto)
+            ofertas_catalogo = [{
+                "catalogo" : catalogo,
+                "ofertas" : listaOfertas.filter(id_estado_oferta=filterEstado)
+                                        .filter(id_producto=filterProducto)
+                                        .filter(id_catalogo_oferta=catalogo.id),
+            }
+            for catalogo in catalogo_list]
         elif (int(filterEstado) > 0):
-            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_estado_oferta=filterEstado)
+            ofertas_catalogo = [{
+                "catalogo" : catalogo,
+                "ofertas": listaOfertas.filter(id_estado_oferta=filterEstado)
+                                       .filter(id_catalogo_oferta=catalogo.id),
+            }for catalogo in catalogo_list]
         elif (int(filterProducto) > 0):
-            listaOfertas = Oferta.objects.filter(id_productor=usuario.id).filter(id_producto=filterProducto)
+            ofertas_catalogo = [{
+                "catalogo" : catalogo,
+                "ofertas": listaOfertas.filter(id_producto=filterProducto)
+                                        .filter(id_catalogo_oferta=catalogo.id),
+            } for catalogo in catalogo_list]
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(listaOfertas, 3)
+    paginator = Paginator(ofertas_catalogo, 3)
 
     try:
         ofertas = paginator.page(page)
@@ -72,17 +89,25 @@ def listarOfertas(request):
                   "next_page_number": nextPage,
                   "current_page": ofertas.number,
                   "first_row": ofertas.start_index()}
-
+    print(ofertas.object_list)
     listaOfertasJson = [{
-        "pk": oferta.id,
-        "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-        "precio": oferta.precio,
-        "cantidad": oferta.cantidad,
-        "estado": oferta.id_estado_oferta.nombre,
-        "producto": oferta.id_producto.nombre,
-        "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-        "editable": oferta.id_estado_oferta.id == 1  # id estado pendiente,
-    } for oferta in ofertas.object_list]
+        "catalogo" : { "id" : oferta_catalogo.get('catalogo').id,
+                       "fecha_ini" : oferta_catalogo.get('catalogo').fecha_inicio.strftime('%Y-%m-%d'),
+                       "fecha_fin" : oferta_catalogo.get('catalogo').fecha_fin.strftime('%Y-%m-%d')
+                        },
+        "ofertas" : [{
+                    "pk": oferta.id,
+                    "fecha": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
+                    "precio": oferta.precio,
+                    "cantidad": oferta.cantidad,
+                    "vendido": oferta.cantidad-oferta.cantidad_disponible,
+                    "estado": oferta.id_estado_oferta.nombre,
+                    "producto": oferta.id_producto.nombre,
+                    "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
+                    "editable": oferta.id_estado_oferta.id == 1,   # id estado pendiente
+                    "catalogo_id": oferta.id_catalogo_oferta.id
+                }for oferta in oferta_catalogo.get('ofertas')]
+    } for oferta_catalogo in ofertas.object_list]
     json_ = [{"ofertas": listaOfertasJson,
               "ofertasPag": ofertasPag
               }]
@@ -332,344 +357,6 @@ def ConsultarProductosaOfertar(request):
             data_convert = json.dumps(json_response)
             return HttpResponse(data_convert, content_type='application/json')
 
-# Metodo que realiza la consulta de lista de ofertas
-# por productor
-@csrf_exempt
-def ConsultaOfertasporProductor(request):
-
-    if (request.method == 'GET'):
-
-        #Se obtiene información de request
-        productor = Usuario.objects.get(auth_user_id=request.user.id)
-        #Consulta información de ofertas por productor
-        try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(id_estado_oferta=estado_oferta)
-            page = request.GET.get('page', 1)
-            paginator = Paginator(listaOfertas, 3)
-
-            try:
-                ofertas = paginator.page(page)
-            except PageNotAnInteger:
-                ofertas = paginator.page(1)
-            except EmptyPage:
-                ofertas = paginator.page(paginator.num_pages)
-
-            prevPage = 0
-            nextPage = 0
-            if (ofertas.has_previous()):
-                prevPage = ofertas.previous_page_number()
-
-            if (ofertas.has_next()):
-                nextPage = ofertas.next_page_number()
-
-            ofertasPag = {"has_other_pages": ofertas.has_other_pages(),
-                          "has_previous": ofertas.has_previous(),
-                          "previous_page_number": prevPage,
-                          "page_range": ofertas.paginator.num_pages,
-                          "has_next": ofertas.has_next(),
-                          "next_page_number": nextPage,
-                          "current_page": ofertas.number,
-                          "first_row": ofertas.start_index()}
-
-            listaOfertas = [{
-                "pk": oferta.id,
-                "producto": oferta.id_producto.nombre,
-                "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 0,  # oferta.cantidad,
-                "precio": oferta.precio,
-                "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-            } for oferta in ofertas.object_list]
-
-            # Se itera en la lista de ofertas para
-            # buscar la cantidad vendida por cada oferta
-            for item in listaOfertas:
-                try:
-                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
-                    if (cantidadVendida.count() > 0):
-                        for cv in cantidadVendida:
-                            item['cantidadVendida'] += cv.cantidad
-                    else:
-                        item['cantidadVendida'] = 0
-                except CompraOfertado.DoesNotExist:
-                    item['cantidadVendida'] = 0
-
-
-            jsonReturn = [{"ofertas": listaOfertas,
-                           "ofertasPag": ofertasPag
-                           }]
-
-            return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
-        except Oferta.DoesNotExist:
-            return JsonResponse({'mensaje': 'El productor no tiene ofertas'})
-
-# Metodo que realiza la consulta de lista de ofertas
-# por productor y rango de fechas (fecha inicio - fecha fin)
-@csrf_exempt
-def ConsultaOfertasporFechayProductor(request):
-    if (request.method == 'POST'):
-        #Se obtiene información de request
-        jsonObj = json.loads(request.body)
-        fechaInicio = jsonObj['fechaInicio']
-        print('Feha Inicio: ', fechaInicio)
-        fechaFin = jsonObj['fechaFin']
-        print('Fecha Fin: ', fechaFin)
-
-        productor = Usuario.objects.get(auth_user_id=request.user.id)
-        #Se le adiciona un día a la fecha porque en el filtro
-        #los registros de la fechaFin son tomados hasta las 00:00.
-        #Si se le suma un dìa al afecha fin, se tiene en cuenta
-        #en el filtro las 24 hrs del día de la fecha fin.
-        nuevafechaFin = datetime.strptime(fechaFin, '%Y-%m-%d') + timedelta(days=1)
-        print('Nueva fecha fin: ', nuevafechaFin)
-
-        #Consulta información de ofertas por productor y rango de fechas
-        try:
-            #listaOfertas = Oferta.objects.filter(id_productor=idproductor).filter(fecha_gte=fechaInicio, fecha__lte=fechaFin)
-            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(fecha__range=(fechaInicio, nuevafechaFin)).filter(id_estado_oferta=estado_oferta)
-            print('Lista de ofertas: ', listaOfertas.count())
-            page = request.GET.get('page', 1)
-            paginator = Paginator(listaOfertas, 3)
-
-            try:
-                ofertas = paginator.page(page)
-            except PageNotAnInteger:
-                ofertas = paginator.page(1)
-            except EmptyPage:
-                ofertas = paginator.page(paginator.num_pages)
-
-            prevPage = 0
-            nextPage = 0
-            if (ofertas.has_previous()):
-                prevPage = ofertas.previous_page_number()
-
-            if (ofertas.has_next()):
-                nextPage = ofertas.next_page_number()
-
-            ofertasPag = {"has_other_pages": ofertas.has_other_pages(),
-                          "has_previous": ofertas.has_previous(),
-                          "previous_page_number": prevPage,
-                          "page_range": ofertas.paginator.num_pages,
-                          "has_next": ofertas.has_next(),
-                          "next_page_number": nextPage,
-                          "current_page": ofertas.number,
-                          "first_row": ofertas.start_index()}
-
-            listaOfertas = [{
-                "pk": oferta.id,
-                "producto": oferta.id_producto.nombre,
-                "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 0,  # oferta.cantidad,
-                "precio": oferta.precio,
-                "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-            } for oferta in ofertas.object_list]
-
-            # Se itera en la lista de ofertas para
-            # buscar la cantidad vendida por cada oferta
-            for item in listaOfertas:
-                try:
-                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
-                    if (cantidadVendida.count() > 0):
-                        for cv in cantidadVendida:
-                            item['cantidadVendida'] += cv.cantidad
-                    else:
-                        item['cantidadVendida'] = 0
-                except CompraOfertado.DoesNotExist:
-                    item['cantidadVendida'] = 0
-
-            jsonReturn = [{"ofertas": listaOfertas,
-                           "ofertasPag": ofertasPag
-                           }]
-
-            return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
-        except Oferta.DoesNotExist:
-            return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
-
-# Metodo que realiza la consulta de lista de ofertas
-# por productor, rango de fechas y producto
-@csrf_exempt
-def ConsultaOfertasporFechaProductoyProductor(request):
-    if (request.method == 'POST'):
-        #Se obtiene información de request
-        jsonObj = json.loads(request.body)
-        fechaInicio = jsonObj['fechaInicio']
-        print('Feha Inicio: ', fechaInicio)
-        fechaFin = jsonObj['fechaFin']
-        print('Fecha Fin: ', fechaFin)
-        _idProducto = jsonObj['idProducto']
-        print('id Producto: ', _idProducto)
-
-        productor = Usuario.objects.get(auth_user_id=request.user.id)
-        producto = Producto.objects.get(pk=_idProducto)
-        #Se le adiciona un día a la fecha porque en el filtro
-        #los registros de la fechaFin son tomados hasta las 00:00.1
-        #Si se le suma un dìa al afecha fin, se tiene en cuenta
-        #en el filtro las 24 hrs del día de la fecha fin.
-        nuevafechaFin = datetime.strptime(fechaFin, '%Y-%m-%d') + timedelta(days=1)
-        print('Nueva fecha fin: ', nuevafechaFin)
-
-        #Consulta información de ofertas por productor y rango de fechas
-        try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto= producto).filter(fecha__range=(fechaInicio, nuevafechaFin)).filter(id_estado_oferta=estado_oferta)
-            print('Lista de ofertas: ', listaOfertas.count())
-            page = request.GET.get('page', 1)
-            paginator = Paginator(listaOfertas, 3)
-
-            try:
-                ofertas = paginator.page(page)
-            except PageNotAnInteger:
-                ofertas = paginator.page(1)
-            except EmptyPage:
-                ofertas = paginator.page(paginator.num_pages)
-
-            prevPage = 0
-            nextPage = 0
-            if (ofertas.has_previous()):
-                prevPage = ofertas.previous_page_number()
-
-            if (ofertas.has_next()):
-                nextPage = ofertas.next_page_number()
-
-            ofertasPag = {"has_other_pages": ofertas.has_other_pages(),
-                          "has_previous": ofertas.has_previous(),
-                          "previous_page_number": prevPage,
-                          "page_range": ofertas.paginator.num_pages,
-                          "has_next": ofertas.has_next(),
-                          "next_page_number": nextPage,
-                          "current_page": ofertas.number,
-                          "first_row": ofertas.start_index()}
-
-            listaOfertas = [{
-                "pk": oferta.id,
-                "producto": oferta.id_producto.nombre,
-                "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 0,  # oferta.cantidad,
-                "precio": oferta.precio,
-                "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-            } for oferta in ofertas.object_list]
-
-            # Se itera en la lista de ofertas para
-            # buscar la cantidad vendida por cada oferta
-            for item in listaOfertas:
-                try:
-                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
-                    if (cantidadVendida.count() > 0):
-                        for cv in cantidadVendida:
-                            item['cantidadVendida'] += cv.cantidad
-                    else:
-                        item['cantidadVendida'] = 0
-                except CompraOfertado.DoesNotExist:
-                    item['cantidadVendida'] = 0
-
-
-            jsonReturn = [{"ofertas": listaOfertas,
-                           "ofertasPag": ofertasPag
-                           }]
-
-            return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
-        except Oferta.DoesNotExist:
-            return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
-
-# Metodo que realiza la consulta de la lista de ofertas
-# por productor y producto
-@csrf_exempt
-def ConsultaOfertasporProductoyProductor(request):
-    if (request.method == 'POST'):
-        #Se obtiene información de request
-        jsonObj = json.loads(request.body)
-        _idProducto = jsonObj['idProducto']
-        print('id Producto: ', _idProducto)
-        #_idProductor = jsonObj['user']
-        productor = Usuario.objects.get(auth_user_id=request.user.id)
-        #productor = Usuario.objects.get(auth_user_id=_idProductor)
-        producto = Producto.objects.get(pk=_idProducto)
-        #Consulta información de ofertas por productor y producto
-        try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor, id_producto=producto).filter(id_estado_oferta=estado_oferta)
-            print('Lista de ofertas: ', listaOfertas.count())
-
-            page = request.GET.get('page', 1)
-            paginator = Paginator(listaOfertas, 3)
-
-            try:
-                ofertas = paginator.page(page)
-            except PageNotAnInteger:
-                ofertas = paginator.page(1)
-            except EmptyPage:
-                ofertas = paginator.page(paginator.num_pages)
-
-            prevPage = 0
-            nextPage = 0
-            if (ofertas.has_previous()):
-                prevPage = ofertas.previous_page_number()
-
-            if (ofertas.has_next()):
-                nextPage = ofertas.next_page_number()
-
-            ofertasPag = {"has_other_pages": ofertas.has_other_pages(),
-                          "has_previous": ofertas.has_previous(),
-                          "previous_page_number": prevPage,
-                          "page_range": ofertas.paginator.num_pages,
-                          "has_next": ofertas.has_next(),
-                          "next_page_number": nextPage,
-                          "current_page": ofertas.number,
-                          "first_row": ofertas.start_index()}
-
-            listaOfertas = [{
-                "pk": oferta.id,
-                "producto": oferta.id_producto.nombre,
-                "unidad": oferta.id_producto.id_tipo_unidad.abreviatura,
-                "cantidadVendida": 0,  # oferta.cantidad,
-                "precio": oferta.precio,
-                "fechaOferta": oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-            } for oferta in ofertas.object_list]
-
-            # Se itera en la lista de ofertas para
-            # buscar la cantidad vendida por cada oferta
-            for item in listaOfertas:
-                try:
-                    cantidadVendida = CompraOfertado.objects.filter(id_oferta=item['pk'])
-                    if (cantidadVendida.count() > 0):
-                        for cv in cantidadVendida:
-                            item['cantidadVendida'] += cv.cantidad
-                    else:
-                        item['cantidadVendida'] = 0
-                except CompraOfertado.DoesNotExist:
-                    item['cantidadVendida'] = 0
-
-            jsonReturn = [{"ofertas": listaOfertas,
-                           "ofertasPag": ofertasPag
-                           }]
-
-            return HttpResponse(json.dumps(jsonReturn), content_type='application/json')
-        except Oferta.DoesNotExist:
-            return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
-
-# Metodo que realiza la consulta la lista de
-# productos que un productor ha ofertado
-@csrf_exempt
-def ConsultaProductosporProductor(request):
-    if (request.method == 'POST'):
-        # Se obtiene información de request
-        productor = Usuario.objects.get(auth_user_id=request.user.id)
-        try:
-            listaOfertas = Oferta.objects.filter(id_productor=productor).filter(id_estado_oferta=estado_oferta)
-
-            if listaOfertas.count() > 0:
-                #return HttpResponse(serializers.serialize("json", listaProductos), content_type='application/json')
-                lista = [{
-                    "id": oferta.id_producto.id,
-                    "producto": oferta.id_producto.nombre,
-                } for oferta in listaOfertas]
-
-                json_response = [{'productos': lista}]
-                data_convert = json.dumps(json_response)
-                return HttpResponse(data_convert, content_type='application/json')
-            else:
-                return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
-        except Oferta.DoesNotExist:
-            return JsonResponse({'mensaje': 'El productor no tiene productos ofertados'})
-
-
 @csrf_exempt
 def ver_productos(request):
     #user = request.user
@@ -698,11 +385,6 @@ def editarOferta(request):
             return HttpResponse(data_convert, content_type='application/json')
         except Oferta.DoesNotExist:
             return JsonResponse({'mensaje': 'No se puede modificar la oferta'})
-
-
-@csrf_exempt
-def verOfertasVendidas(request):
-    return render(request, "consultarOfertasVendidas.html")
 
 @csrf_exempt
 def listarProductosOfertas(request):
