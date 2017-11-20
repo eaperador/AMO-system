@@ -11,8 +11,11 @@ urlpatterns = (
     url(r'^seleccionarProducto/(?P<id>[0-9]+)/$', views.select_producto, name="seleccionarProducto"),
     url(r'^listarOfertas/(?P<productoId>.+)/(?P<filtro>[0-9]+)/$', views.listarOfertas, name="listarOfertas"),
     url(r'^evaluarOfertas/$', views.evaluarOfertas, name="evaluarOfertas"),
+    url(r'^catalogoProductos/$', views.catalogoProductos, name="catalogoProductos"),
     url(r'^guardarOferta/$', views.guardarOferta, name="guardarOferta"),
+    url(r'^guardarEstadoProducto/$', views.guardarEstadoProducto, name="guardarEstadoProducto"),
     url(r'^guardarCatalogoOferta/$', views.ingresarCatalogoOferta, name="guardarCatalogoOferta"),
     url(r'^getCatalogoOfertaActivo/$', views.get_CatalogoOfertaActivo, name="getCatalogoOfertaActivo"),
-    url(r'^getCatalogoProducto/$', views.getCatalogoProducto, name="getCatalogoProducto")
+    url(r'^getCatalogoProducto/$', views.getCatalogoProducto, name="getCatalogoProducto"),
+    url(r'listarProductos/$', views.listar_productos, name='listarProductos'),
 )
