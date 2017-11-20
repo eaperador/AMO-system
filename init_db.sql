@@ -2,13 +2,24 @@ INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_n
 INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (3, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor', 'Productor', 'Usuario', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
 INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (4, 'pbkdf2_sha256$36000$M0WdMy2pAszA$3355CP3aEX0v1bIbg/R5Hw6x8UKaen9jKkxvW1+QQ9k=', '2017-11-05 17:49:27', false, 'administrador', 'Administrador', 'Usuario', '', false, true, '2017-11-05 17:11:48');
 INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (5, 'pbkdf2_sha256$36000$Iy1tOWO9sMDd$cAPGZqQdQfO29Le3BeRU6DFxlDtcbQ+ToSUk5zMkG1s=', '2017-11-09 07:19:13', false, 'consumidor', 'Consumidor', 'Usuario', '', false, true, '2017-11-05 23:43:09');
-INSERT INTO comun_cooperativa (id, ciudad) VALUES (1, 'Bogotá');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (2, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor2', 'Productor', 'Usuario dos', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (6, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor3', 'Productor', 'Tres', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (7, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor4', 'Productor', 'Cuatro', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (8, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor5', 'Productor', 'Cinco', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
+INSERT INTO auth_user (id, password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES (9, 'pbkdf2_sha256$36000$TaCyS6HMD8vi$gtPBGINaV67qhmapAzt5DdhVTDSqDg1xGlMiwoLPN6M=', '2017-11-05 17:40:52', false, 'productor6', 'Productor', 'Seis', 'og.amaya@uniandes.edu.co', false, true, '2017-11-05 17:10:50');
+
+INSERT INTO comun_cooperativa (id, ciudad) VALUES (1, 'Bogota');
 INSERT INTO comun_rol (id, nombre, descripcion) VALUES (1, 'Productor', 'Productor');
 INSERT INTO comun_rol (id, nombre, descripcion) VALUES (2, 'Administrador', 'Administrador');
 INSERT INTO comun_rol (id, nombre, descripcion) VALUES (3, 'Consumidor', 'Consumidor');
 INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (1, 'images/user/test.jpg', 'Productor', 5554433, 3, 1, 1);
 INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (2, 'images/user/test_0qaslcp.jpg', 'Administrador', 5554433, 4, 1, 2);
 INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (3, 'images/user/test.jpg', 'Consumidor', 5554422, 5, 1, 3);
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (4, 'images/user/test.jpg', 'Productor', 5554433, 2, 1, 1);
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (5, 'images/user/test.jpg', 'Productor', 5554433, 6, 1, 1);
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (6, 'images/user/test.jpg', 'Productor', 5554433, 7, 1, 1);
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (7, 'images/user/test.jpg', 'Productor', 5554433, 8, 1, 1);
+INSERT INTO comun_usuario (id, foto, descripcion, telefono, auth_user_id_id, id_cooperativa_id, id_rol_id) VALUES (8, 'images/user/test.jpg', 'Productor', 5554433, 9, 1, 1);
 INSERT INTO administrador_categoria (id, nombre) VALUES (1, 'Frutas');
 INSERT INTO administrador_categoria (id, nombre) VALUES (2, 'Verduras');
 INSERT INTO administrador_categoria (id, nombre) VALUES (3, 'Tuberculos');
