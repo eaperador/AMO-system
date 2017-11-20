@@ -1,0 +1,151 @@
+{% extends 'layout/administrador_layout.html' %}
+
+{% block title %}
+    Administrador
+{% endblock %}
+
+{% block content %}
+<header class="masthead" style="background: whitesmoke">
+    <style>
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+        }
+
+        .switch input {display:none;}
+
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: .4s;
+          transition: .4s;
+        }
+
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 26px;
+          width: 26px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: .4s;
+          transition: .4s;
+        }
+
+        input:checked + .slider {
+          background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+          box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 34px;
+        }
+
+        .slider.round:before {
+          border-radius: 50%;
+        }
+    </style>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+    <script>
+         function boxDisable(id,t) {
+             if (t.is(':checked')) {
+                 estadoProd = 1;
+                 t.prop("checked", false);
+             } else {
+                 estadoProd = 0;
+                 t.prop("checked", true);
+             }
+             $.ajax({
+               type: "POST",
+               url: location.origin+"/catalogo/guardarEstadoProducto/",
+               data: JSON.stringify({ productoId: id, estado : estadoProd}),
+               contentType: "application/json; charset=utf-8",
+               dataType: "json",
+               success: function (data) {
+                   if (data.mensaje == "ok"){
+                       if(estadoProd == 0){
+                           t.prop("checked", false);
+                       }else{
+                           t.prop("checked", true);
+                       }
+                   }else{
+                       if(estadoProd == 0){
+                           t.prop("checked", true);
+                           alert("No es posible desactivar el producto porque ya existen ofertas asociadas");
+                       }else{
+                           t.prop("checked", false);
+                       }
+                   }
+               },
+               failure: function(errMsg){
+                   alert("Hubo un error intenete más tarde");
+               }
+            });
+         }
+
+        $(document).ready(function () {
+            $.getJSON(location.origin+"/catalogo/listarProductos/").done(function (data) {
+                var items = [];
+                    $.each(data, function (key,val) {
+                        items.push("<tr>");
+                        items.push("<td id=''"+key+"''>"+val.nombre+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.descripcion+"</td>");
+                        items.push("<td id=''"+key+"''>"+"<img class='img-responsive' src=\"/static/" + val.imagen + "\" style=\"margin: 0 auto; height: 100px; width: 120px\">"+"</td>");
+                        if (val.activo == '1'){
+                            items.push("<td><label class=\"switch\">" +
+                                "<input name=\"checkbox\" onclick=\"boxDisable("+val.id+",$(this));\" type=\"checkbox\" checked id=\"checkbox\" />" +
+                                "<span class=\"slider round\"></span>" +
+                                "</label></td>");
+                        }
+                        else{
+                            items.push("<td><label class=\"switch\">" +
+                                "<input name=\"checkbox\" onclick=\"boxDisable("+val.id+",$(this));\" type=\"checkbox\" id=\"checkbox\" />" +
+                                "<span class=\"slider round\"></span>" +
+                                "</label></td>");
+                        }
+                        items.push("</tr>");
+                    });
+                    $("<tbody/>",{html: items.join("")}).appendTo("table");
+            });
+        });
+    </script>
+
+    <section id="CatalogoProductos">
+        <div class="container">
+                <table id="lista_productos"
+                       class="table table-responsive">
+                 <thead>
+                     <tr style="color: black">
+                         <th class="col-xs-4">Producto</th>
+                         <th class="col-xs-4">Descripción</th>
+                         <th class="col-xs-4">Foto</th>
+                         <th class="col-xs-4">Estado</th>
+                     </tr>
+                 </thead>
+                </table>
+            </div>
+    </section>
+</header>
+{% endblock %}
