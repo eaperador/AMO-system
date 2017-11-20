@@ -22,7 +22,6 @@ def login(self):
     botonLogin.click()
     sleep(2)
 
-
 class ProductorTestCase(TestCase):
     def setUp(self):
         #self.browser = webdriver.Chrome("C:\\Users\\wilme\\chromedriver.exe")
@@ -30,7 +29,6 @@ class ProductorTestCase(TestCase):
 
     def tearDown(self):
         self.browser.quit()
-        
     def test_filter(self):
         self.browser.get('http://localhost:8000')
         login(self)
@@ -57,7 +55,6 @@ class ProductorTestCase(TestCase):
 
         listaProductos = self.browser.find_element_by_id('listaProductos')
         self.assertTrue(len(listaProductos.find_elements_by_tag_name("option")) > 1)
-
     def test_filter_a_lot_of_products(self):
         self.browser.get('http://localhost:8000')
         login(self)
@@ -71,7 +68,7 @@ class ProductorTestCase(TestCase):
         self.browser.find_element_by_xpath("//select[@id='listaProductos']/option[text()='Naranja']").click()
         sleep(1)
 
-        offer_list = self.browser.find_element_by_id('listaOfertas')
+        offer_list = self.browser.find_element_by_id('ofertas_catlogo_1')
         otherProds = 0
         for offer in offer_list.find_elements_by_tag_name('tr'):
             self.assertEquals(offer.find_elements_by_tag_name('td')[1].text, 'Naranja')
@@ -83,7 +80,6 @@ class ProductorEditOfertaTestCase(TestCase):
 
     def tearDown(self):
         self.browser.quit()
-
 
     def test_edit_available(self):
         self.browser.get('http://localhost:8000')
@@ -122,7 +118,6 @@ class ProductorEditOfertaTestCase(TestCase):
 
         labelCant = self.browser.find_element(By.XPATH, '//h4[text()="Editar oferta producto"]')
         self.assertIn('Editar oferta producto', labelCant.text)
-
     def test_edit_function(self):
         self.browser.get('http://localhost:8000')
         login(self)
@@ -144,13 +139,14 @@ class ProductorEditOfertaTestCase(TestCase):
 
         botonEdit = self.browser.find_element_by_id('editOferBtn')
         botonEdit.click()
-        sleep(1)
+        sleep(5)
 
         labelPrecio = self.browser.find_element_by_id('precio_1')
         self.assertIn('9999', labelPrecio.text)
 
         labelCant = self.browser.find_element_by_id('cant_1')
         self.assertIn('5555', labelCant.text)
+
 
 class ProductorTemplateVisualizationTestCase(TestCase):
     def setUp(self):
@@ -163,6 +159,6 @@ class ProductorTemplateVisualizationTestCase(TestCase):
     def testMenuOfertasVendidas(self):
         self.browser.get('http://localhost:8000')
         login(self)
-        option_menu = self.browser.find_element_by_id('consultar_ofertas_vendidas')
+        option_menu = self.browser.find_element_by_id('id_consulatarOfertas')
         option_menu.click()
-        sleep(1)
+        sleep(1) 
