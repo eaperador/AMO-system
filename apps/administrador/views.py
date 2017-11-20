@@ -140,6 +140,10 @@ def evaluarOfertas(request):
     return render(request, "Ofertas/evaluar_ofertas.html")
 
 @csrf_exempt
+def catalogoProductos(request):
+    return render(request, "Ofertas/catalogoProductos.html")
+
+@csrf_exempt
 def ingresarCatalogoOferta(request):
     if request.method == "POST":
         jsonData = json.loads(request.body)
@@ -179,3 +183,42 @@ def getCatalogoProducto(request):
             message = "No"
 
     return JsonResponse({"mensaje": message})
+
+@csrf_exempt
+def listar_productos(request):
+    if request.method == "GET":
+        listado_productos = Producto.objects.all()
+        data_producto = [{'id': producto.id,
+                         'nombre': producto.nombre,
+                         'descripcion': producto.descripcion,
+                         'imagen': str(producto.foto),
+                         'activo': producto.activo} for producto in listado_productos]
+    data_convert = json.dumps(data_producto)
+    return HttpResponse(data_convert)
+
+@csrf_exempt
+def guardarEstadoProducto(request):
+    if request.method == 'POST':
+        jsonProducto = json.loads(request.body)
+        productoId = jsonProducto['productoId']
+        estado = jsonProducto['estado']
+        catalogo_oferta = CatalogoOfertas.objects.get(activo=1)
+
+        if estado == 1:
+            Producto.objects.filter(pk=productoId).update(activo=estado)
+            mensaje = "ok"
+        else:
+            if catalogo_oferta.fecha_fin >= datetime.now().date():
+                ofertas = Oferta.objects.filter(id_catalogo_oferta = catalogo_oferta).filter(id_producto = productoId)
+                if ofertas.count() == 0 :
+                    Producto.objects.filter(pk=productoId).update(activo = estado)
+                    mensaje = "ok"
+                else:
+                    mensaje = "no"
+            else:
+                print("lo cambia de estado adesactivado");
+                Producto.objects.filter(pk=productoId).update(activo=estado)
+                mensaje="ok"
+
+    return JsonResponse({"mensaje": mensaje})
+
