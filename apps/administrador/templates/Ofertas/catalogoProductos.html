@@ -105,10 +105,12 @@
             });
          }
 
-        $(document).ready(function () {
-            $.getJSON(location.origin+"/catalogo/listarProductos/").done(function (data) {
-                var items = [];
-                    $.each(data, function (key,val) {
+         function mostrarProductos(page) {
+             $.getJSON(location.origin+"/catalogo/listarProductos/"+page).done(function (data){
+                 paginacion(data[0].prodsPag);
+                 $("#lista_productos").find("tr:gt(0)").remove();
+                 var items = [];
+                    $.each(data[0].productos, function (key,val) {
                         items.push("<tr>");
                         items.push("<td id=''"+key+"''>"+val.nombre+"</td>");
                         items.push("<td id=''"+key+"''>"+val.descripcion+"</td>");
@@ -129,6 +131,32 @@
                     });
                     $("<tbody/>",{html: items.join("")}).appendTo("table");
             });
+         }
+
+         function paginacion(productosPag){
+		    $('#pagination').empty()
+		    if (productosPag.has_other_pages){
+                $('#pagination').append("<ul class='pagination' id='paginationList'></ul>")
+                if (productosPag.has_previous)
+                    $('#paginationList').append("<li><button onclick='mostrarProductos("+productosPag.previous_page_number+")'  class='btn btn-basic'>&laquo;</button></li>")
+                else
+                    $('#paginationList').append("<li class='disabled'><span>&laquo;</span></li>")
+                for (i = 1; i <= productosPag.page_range; i++) {
+                if (productosPag.current_page == i )
+                    $('#paginationList').append("<li><button onclick='mostrarProductos("+i+")' class='btn btn-primary'>"+i+"</button></li>")
+                else
+                    $('#paginationList').append("<li><button onclick='mostrarProductos("+i+")' class='btn btn-basic'>"+i+"</button></li>")
+                }
+                if (productosPag.has_next){
+                    $('#paginationList').append("<li><button onclick='mostrarProductos("+productosPag.next_page_number+")'  class='btn btn-basic'>&raquo;</button></li>")
+                } else {
+                    $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
+                }
+            }
+         }
+
+        $(document).ready(function () {
+            mostrarProductos(1);
         });
     </script>
 
@@ -145,6 +173,10 @@
                      </tr>
                  </thead>
                 </table>
+                <div class="row" >
+                    <div class="col-md-2 col-centered" id="pagination">
+                </div>
+            </div>
             </div>
     </section>
 </header>
