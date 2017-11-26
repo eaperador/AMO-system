@@ -17,5 +17,5 @@ urlpatterns = (
     url(r'^guardarCatalogoOferta/$', views.ingresarCatalogoOferta, name="guardarCatalogoOferta"),
     url(r'^getCatalogoOfertaActivo/$', views.get_CatalogoOfertaActivo, name="getCatalogoOfertaActivo"),
     url(r'^getCatalogoProducto/$', views.getCatalogoProducto, name="getCatalogoProducto"),
-    url(r'listarProductos/$', views.listar_productos, name='listarProductos'),
+    url(r'listarProductos/(?P<page>.+)/$', views.listar_productos, name='listarProductos'),
 )
