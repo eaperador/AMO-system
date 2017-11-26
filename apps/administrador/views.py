@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from datetime import timedelta, datetime
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 import time
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
@@ -185,16 +186,49 @@ def getCatalogoProducto(request):
     return JsonResponse({"mensaje": message})
 
 @csrf_exempt
-def listar_productos(request):
+def listar_productos(request,page):
     if request.method == "GET":
         listado_productos = Producto.objects.all()
+
+        # paginacion
+        paginator = Paginator(listado_productos, 1)
+
+        try:
+            prodsPag = paginator.page(page)
+        except PageNotAnInteger:
+            prodsPag = paginator.page(4)
+        except EmptyPage:
+            prodsPag = paginator.page(paginator.num_pages)
+
+        prevPage = 0
+        nextPage = 0
+        if (prodsPag.has_previous()):
+            prevPage = prodsPag.previous_page_number()
+
+        if (prodsPag.has_next()):
+            nextPage = prodsPag.next_page_number()
+
+        productosPag = {"has_other_pages": prodsPag.has_other_pages(),
+                           "has_previous": prodsPag.has_previous(),
+                           "previous_page_number": prevPage,
+                           "page_range": prodsPag.paginator.num_pages,
+                           "has_next": prodsPag.has_next(),
+                           "next_page_number": nextPage,
+                           "current_page": prodsPag.number,
+                           "first_row": prodsPag.start_index()}
+        # fin pag
+
         data_producto = [{'id': producto.id,
-                         'nombre': producto.nombre,
-                         'descripcion': producto.descripcion,
-                         'imagen': str(producto.foto),
-                         'activo': producto.activo} for producto in listado_productos]
-    data_convert = json.dumps(data_producto)
-    return HttpResponse(data_convert)
+                          'nombre': producto.nombre,
+                          'descripcion': producto.descripcion,
+                          'imagen': str(producto.foto),
+                          'activo': producto.activo} for producto in prodsPag.object_list]
+
+    json_ = [{"productos": data_producto,
+              "prodsPag": productosPag
+              }]
+
+    return HttpResponse(json.dumps(json_))
 
 @csrf_exempt
 def guardarEstadoProducto(request):
