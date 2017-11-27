@@ -204,8 +204,8 @@ def crearOferta(request):
 def CalculoDiasCatalogoOfertas():
     # Hoy
     hoy = datetime.now().date()
-    hoy = hoy - timedelta(2) ##Para lanzar ejemplo con cualquier dia
-    print ('Hoy TEST: ', hoy)
+    #hoy = hoy - timedelta(2) ##Para lanzar ejemplo con cualquier dia
+    #print ('Hoy TEST: ', hoy)
     intdia = hoy.strftime("%w")
     dia = diaSemana(intdia)
     #print("Dia de la semana: ", dia)
