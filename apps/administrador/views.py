@@ -256,3 +256,5 @@ def guardarEstadoProducto(request):
 
     return JsonResponse({"mensaje": mensaje})
 
+def cerrarSemana(request):
+    return JsonResponse({"mensaje": 'ok'})
