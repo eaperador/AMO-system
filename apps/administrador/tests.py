@@ -30,8 +30,8 @@ def login(self):
 class AdministradorTestCase(TestCase):
 
     def setUp(self):
-        self.browser = webdriver.Chrome("C:\\To_D\\chromedriver.exe")
-        #self.browser = webdriver.Chrome()
+        #self.browser = webdriver.Chrome("C:\\To_D\\chromedriver.exe")
+        self.browser = webdriver.Chrome()
 
     def tearDown(self):
         self.browser.quit()
