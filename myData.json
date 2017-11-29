@@ -101,7 +101,7 @@
   },
   {
     "model": "comun.Usuario",
-    "pk": "1",
+    "pk": "2",
     "fields": {
       "foto": "images/user/photo1.jpg",
       "descripcion": "Usuario administrador",
