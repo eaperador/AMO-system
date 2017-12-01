@@ -128,11 +128,14 @@
                         "          <td align='center'>"+item.unidad+"</td>" +
                         "          <td align='center'>"+item.vendido+" "+item.unidad+"</td>"+
                         "          <td align='center' id='precio_"+item.pk+"' >"+item.precio+"</td>"+
-                        "          <td align='center' id='editable_"+item.pk+"'>"+item.estado+"</td>"+
+                        "          <td align='center'>"+item.estado+"</td>" +
+                        "          <td align='center' id='editable_"+item.pk+"'>"+"</td>"+
+                        "          <td align='center' id='delete_"+item.pk+"'>"+"</td>"+
                         "       </tr>");
 
                         if (item.editable) {
                             $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#modalLogin' onclick='LanzaPopup("+item.pk+")'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
+                            $('#delete_'+item.pk).append("&nbsp<a id='to_delete_"+item.pk+"' href='#' onclick='EliminaOferta("+item.pk+")'> <i class='fa fa-trash-o' style='font-size:24px'></i></a>")
                         }
                         i++
                 });
@@ -160,6 +163,29 @@
                     $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
                 }
             }
+        }
+
+        function EliminaOferta(id){
+            $.ajax({
+                type: "DELETE",
+                url: location.origin+"/productor/oferta/"+id+"/",
+                contentType: "aplication/json; charset-utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data[0].mensaje == 'OK'){
+                        console.log('Se elimina prodcuto')
+                        window.location.reload();
+                    }
+                    else {
+                        console.log('Error eliminando la oferta')
+                        console.log(data[0].mensaje)
+                        alert(data[0].mensaje)
+                    }
+                },
+                failure: function (errMsg) {
+                    alert("Error consumiendo el servicio web");
+                }
+            });
         }
 
         function LanzaPopup(idOferta) {
