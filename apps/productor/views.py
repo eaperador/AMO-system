@@ -286,9 +286,11 @@ def ConsultarProductosaOfertar(request):
         return HttpResponse(data_convert_s, content_type='application/json')
     else:
         productos_ini = list(Producto.objects.filter(activo=True).order_by('nombre'))
+        print ('Productos en stock: ', len(productos_ini))
         listaProductos = list()
         if (len(productos_ini) > 0):
             _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
+            print ('Catalogo para la semana: ', _catalogoOferta.count())
             if (_catalogoOferta.count() > 0):
                 ofertas = Oferta.objects.filter(id_catalogo_oferta_id=_catalogoOferta,
                                                 id_productor__auth_user_id=request.user.id)
@@ -309,6 +311,9 @@ def ConsultarProductosaOfertar(request):
                         else:
                             print('El producto', item.nombre, ' no ha sido ofertado')
                             listaProductos.append(item)
+                    else:
+                        print('El producto', item.nombre, ' no ha sido ofertado')
+                        listaProductos.append(item)
                 except Oferta.DoesNotExist:
                     print('No existen ofertas')
                 except CatalogoOfertas.DoesNotExist:
@@ -363,6 +368,44 @@ def ver_productos(request):
     #print user.id
     return render(request, "productosaOfertar.html")
 
+@csrf_exempt
+def EliminarOferta(request, id):
+    if request.method == 'DELETE':
+        try:
+            _oferta = Oferta.objects.get(id=id)
+            print ('Oferta a eliminar: ', _oferta.id)
+            _semanaOferta = _oferta.id_catalogo_oferta_id
+            print ('Semana de la oferta: ', _semanaOferta)
+            if(_oferta.id_estado_oferta_id != 1):
+                #print ('Solo las ofertas pendientes pueden ser retiradas')
+                json_response = [{'mensaje': "Solo las ofertas en estado pendiente pueden ser retiradas"}]
+                data_convert = json.dumps(json_response)
+                return HttpResponse(data_convert, content_type='application/json')
+            else:
+                dias = CalculoDiasCatalogoOfertas()
+                hoy = dias[0]
+                _catalogoOferta = CatalogoOfertas.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy)
+                print ('Catalogo para la semana: ', _catalogoOferta.first().id)
+                if(_catalogoOferta.first().id == _semanaOferta):
+                    #print ('Se elimina la oferta')
+                    _oferta.delete()
+                    json_response = [{'mensaje': "OK"}]
+                    data_convert = json.dumps(json_response)
+                    return HttpResponse(data_convert, content_type='application/json')
+                else:
+                    #print ('Solo pueden retirarse las ofertas de la última semana.')
+                    json_response = [{'mensaje': "Solo pueden retirarse las ofertas de la última semana."}]
+                    data_convert = json.dumps(json_response)
+                    return HttpResponse(data_convert, content_type='application/json')
+        except Exception as e:
+            print ('Error: ', e.message)
+            json_response = [{'mensaje': "Se ha presentado un error, por favor, contacte al administrador."}]
+            data_convert = json.dumps(json_response)
+            return HttpResponse(data_convert, content_type='application/json')
+    else:
+        json_response = [{'mensaje': "Método no permitido."}]
+        data_convert = json.dumps(json_response)
+        return HttpResponse(data_convert, content_type='application/json')
 
 @csrf_exempt
 def editarOferta(request):
