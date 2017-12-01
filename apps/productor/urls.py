@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'ver_productos/$', views.ver_productos, name='ver_productos'),
     url(r'listarProductosOfertas/$', views.listarProductosOfertas, name='listaProductosOfertas'),
     url(r'ConsultaSemanaOferta/$', views.ConsultaFechaSemanaOferta, name='ConsultaFechaSemanaOferta'),
-
+    url(r'oferta/(?P<id>[0-9]+)/$', views.EliminarOferta, name='EliminarOferta'),
 ]
