@@ -13,9 +13,11 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
+from ..consumidor.models import Compra, ItemCompra
 from ..comun.views import sendMailNotification
 from .models import CatalogoProductos, Producto, TipoUnidad, Categoria
-from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas
+from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas, CompraOfertado
+
 from ..administrador.models import ProductoCatalogo
 
 @csrf_exempt
@@ -295,3 +297,57 @@ def ingresar_producto(request):
                                id_categoria=categoria);
         new_product.save();
     return JsonResponse({"mensaje": "ok"})
+
+def getVentaHistoricaPorMes(request):
+    if (request.method == "POST"):
+        jsonProducto = json.loads(request.body)
+        productoId = int(jsonProducto['idProducto'])
+        now = datetime.now()
+
+        dataventa = []
+        meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        for i in range(1,13):
+            data = {}
+
+            start_date = datetime(now.year,i,1)
+
+            if i == 12:
+                end_date = datetime(now.year,1,1)
+            else:
+                end_date = datetime(now.year,i+1,1)
+
+            compras = Compra.objects.filter(fecha_compra__lt=end_date, fecha_compra__gte=start_date)
+            val_mes = 0
+            ofertas_mes = []
+
+            if (compras):
+                for c in compras:
+                    items = ItemCompra.objects.filter(id_compra=c)
+                    if(items):
+                        for it in items:
+                            ofertas = CompraOfertado.objects.filter(id_item_compra=it)
+                            for of in ofertas:
+                                if (of.id_oferta.id_producto.pk == productoId):
+                                    ofertas_mes.append(of.id_oferta.pk)
+                            producto = it.id_producto_catalogo.id_producto
+                            if(producto.pk == productoId):
+                                val_mes += (it.id_producto_catalogo.precio_definido * it.cantidad)
+            #print(val_mes)
+            if (i==1):
+                comparacion = 0
+            elif (dataventa[i-2]['valor'] == 0):
+                comparacion = 0
+            else:
+                comparacion = ((val_mes-dataventa[i-2]['valor'])*100)/dataventa[i-2]['valor']
+            data["mes"] = meses[i-1]
+            data["valor"] = val_mes
+            data["comparacion"] = comparacion
+            data["ofertas"] = len(list(set(ofertas_mes)))
+
+            dataventa.append(data)
+        data_info = json.dumps(dataventa)
+    return HttpResponse(data_info)
+
+@csrf_exempt
+def getHistoricoVentas(request):
+    return render(request, "Reportes/historico_precios_producto.html")

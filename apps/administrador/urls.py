@@ -22,4 +22,6 @@ urlpatterns = (
     url(r'listarTiposUnidad/$', views.tiposUnidad, name='listarTiposUnidad'),
     url(r'listarCategorias/$', views.Categorias, name='listarCategorias'),
     url(r'ingresarProducto/$', views.ingresar_producto, name='ingresarProducto'),
+    url(r'verVentaHistoricaPorMes/$', views.getVentaHistoricaPorMes, name='verVentaHistoricaPorMes'),
+    url(r'verHistoricoVentas/$', views.getHistoricoVentas, name='verHistoricoVentas'),
 )
