@@ -299,6 +299,7 @@ def ingresar_producto(request):
         new_product.save();
     return JsonResponse({"mensaje": "ok"})
 
+@csrf_exempt
 def getVentaHistoricaPorMes(request):
     if (request.method == "POST"):
         jsonProducto = json.loads(request.body)
