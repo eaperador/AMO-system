@@ -1,0 +1,98 @@
+{% extends 'layout/administrador_layout.html' %}
+
+{% block title %}
+    Admin
+{% endblock %}
+
+{% block content %}
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        var productos = $("#select_productos");
+        var inf = $("#info");
+        var table = $("#table-data");
+        inf.hide();
+        table.hide();
+        $(productos).change(function () {
+
+            $(".image").empty();
+            inf.show();
+            table.show();
+            var selected_producto = productos.val();
+
+            if (selected_producto)
+            {
+                var mensaje = "";
+
+                $.getJSON(location.origin+"/catalogo/seleccionarProducto/" + selected_producto).done(function (data) {
+                    console.log(data);
+                    $(".image").prepend("<img src='"+location.origin+"/static/"+data.imagen+"'class='img-responsive' style='width: 200px; height: 100px'>");
+                    $("#description_producto").html(data.descripcion);
+                    $("#lista_ofertas_producto").show();
+                });
+                $("#table-ventas").find("tr:gt(0)").remove();
+                $.post( location.origin+"/catalogo/verVentaHistoricaPorMes/",JSON.stringify({ idProducto: selected_producto })).done(function (data) {
+                    info = JSON.parse(data);
+                    console.log(info);
+                    var items = [];
+                    if (info)
+                    {
+                        $.each(info, function (key,val) {
+                            if(val.valor > 0)
+                            {
+                                items.push("<tr>");
+                                items.push("<td>"+val.mes+"</td>");
+                                items.push("<td>"+val.valor+"</td>");
+                                items.push("<td>"+val.comparacion+"%</td>");
+                                items.push("<td>"+val.ofertas+"</td>");
+                                items.push("</tr>");
+                            }
+                        });
+
+                        $("<tbody/>",{html: items.join("")}).appendTo("#table-ventas");
+                    }
+			    });
+            }
+        });
+
+        //Listar productos
+        $.getJSON(location.origin+"/catalogo/seleccionarProductos/").done(function (data) {
+             console.log(data);
+             var options = $("#select_productos");
+             options.append($("<option />").val('').text('Seleccione producto'));
+             $.each(data, function() {
+                options.append($("<option />").val(this.id).text(this.nombre));
+            });
+        });
+
+    });
+</script>
+<div class="container" style="margin-top: 60px">
+    <h1>Historico de ventas</h1>
+    <div class="col-md-4 col-centered">
+        <label for="select_productos" class="label-control">Producto:</label>
+        <select id="select_productos" class="form-control" style="margin-bottom: 20px"></select>
+    </div>
+    <div id="info">
+        <h3 class="page-header">Producto: <span id="description_producto"></span></h3>
+        <div class="image"></div>
+    </div>
+    <div id="table-data">
+        <div class="col-lg-12 col-centered">
+            <table class="table table-bordered" id="table-ventas">
+                <thead>
+                <tr>
+                    <th>Mes</th>
+                    <th>Precio Venta</th>
+                    <th>Respecto al mes anterior</th>
+                    <th>Número de ofertas</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
