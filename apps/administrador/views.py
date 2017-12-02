@@ -15,8 +15,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..consumidor.models import Compra, ItemCompra
 from ..comun.views import sendMailNotification
-from .models import CatalogoProductos, Producto
+from .models import CatalogoProductos, Producto, TipoUnidad, Categoria
 from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas, CompraOfertado
+
 from ..administrador.models import ProductoCatalogo
 
 @csrf_exempt
@@ -146,6 +147,27 @@ def catalogoProductos(request):
     return render(request, "Ofertas/catalogoProductos.html")
 
 @csrf_exempt
+def crearProducto(request):
+    return render(request, "Producto/crear_producto.html")
+
+@csrf_exempt
+def tiposUnidad(request):
+    tipos_unidad = TipoUnidad.objects.all()
+    if request.method == "GET":
+        lista_tipos_unidad = [{'id': tu.id,
+                        'nombre': tu.nombre,
+                        'abreviatura': tu.abreviatura,
+                        } for tu in tipos_unidad]
+    data_convert = json.dumps(lista_tipos_unidad)
+    return HttpResponse(data_convert)
+
+@csrf_exempt
+def Categorias(request):
+    if request.method == "GET":
+        categorias = Categoria.objects.all()
+    return HttpResponse(serializers.serialize("json", categorias))
+
+@csrf_exempt
 def ingresarCatalogoOferta(request):
     if request.method == "POST":
         jsonData = json.loads(request.body)
@@ -251,13 +273,31 @@ def guardarEstadoProducto(request):
                 else:
                     mensaje = "no"
             else:
-                print("lo cambia de estado adesactivado");
+                print("lo cambia de estado adesactivado")
                 Producto.objects.filter(pk=productoId).update(activo=estado)
                 mensaje="ok"
 
     return JsonResponse({"mensaje": mensaje})
 
 @csrf_exempt
+def ingresar_producto(request):
+    if (request.method=="POST"):
+        print(request.POST.get('activo'))
+        if request.POST.get('activo') == "on":
+            activo = True
+        else:
+            activo = False
+        tipo_unidad = TipoUnidad.objects.get(pk=request.POST['unidad'])
+        categoria = Categoria.objects.get(pk=request.POST['categoria'])
+        new_product = Producto(nombre=request.POST['nombre'],
+                               descripcion=request.POST['descripcion'],
+                               foto=request.FILES['imagen'],
+                               activo=activo,
+                               id_tipo_unidad=tipo_unidad,
+                               id_categoria=categoria);
+        new_product.save();
+    return JsonResponse({"mensaje": "ok"})
+
 def getVentaHistoricaPorMes(request):
     if (request.method == "POST"):
         jsonProducto = json.loads(request.body)
