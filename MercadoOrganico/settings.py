@@ -120,7 +120,7 @@ elif ON_HEROKU_PROD:
         }
     }
 else:
-    # Configuracion de base de datos local
+    # Configuracion de base de datos despliegue
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
