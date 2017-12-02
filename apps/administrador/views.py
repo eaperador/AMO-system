@@ -353,5 +353,5 @@ def getHistoricoVentas(request):
     return render(request, "Reportes/historico_precios_producto.html")
 
 def cerrarSemana(request):
-    return JsonResponse({"mensaje": 'ok'})
+    return JsonResponse({"mensaje": 'No hay catalogo para cerrar'})
 
