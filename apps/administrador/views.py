@@ -13,6 +13,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
+from ..comun.models import Usuario
 from ..consumidor.models import Compra, ItemCompra
 from ..comun.views import sendMailNotification
 from .models import CatalogoProductos, Producto, TipoUnidad, Categoria
@@ -352,6 +353,24 @@ def getVentaHistoricaPorMes(request):
 def getHistoricoVentas(request):
     return render(request, "Reportes/historico_precios_producto.html")
 
+
+def confirmar(ofertas):
+    for oferta in ofertas:
+        prod = oferta.id_productor
+        cantidad = oferta.cantidad - oferta.cantidad_disponible
+        email = prod.auth_user_id.email
+        asunto = "Confirmación de pedido"
+        mensaje = "Señor(a) " + prod.auth_user_id.first_name + " " + prod.auth_user_id.last_name + ": \n\n"
+        mensaje = mensaje + "De la forma más atenta queremos informale que su oferta tuvo una venta de \n"
+        mensaje = mensaje + "         "+str(cantidad) + " " +str(oferta.id_producto.id_tipo_unidad.abreviatura)
+        mensaje = mensaje + " de " + oferta.id_producto.nombre +"\n"
+        if cantidad > 0 :
+            mensaje = mensaje + "Recuerde que debe hacernos llegar su producto en los proximos 2 días \n"
+        mensaje = mensaje + "Puede consultar más información de la oferta en su perfil y recuerde estar atento a futuras notificaciones\n\n"
+        mensaje = mensaje + "Saludos."
+        sendMailNotification(email, asunto, mensaje)
+
+
 def cerrarSemana(request):
     today = datetime.now().date()
     catalogoSet = CatalogoProductos.objects.filter(fecha_inicio__lte=today).filter(fecha_fin__gte=today).filter(activo=True)
@@ -361,8 +380,13 @@ def cerrarSemana(request):
     else:
         catalogo.activo = False
         catalogo.save()
-        #prodList = CompraOfertado.objects.filter(id_item_compra__id_producto_catalogo__id_catalogo=catalogo.id)
-        #for prodVenta in prodList:
-            #ventas =
+        prodList = CompraOfertado.objects.filter(id_item_compra__id_producto_catalogo__id_catalogo=catalogo.id).distinct('id_oferta')
+        ofertas = list()
+        for prodVenta in prodList:
+            ofertas.append(Oferta.objects.filter(id = prodVenta.id_oferta.id).first())
+
+        confirmar (ofertas)
+
+
         return JsonResponse({"mensaje": 'Se cerro el catalogo con vigencia '+str(catalogo.fecha_inicio)+' - '+str(catalogo.fecha_fin)})
 

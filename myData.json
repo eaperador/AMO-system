@@ -74,6 +74,7 @@
       "first_name": "Productor",
       "last_name": "Uno",
       "username": "prod1",
+      "email": "og.amaya@uniandes.edu.co",
       "password": "pbkdf2_sha256$36000$MOSEV7urkZFb$CYm7AsQ7jts2cC9gtMwLAOjnrgRXGqI2thrtPx9B91E="
     }
   },
@@ -85,6 +86,16 @@
       "last_name": "Usuario",
       "username": "administrador",
       "password": "pbkdf2_sha256$36000$M0WdMy2pAszA$3355CP3aEX0v1bIbg/R5Hw6x8UKaen9jKkxvW1+QQ9k="
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": "3",
+    "fields": {
+      "first_name": "Consumidor",
+      "last_name": "Usuario",
+      "username": "consumidor",
+      "password": "pbkdf2_sha256$36000$Iy1tOWO9sMDd$cAPGZqQdQfO29Le3BeRU6DFxlDtcbQ+ToSUk5zMkG1s="
     }
   },
   {
@@ -107,6 +118,18 @@
       "descripcion": "Usuario administrador",
       "telefono": "16516",
       "auth_user_id": "2",
+      "id_rol": "2",
+      "id_cooperativa": "1"
+    }
+  },
+  {
+    "model": "comun.Usuario",
+    "pk": "3",
+    "fields": {
+      "foto": "images/user/photo1.jpg",
+      "descripcion": "Usuario consumidor",
+      "telefono": "16516",
+      "auth_user_id": "3",
       "id_rol": "2",
       "id_cooperativa": "1"
     }
@@ -175,6 +198,64 @@
       "cantidad_disponible":"50",
       "id_producto":"2",
       "id_catalogo":"1"
+    }
+  },{
+    "model": "comun.Direccion",
+    "pk": "1",
+    "fields": {
+      "id_usuario_comprador":"3",
+      "direccion":"Av Falsa 123"
+    }
+  },{
+    "model": "distribuidor.Entrega",
+    "pk": "1",
+    "fields": {
+      "estado":"Todo bien",
+      "id_ruta":"1"
+    }
+  },{
+    "model": "distribuidor.Ruta",
+    "pk": "1",
+    "fields": {
+      "descripcion":"Una ruta",
+      "id_usuario_distribuidor":"3"
+    }
+  }
+  ,{
+    "model": "consumidor.MedioPago",
+    "pk": "1",
+    "fields": {
+      "nombre":"Efectivo",
+      "id_usuario_comprador":"3"
+    }
+  },{
+    "model": "consumidor.Compra",
+    "pk": "1",
+    "fields": {
+      "fecha_compra":"2017-12-02",
+      "valor_total":"500",
+      "cantidad_items":"1",
+      "fecha_entrega":"2017-12-05",
+      "id_usuario_comprador":"3",
+      "id_direccion_compra":"1",
+      "id_entrega":"1",
+      "id_medio_pago":"1"
+    }
+  },{
+    "model": "consumidor.ItemCompra",
+    "pk": "1",
+    "fields": {
+      "cantidad":"1",
+      "id_producto_catalogo":"1",
+      "id_compra":"1"
+    }
+  },{
+    "model": "productor.CompraOfertado",
+    "pk": "1",
+    "fields": {
+      "cantidad":"1",
+      "id_item_compra":"1",
+      "id_oferta":"1"
     }
   }
 ]
