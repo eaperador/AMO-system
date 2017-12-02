@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from datetime import timedelta, datetime
+from datetime import datetime
 import json
+
+from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-import time
-from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
@@ -20,6 +20,8 @@ from .models import CatalogoProductos, Producto, TipoUnidad, Categoria
 from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas, CompraOfertado
 
 from ..administrador.models import ProductoCatalogo
+from django.contrib.auth.models import User
+from ..comun.models import Cooperativa,Usuario, Rol,Finca
 
 @csrf_exempt
 def index(request):
@@ -215,12 +217,12 @@ def listar_productos(request,page):
         listado_productos = Producto.objects.all()
 
         # paginacion
-        paginator = Paginator(listado_productos, 1)
+        paginator = Paginator(listado_productos, 4)
 
         try:
             prodsPag = paginator.page(page)
         except PageNotAnInteger:
-            prodsPag = paginator.page(4)
+            prodsPag = paginator.page(1)
         except EmptyPage:
             prodsPag = paginator.page(paginator.num_pages)
 
@@ -390,3 +392,70 @@ def cerrarSemana(request):
 
         return JsonResponse({"mensaje": 'Se cerro el catalogo con vigencia '+str(catalogo.fecha_inicio)+' - '+str(catalogo.fecha_fin)})
 
+
+@csrf_exempt
+def crearProductor(request):
+    return render(request, "Ofertas/crear_productor.html")
+
+@csrf_exempt
+def guardar_productor(request):
+    mensaje = ""
+    if request.method == 'POST':
+        jsonProductor = json.loads(request.body)
+        nombreProductor = jsonProductor['nombreProductor']
+        apellidosProductor = jsonProductor['apellidosProductor']
+        telefono = jsonProductor['telefono']
+        email = jsonProductor['email']
+        descripcionProd = jsonProductor['descripcionProd']
+        cooperativa = jsonProductor['cooperativa']
+        usuario = jsonProductor['usuario']
+        contrasena = jsonProductor['contasena']
+        imagenProductor = jsonProductor['imagenProductor']
+        nombreFinca = jsonProductor['nombreFinca']
+        descripcionFinca = jsonProductor['descripcionFinca']
+        imagenFinca = jsonProductor['imagenFinca']
+        coordenadas = jsonProductor['coordenadas']
+
+        usuario_existente = User.objects.filter(username=usuario)
+        if usuario_existente.count() >= 1:
+            mensaje = "Ya existe un productor con el mismo usuario"
+        else:
+            user_model = User.objects.create_user(username=usuario, password=contrasena)
+            user_model.first_name = nombreProductor
+            user_model.last_name = apellidosProductor
+            user_model.email = email
+            user_model.save()
+
+            # get rol
+            rol = Rol.objects.get(pk=1)
+            # get cooperativa
+            coop = Cooperativa.objects.get(pk=cooperativa)
+
+            # usuario no puede existir
+            user_app = Usuario.objects.create(foto=imagenProductor,
+                                              telefono=telefono,
+                                              descripcion=descripcionProd,
+                                              id_rol=rol,
+                                              id_cooperativa=coop,
+                                              auth_user_id=user_model)
+            user_app.save()
+
+            # crear finca
+            finca = Finca.objects.create(nombre=nombreFinca,
+                                         descripcion=descripcionFinca,
+                                         foto=imagenFinca,
+                                         ubicacion=coordenadas,
+                                         id_usuario_productor=user_app)
+            finca.save()
+            mensaje = "OK"
+    return JsonResponse({"mensaje": mensaje})
+
+@csrf_exempt
+def listar_cooperativas(request):
+    if request.method == "GET":
+        lista_cooperativas = Cooperativa.objects.all()
+        data_cooperativas = [{'id': cooperativa.id,
+                              'ciudad': cooperativa.ciudad} for cooperativa in lista_cooperativas]
+    data_convert = json.dumps(data_cooperativas)
+
+    return HttpResponse(data_convert)

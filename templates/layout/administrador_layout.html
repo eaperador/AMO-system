@@ -14,6 +14,9 @@
     <!-- Bootstrap core CSS -->
     <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 
+    <!-- Google fonts - Roboto -->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+
     <!-- Custom fonts for this template -->
     <link href="{% static 'vendor/font-awesome/css/font-awesome.css' %}" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
@@ -58,6 +61,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
+              <li class="nav-item" id ="crear_productor"><a class="nav-link" href="{% url 'catalogo:crearProductor' %}">Crear Productor</a></li>
               <li class="nav-item" id ="catalogo_productos"><a class="nav-link" href="{% url 'catalogo:catalogoProductos' %}">Catálogo Productos</a></li>
               <li class="nav-item" id ="evaluar_ofertas"><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
               <li class="nav-item" id ="armar_catalogo"><a class="nav-link" href="{% url 'catalogo:index' %}">Armar Catálogo</a></li>
@@ -65,7 +69,7 @@
               <li class="nav-item" id="cerrar_sesion"><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
            </ul>
         </div>
-      </div>S
+      </div>
     </nav>
     {% endblock %}
 

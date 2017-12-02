@@ -1,0 +1,228 @@
+{% extends 'layout/administrador_layout.html' %}
+
+{% block title %}
+    Administrador
+{% endblock %}
+
+{% block content %}
+<header class="masthead" style="background: whitesmoke">
+    <style>
+        fieldset
+        {
+          border:2px solid darkgray;
+            -moz-border-radius:8px;
+            -webkit-border-radius:8px;
+            border-radius:8px;
+            padding:16px;
+        }
+        legend
+        {
+            width: auto;
+            font-weight: bold;
+            font-size: 16px;
+            color: black;
+            font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .inputfile {
+            color: black;
+            font-size: 12px;
+        }
+        .imgText {
+            color: black;
+            font-size: 12px;
+        }
+    </style>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuK0B-vMtqO_0kbdojIr0GOEoPFz2NZps&callback=initMap">
+    </script>
+
+    <script>
+        var map = null, marker, latSelect, longSelect;
+       function initMap() {
+             var uluru = {lat: 4.543, lng: -74.064},
+             map = new google.maps.Map(document.getElementById('map'), {
+                 zoom: 4,
+                 center: uluru
+                });
+            google.maps.event.addListener(map, "click", function(event) {
+                latSelect = event.latLng.lat();
+                longSelect = event.latLng.lng();
+
+                placeMarker(event.latLng);
+            });
+
+            google.maps.event.trigger(map, 'resize')
+        }
+
+        function placeMarker(location) {
+            if (marker)
+            {
+                marker.setMap(null)
+            }
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+
+        function seleccionarUbicacion(){
+            if(latSelect || longSelect){
+                alert("entro");
+                $("#coordenadasMapa").text(latSelect.toString().substring(0,6)+","+longSelect.toString().substring(0,6));
+            }else{
+                alert("Seleccione un punto en el mapa")
+            }
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah')
+                        .attr('src', e.target.result)
+                        .width(150)
+                        .height(200);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function readURLFinca(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#imgFinca')
+                        .attr('src', e.target.result)
+                        .width(250)
+                        .height(120);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $(document).ready(function () {
+            //Listar cooperativas
+            $.getJSON(location.origin+"/catalogo/listarCooperativa/").done(function (data) {
+                 var options = $("#select_cooperativa");
+                 options.append($("<option />").val('').text('Seleccione cooperativa'));
+                 $.each(data, function() {
+                    options.append($("<option />").val(this.id).text(this.ciudad));
+                });
+            });
+
+            $("#form-registro").submit(function (event) {
+                var cooperativas = $("#select_cooperativa");
+                var selected_cooperativa = cooperativas.val();
+                $.ajax({
+                        type: "POST",
+                        url: location.origin + "/catalogo/guardarProductor/",
+                        data: JSON.stringify({
+                            nombreProductor: $('#inputNombre').val(),
+                            apellidosProductor: $('#inputApellidos').val(),
+                            telefono: $('#inputTelefono').val(),
+                            email: $('#inputCorreo').val(),
+                            cooperativa: selected_cooperativa,
+                            descripcionProd: $('#inputDescripcionProd').val(),
+                            usuario: $('#inputUsuario').val(),
+                            contasena: $('#inputContrasena').val(),
+                            imagenProductor: $("#fileUrl").val().split('/').pop().split('\\').pop(),
+                            nombreFinca: $('#inputNombreFinca').val(),
+                            descripcionFinca: $('#inputDescripcionFinca').val(),
+                            imagenFinca: $("#fileURLFinca").val().split('/').pop().split('\\').pop(),
+                            coordenadas: latSelect + "," + longSelect
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            alert("concluye");
+                            if (data.mensaje == 'ok') {
+                                alert('Productor creado exitosamente!');
+                                window.location = "{% url 'comun:index' %}";
+                            } else {
+                                alert(data.mensaje);
+                            }
+                        },
+                        failure: function (errMsg) {
+                            alert('Hubo error!');
+                        }
+                    });
+            });
+        });
+
+
+    </script>
+
+    <section>
+        <div class="container col-centered col-md-12">
+            <form class="form" method="POST" id="form-registro">
+                <div class="row">
+                    <div class="col-centered col-md-6">
+                        <fieldset>
+                            <legend align="left">Datos del productor</legend>
+                                <div class="row">
+                                    <div class="col-centered col-md-6">
+                                        <label for="inputNombre" class="sr-only">Nombres</label>
+                                        <input id="inputNombre" class="form-control" placeholder="Nombres" style="font-size: 14px; margin-bottom: 5px" name="nombres" required autofocus >
+                                        <label for="inputApellidos" class="sr-only">Apellidos</label>
+                                        <input id="inputApellidos" class="form-control" placeholder="Apellidos" style="font-size: 14px; margin-bottom: 5px" name="apellidos" required autofocus >
+                                        <label for="inputDescripcionProd" class="sr-only">Descripción</label>
+                                        <textarea class="form-control" rows="3" placeholder="Descripción" style="font-size: 14px; margin-bottom: 5px" id="inputDescripcionProd" required></textarea>
+                                        <label for="inputCorreo" class="sr-only">Correo</label>
+                                        <input type="email" id="inputCorreo" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Correo" name="correo" required autofocus >
+                                        <label for="inputTelefono" class="sr-only">Teléfono</label>
+                                        <input type="number" id="inputTelefono" class="form-control"  style="font-size: 14px; margin-bottom: 5px" placeholder="Teléfono" name="telefono" required autofocus >
+                                        <select id="select_cooperativa" class="form-control" style="font-size: 14px; margin-bottom: 5px;" required></select>
+                                        <label for="inputUsuario" class="sr-only">Usuario</label>
+                                        <input type="usuario" id="inputUsuario" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Usuario" name="usuario" required autofocus >
+                                        <label for="inputContrasena" class="sr-only">Nombres</label>
+                                        <input type="password" id="inputContrasena" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Contraseña" name="contraseña" required autofocus ><br/><br/>
+                                    </div>
+                                    <div class="col-centered col-md-6">
+                                        <div class="panel panel-default">
+                                            <img class="imgText" id="blah" src="#" alt="Tu imagen de perfil"/><br><br>
+                                            <input type='file' id="fileUrl" class="inputfile" required onchange="readURL(this);" />
+                                        </div>
+                                    </div>
+                                </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-centered col-md-6">
+                        <fieldset>
+                            <legend align="left">Datos de la finca</legend>
+                            <div class="row">
+                                <div class="col-centered col-md-6">
+                                    <label for="inputNombreFinca" class="sr-only">Nombres</label>
+                                    <input id="inputNombreFinca" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Nombre de la Finca" name="nombre" required autofocus >
+                                    <label for="inputDescripcionFinca" class="sr-only">Descripción</label>
+                                    <textarea class="form-control" rows="3" style="font-size: 14px; margin-bottom: 5px" placeholder="Descripción de la finca" id="inputDescripcionFinca" required></textarea>
+                                </div>
+                                 <div class="col-centered col-md-6">
+                                    <div class="panel panel-default">
+                                        <img class="imgText" id="imgFinca" src="#" alt="Foto de la finca"/><br><br>
+                                        <input type='file' id="fileURLFinca" class="inputfile" required onchange="readURLFinca(this);" />
+                                    </div>
+                                </div>
+                                <div class="col-centered">
+                                     <p id="coordenadasMapa" class="col-md-6" style="visibility: collapse"></p>
+                                     <div id="map" style="width:500px;height:200px;"></div><button type="button" onclick="seleccionarUbicacion();" class="btn btn-primary">Capturar Coordenadas</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="container col-centered col-md-12">
+                    <br/>
+                    <button class="btn btn-primary btn-success" id="btn_crearProductor" type="submit">Crear productor</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</header>
+{% endblock %}
