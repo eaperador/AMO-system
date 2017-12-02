@@ -1,0 +1,341 @@
+{% extends 'layout/administrador_layout.html' %}
+
+{% block title %}
+    Administrador
+{% endblock %}
+
+{% block content %}
+<header class="masthead" style="background: whitesmoke">
+    <style>
+        fieldset
+        {
+          border:2px solid darkgray;
+            -moz-border-radius:8px;
+            -webkit-border-radius:8px;
+            border-radius:8px;
+            padding:16px;
+        }
+        legend
+        {
+            width: auto;
+            font-weight: bold;
+            font-size: 16px;
+            color: black;
+            font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .inputfile {
+            color: black;
+            font-size: 12px;
+        }
+        .imgText {
+            color: black;
+            font-size: 12px;
+        }
+    </style>
+
+    <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuK0B-vMtqO_0kbdojIr0GOEoPFz2NZps&callback=initMap">
+    </script>
+
+    <script>
+        var map = null, marker, latSelect, longSelect;
+       function initMap() {
+             var uluru = {lat: 4.543, lng: -74.064},
+             map = new google.maps.Map(document.getElementById('map'), {
+                 zoom: 4,
+                 center: uluru
+                });
+            google.maps.event.addListener(map, "click", function(event) {
+                latSelect = event.latLng.lat();
+                longSelect = event.latLng.lng();
+
+                placeMarker(event.latLng);
+            });
+
+            google.maps.event.trigger(map, 'resize')
+        }
+
+        function placeMarker(location) {
+            if (marker)
+            {
+                marker.setMap(null)
+            }
+            marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+
+        function seleccionarUbicacion(){
+            if(latSelect || longSelect){
+                $("#coordenadasMapa").text(latSelect.toString().substring(0,6)+","+longSelect.toString().substring(0,6));
+            }else{
+                alert("Seleccione un punto en el mapa")
+            }
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah')
+                        .attr('src', e.target.result)
+                        .width(150)
+                        .height(200);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearFileInput(id)
+        {
+            var oldInput = document.getElementById(id);
+            var newInput = document.createElement("input");
+            newInput.type = "file";
+            newInput.id = oldInput.id;
+            newInput.name = oldInput.name;
+            newInput.className = oldInput.className;
+            newInput.style.cssText = oldInput.style.cssText;
+            oldInput.parentNode.replaceChild(newInput, oldInput);
+        }
+
+        function limpiarCamposProductor() {
+            $("#inputNombre").val('');
+            $("#inputapellidos").val('');
+            $("#inputTelefono").val('');
+            $("#inputCorreo").val('');
+            $("#inputDescripcionProd").val('');
+            $("#inputUsuario").val('');
+            $("#inputContrasena").val('');
+            $("#inputContrasena2").val('');
+            clearFileInput("fileUrl");
+            $("#inputNombreFinca").val('');
+            $("#inputDescripcionFinca").val('');
+            $("#select_cooperativa").val('');
+            clearFileInput("fileURLFinca");
+            var image_prod = document.getElementById('blah');
+            image_prod.parentNode.removeChild(image_prod);
+
+            var image_finca = document.getElementById('imgFinca');
+            image_finca.parentNode.removeChild(image_finca);
+        }
+
+        function crearNuevoProductor() {
+            if($('#inputNombre').val().trim() == ""){
+                alert("El campo Nombres del productor es obligatorio");
+                return;
+            }
+            if($('#inputApellidos').val().trim() == ""){
+                alert("El campo Apellidos del productor es obligatorio");
+                return;
+            }
+            if($('#inputDescripcionProd').val().trim() == ""){
+                alert("El campo Descripción del productor es obligatorio");
+                return;
+            }
+
+            if($('#inputCorreo').val().trim() == ""){
+                alert("El campo Correo del productor es obligatorio");
+                return;
+            }
+
+            emailRegex = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+            if(!emailRegex.test($('#inputCorreo').val())){
+                alert ("El correo no es válido.");
+                return;
+            }
+
+            if($('#inputTelefono').val().trim() == ""){
+                alert("El campo Teléfono del productor es obligatorio");
+                return;
+            }
+
+            if( $("#select_cooperativa").val()==''){
+                alert("El campo Coorperativa es obligatorio");
+                return;
+            }
+
+            if($('#inputUsuario').val().trim() == ""){
+                alert("El campo Usuario es obligatorio");
+                return;
+            }
+            if($('#inputContrasena').val().trim() == ""){
+                alert("El campo Contraseña es obligatorio");
+                return;
+            }
+            if($('#inputContrasena2').val().trim() == ""){
+                alert("Es necesario repetir la contraseña");
+                return;
+            }
+
+            if($('#inputContrasena').val().trim() != $('#inputContrasena2').val().trim()){
+                alert("Las contraseñas no coinciden");
+                return;
+            }
+
+            if($("#fileUrl").val().trim() == ""){
+                alert("La foto de perfil del productor es obligatoria");
+                return;
+            }
+
+            if($('#inputNombreFinca').val().trim() == ""){
+                alert("El campo Nombre de la Finca es obligatorio");
+                return;
+            }
+
+            if($('#inputDescripcionFinca').val().trim() == ""){
+                alert("El campo Descripción de la Finca es obligatorio");
+                return;
+            }
+
+            if($("#fileURLFinca").val().trim() == ""){
+                alert("La foto de la finca es obligatoria");
+                return;
+            }
+
+            if(latSelect==undefined || longSelect==undefined)
+            {
+                alert("Las ubicación de la finca es obligatoria");
+                return;
+            }
+
+            var cooperativas = $("#select_cooperativa");
+            var selected_cooperativa = cooperativas.val();
+                $.ajax({
+                        type: "POST",
+                        url: location.origin + "/catalogo/guardarProductor/",
+                        data: JSON.stringify({
+                            nombreProductor: $('#inputNombre').val(),
+                            apellidosProductor: $('#inputApellidos').val(),
+                            telefono: $('#inputTelefono').val(),
+                            email: $('#inputCorreo').val(),
+                            cooperativa: selected_cooperativa,
+                            descripcionProd: $('#inputDescripcionProd').val(),
+                            usuario: $('#inputUsuario').val(),
+                            contasena: $('#inputContrasena').val(),
+                            imagenProductor: $("#fileUrl").val().split('/').pop().split('\\').pop(),
+                            nombreFinca: $('#inputNombreFinca').val(),
+                            descripcionFinca: $('#inputDescripcionFinca').val(),
+                            imagenFinca: $("#fileURLFinca").val().split('/').pop().split('\\').pop(),
+                            coordenadas: latSelect + "," + longSelect
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.mensaje == 'ok') {
+                                alert('Productor creado exitosamente!');
+                                limpiarCamposProductor();
+                                window.location = "{% url 'comun:index' %}";
+                            } else {
+                                alert(data.mensaje);
+                            }
+                        },
+                        failure: function (errMsg) {
+                            alert('Hubo error!');
+                        }
+                    });
+                }
+
+
+        function readURLFinca(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#imgFinca')
+                        .attr('src', e.target.result)
+                        .width(250)
+                        .height(120);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $(document).ready(function () {
+            //Listar cooperativas
+            $.getJSON(location.origin+"/catalogo/listarCooperativa/").done(function (data) {
+                 var options = $("#select_cooperativa");
+                 options.append($("<option />").val('').text('Seleccione cooperativa'));
+                 $.each(data, function() {
+                    options.append($("<option />").val(this.id).text(this.ciudad));
+                });
+            });
+        });
+
+
+    </script>
+
+    <section>
+        <div class="container col-centered col-md-12">
+                <div class="row">
+                    <div class="col-centered col-md-6">
+                        <fieldset>
+                            <legend align="left">Datos del productor</legend>
+                                <div class="row">
+                                    <div class="col-centered col-md-6">
+                                        <label for="inputNombre" class="sr-only">Nombres</label>
+                                        <input id="inputNombre" class="form-control" placeholder="Nombres" style="font-size: 14px; margin-bottom: 5px" name="nombres" required autofocus >
+                                        <label for="inputApellidos" class="sr-only">Apellidos</label>
+                                        <input id="inputApellidos" class="form-control" placeholder="Apellidos" style="font-size: 14px; margin-bottom: 5px" name="apellidos" required autofocus >
+                                        <label for="inputDescripcionProd" class="sr-only">Descripción</label>
+                                        <textarea class="form-control" rows="3" placeholder="Descripción" style="font-size: 14px; margin-bottom: 5px" id="inputDescripcionProd" required></textarea>
+                                        <label for="inputCorreo" class="sr-only">Correo</label>
+                                        <input type="email" id="inputCorreo" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Correo" name="correo" required autofocus >
+                                        <label for="inputTelefono" class="sr-only">Teléfono</label>
+                                        <input type="number" id="inputTelefono" class="form-control"  style="font-size: 14px; margin-bottom: 5px" placeholder="Teléfono" name="telefono" required autofocus >
+                                        <select id="select_cooperativa" class="form-control" style="font-size: 14px; margin-bottom: 5px;" required></select>
+                                        <label for="inputUsuario" class="sr-only">Usuario</label>
+                                        <input type="usuario" id="inputUsuario" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Usuario" name="usuario" required autofocus >
+                                        <label for="inputContrasena" class="sr-only">Contraseña</label>
+                                        <input type="password" id="inputContrasena" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Contraseña" name="contraseña" required autofocus >
+                                        <label for="inputContrasena2" class="sr-only">Nombres</label>
+                                        <input type="password" id="inputContrasena2" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Repetir Contraseña" name="contraseña" required autofocus ><br/>
+
+                                    </div>
+                                    <div class="col-centered col-md-6">
+                                        <div class="panel panel-default">
+                                            <img class="imgText" id="blah" src="#" alt="Tu imagen de perfil"/><br><br>
+                                            <input type='file' id="fileUrl" class="inputfile" required onchange="readURL(this);" />
+                                        </div>
+                                    </div>
+                                </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-centered col-md-6">
+                        <fieldset>
+                            <legend align="left">Datos de la finca</legend>
+                            <div class="row">
+                                <div class="col-centered col-md-6">
+                                    <label for="inputNombreFinca" class="sr-only">Nombres</label>
+                                    <input id="inputNombreFinca" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Nombre de la Finca" name="nombre" required autofocus >
+                                    <label for="inputDescripcionFinca" class="sr-only">Descripción</label>
+                                    <textarea class="form-control" rows="3" style="font-size: 14px; margin-bottom: 5px" placeholder="Descripción de la finca" id="inputDescripcionFinca" required></textarea>
+                                </div>
+                                 <div class="col-centered col-md-6">
+                                    <div class="panel panel-default">
+                                        <img class="imgText" id="imgFinca" src="#" alt="Foto de la finca"/><br><br>
+                                        <input type='file' id="fileURLFinca" class="inputfile" required onchange="readURLFinca(this);" />
+                                    </div>
+                                </div>
+                                <div class="col-centered">
+                                     <p id="coordenadasMapa" class="col-md-6" style="visibility: collapse"></p>
+                                     <div id="map" style="width:500px;height:200px;"></div><button type="button" onclick="seleccionarUbicacion();" class="btn btn-primary">Capturar Coordenadas</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="container col-centered col-md-12">
+                    <br/>
+                    <button class="btn btn-primary btn-success" id="btn_crearProductor" onclick="crearNuevoProductor()">Crear productor</button>
+                    <button class="btn btn-primary btn-success" id="btn_limpiar" onclick="limpiarCamposProductor()">Limpiar</button>
+                </div>
+        </div>
+    </section>
+</header>
+{% endblock %}

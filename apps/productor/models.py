@@ -34,4 +34,3 @@ class CompraOfertado(models.Model):
     cantidad = models.IntegerField()
     id_item_compra = models.ForeignKey(ItemCompra, null=False)
     id_oferta = models.ForeignKey(Oferta, null=False)
-
