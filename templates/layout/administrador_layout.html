@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {# Load the tag library #}
 {% load staticfiles %}
 
@@ -58,6 +59,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
+              <li class="nav-item" id ="crear_productor"><a class="nav-link" href="{% url 'catalogo:crearProductor' %}">Crear Productor</a></li>
               <li class="nav-item" id ="catalogo_productos"><a class="nav-link" href="{% url 'catalogo:catalogoProductos' %}">Catálogo Productos</a></li>
               <li class="nav-item" id ="evaluar_ofertas"><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
               <li class="nav-item" id ="armar_catalogo"><a class="nav-link" href="{% url 'catalogo:index' %}">Armar Catálogo</a></li>
@@ -107,5 +109,4 @@
 
     {% endblock %}
 </body>
-
 </html>
