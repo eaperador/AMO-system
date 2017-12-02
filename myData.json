@@ -147,5 +147,34 @@
       "fecha_fin":"2017-11-08",
       "activo":"True"
     }
+  },
+  {
+    "model": "administrador.CatalogoProductos",
+    "pk": "1",
+    "fields": {
+      "fecha_inicio":"2017-12-01",
+      "fecha_fin":"2017-12-31",
+      "activo":"True"
+    }
+  },{
+    "model": "administrador.ProductoCatalogo",
+    "pk": "1",
+    "fields": {
+      "precio_definido":"500",
+      "cantidad_definida":"50",
+      "cantidad_disponible":"50",
+      "id_producto":"1",
+      "id_catalogo":"1"
+    }
+  },{
+    "model": "administrador.ProductoCatalogo",
+    "pk": "2",
+    "fields": {
+      "precio_definido":"500",
+      "cantidad_definida":"50",
+      "cantidad_disponible":"50",
+      "id_producto":"2",
+      "id_catalogo":"1"
+    }
   }
 ]

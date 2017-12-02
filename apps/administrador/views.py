@@ -353,5 +353,16 @@ def getHistoricoVentas(request):
     return render(request, "Reportes/historico_precios_producto.html")
 
 def cerrarSemana(request):
-    return JsonResponse({"mensaje": 'No hay catalogo para cerrar'})
+    today = datetime.now().date()
+    catalogoSet = CatalogoProductos.objects.filter(fecha_inicio__lte=today).filter(fecha_fin__gte=today).filter(activo=True)
+    catalogo = catalogoSet.first()
+    if (catalogo == None):
+        return JsonResponse({"mensaje": 'No hay catalogo para cerrar'})
+    else:
+        catalogo.activo = False
+        catalogo.save()
+        #prodList = CompraOfertado.objects.filter(id_item_compra__id_producto_catalogo__id_catalogo=catalogo.id)
+        #for prodVenta in prodList:
+            #ventas =
+        return JsonResponse({"mensaje": 'Se cerro el catalogo con vigencia '+str(catalogo.fecha_inicio)+' - '+str(catalogo.fecha_fin)})
 
