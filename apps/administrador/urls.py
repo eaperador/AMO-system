@@ -18,10 +18,11 @@ urlpatterns = (
     url(r'^getCatalogoOfertaActivo/$', views.get_CatalogoOfertaActivo, name="getCatalogoOfertaActivo"),
     url(r'^getCatalogoProducto/$', views.getCatalogoProducto, name="getCatalogoProducto"),
     url(r'listarProductos/(?P<page>.+)/$', views.listar_productos, name='listarProductos'),
+    url(r'cerrarSemana/$', views.cerrarSemana, name='cerrarSemana'),
     url(r'crearProducto/$', views.crearProducto, name='crearProducto'),
     url(r'listarTiposUnidad/$', views.tiposUnidad, name='listarTiposUnidad'),
     url(r'listarCategorias/$', views.Categorias, name='listarCategorias'),
     url(r'ingresarProducto/$', views.ingresar_producto, name='ingresarProducto'),
     url(r'verVentaHistoricaPorMes/$', views.getVentaHistoricaPorMes, name='verVentaHistoricaPorMes'),
-    url(r'verHistoricoVentas/$', views.getHistoricoVentas, name='verHistoricoVentas'),
+    url(r'verHistoricoVentas/$', views.getHistoricoVentas, name='verHistoricoVentas')
 )
