@@ -44,3 +44,15 @@ class AdministradorTestCase(TestCase):
         sleep(5)
         a = self.browser.find_element(By.XPATH, '//a[text()="Cerrar semana"]')
         self.assertIn('CERRAR SEMANA', a.text)
+        
+    def test_sin_catalogo(self):
+        self.browser.get('http://localhost:8000')
+        sleep(2)
+        login(self)
+        menuCerrar = self.browser.find_element(By.XPATH, '//a[text()="Cerrar semana"]')
+        menuCerrar.click()
+        sleep(5)
+        mensajeCierre = self.browser.find_element_by_id('cierreMsj')
+        self.assertEquals(mensajeCierre.text, 'No hay catalogo para cerrar')
+
+        
