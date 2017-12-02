@@ -71,7 +71,6 @@
 
         function seleccionarUbicacion(){
             if(latSelect || longSelect){
-                alert("entro");
                 $("#coordenadasMapa").text(latSelect.toString().substring(0,6)+","+longSelect.toString().substring(0,6));
             }else{
                 alert("Seleccione un punto en el mapa")
@@ -92,6 +91,156 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
+        function clearFileInput(id)
+        {
+            var oldInput = document.getElementById(id);
+            var newInput = document.createElement("input");
+            newInput.type = "file";
+            newInput.id = oldInput.id;
+            newInput.name = oldInput.name;
+            newInput.className = oldInput.className;
+            newInput.style.cssText = oldInput.style.cssText;
+            oldInput.parentNode.replaceChild(newInput, oldInput);
+        }
+
+        function limpiarCamposProductor() {
+            $("#inputNombre").val('');
+            $("#inputapellidos").val('');
+            $("#inputTelefono").val('');
+            $("#inputCorreo").val('');
+            $("#inputDescripcionProd").val('');
+            $("#inputUsuario").val('');
+            $("#inputContrasena").val('');
+            $("#inputContrasena2").val('');
+            clearFileInput("fileUrl");
+            $("#inputNombreFinca").val('');
+            $("#inputDescripcionFinca").val('');
+            $("#select_cooperativa").val('');
+            clearFileInput("fileURLFinca");
+            var image_prod = document.getElementById('blah');
+            image_prod.parentNode.removeChild(image_prod);
+
+            var image_finca = document.getElementById('imgFinca');
+            image_finca.parentNode.removeChild(image_finca);
+        }
+
+        function crearNuevoProductor() {
+            if($('#inputNombre').val().trim() == ""){
+                alert("El campo Nombres del productor es obligatorio");
+                return;
+            }
+            if($('#inputApellidos').val().trim() == ""){
+                alert("El campo Apellidos del productor es obligatorio");
+                return;
+            }
+            if($('#inputDescripcionProd').val().trim() == ""){
+                alert("El campo Descripción del productor es obligatorio");
+                return;
+            }
+
+            if($('#inputCorreo').val().trim() == ""){
+                alert("El campo Correo del productor es obligatorio");
+                return;
+            }
+
+            emailRegex = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+            if(!emailRegex.test($('#inputCorreo').val())){
+                alert ("El correo no es válido.");
+                return;
+            }
+
+            if($('#inputTelefono').val().trim() == ""){
+                alert("El campo Teléfono del productor es obligatorio");
+                return;
+            }
+
+            if( $("#select_cooperativa").val()==''){
+                alert("El campo Coorperativa es obligatorio");
+                return;
+            }
+
+            if($('#inputUsuario').val().trim() == ""){
+                alert("El campo Usuario es obligatorio");
+                return;
+            }
+            if($('#inputContrasena').val().trim() == ""){
+                alert("El campo Contraseña es obligatorio");
+                return;
+            }
+            if($('#inputContrasena2').val().trim() == ""){
+                alert("Es necesario repetir la contraseña");
+                return;
+            }
+
+            if($('#inputContrasena').val().trim() != $('#inputContrasena2').val().trim()){
+                alert("Las contraseñas no coinciden");
+                return;
+            }
+
+            if($("#fileUrl").val().trim() == ""){
+                alert("La foto de perfil del productor es obligatoria");
+                return;
+            }
+
+            if($('#inputNombreFinca').val().trim() == ""){
+                alert("El campo Nombre de la Finca es obligatorio");
+                return;
+            }
+
+            if($('#inputDescripcionFinca').val().trim() == ""){
+                alert("El campo Descripción de la Finca es obligatorio");
+                return;
+            }
+
+            if($("#fileURLFinca").val().trim() == ""){
+                alert("La foto de la finca es obligatoria");
+                return;
+            }
+
+            if(latSelect==undefined || longSelect==undefined)
+            {
+                alert("Las ubicación de la finca es obligatoria");
+                return;
+            }
+
+            var cooperativas = $("#select_cooperativa");
+            var selected_cooperativa = cooperativas.val();
+                $.ajax({
+                        type: "POST",
+                        url: location.origin + "/catalogo/guardarProductor/",
+                        data: JSON.stringify({
+                            nombreProductor: $('#inputNombre').val(),
+                            apellidosProductor: $('#inputApellidos').val(),
+                            telefono: $('#inputTelefono').val(),
+                            email: $('#inputCorreo').val(),
+                            cooperativa: selected_cooperativa,
+                            descripcionProd: $('#inputDescripcionProd').val(),
+                            usuario: $('#inputUsuario').val(),
+                            contasena: $('#inputContrasena').val(),
+                            imagenProductor: $("#fileUrl").val().split('/').pop().split('\\').pop(),
+                            nombreFinca: $('#inputNombreFinca').val(),
+                            descripcionFinca: $('#inputDescripcionFinca').val(),
+                            imagenFinca: $("#fileURLFinca").val().split('/').pop().split('\\').pop(),
+                            coordenadas: latSelect + "," + longSelect
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.mensaje == 'ok') {
+                                alert('Productor creado exitosamente!');
+                                limpiarCamposProductor();
+                                window.location = "{% url 'comun:index' %}";
+                            } else {
+                                alert(data.mensaje);
+                            }
+                        },
+                        failure: function (errMsg) {
+                            alert('Hubo error!');
+                        }
+                    });
+                }
+
 
         function readURLFinca(input) {
             if (input.files && input.files[0]) {
@@ -116,44 +265,6 @@
                     options.append($("<option />").val(this.id).text(this.ciudad));
                 });
             });
-
-            $("#form-registro").submit(function (event) {
-                var cooperativas = $("#select_cooperativa");
-                var selected_cooperativa = cooperativas.val();
-                $.ajax({
-                        type: "POST",
-                        url: location.origin + "/catalogo/guardarProductor/",
-                        data: JSON.stringify({
-                            nombreProductor: $('#inputNombre').val(),
-                            apellidosProductor: $('#inputApellidos').val(),
-                            telefono: $('#inputTelefono').val(),
-                            email: $('#inputCorreo').val(),
-                            cooperativa: selected_cooperativa,
-                            descripcionProd: $('#inputDescripcionProd').val(),
-                            usuario: $('#inputUsuario').val(),
-                            contasena: $('#inputContrasena').val(),
-                            imagenProductor: $("#fileUrl").val().split('/').pop().split('\\').pop(),
-                            nombreFinca: $('#inputNombreFinca').val(),
-                            descripcionFinca: $('#inputDescripcionFinca').val(),
-                            imagenFinca: $("#fileURLFinca").val().split('/').pop().split('\\').pop(),
-                            coordenadas: latSelect + "," + longSelect
-                        }),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            alert("concluye");
-                            if (data.mensaje == 'ok') {
-                                alert('Productor creado exitosamente!');
-                                window.location = "{% url 'comun:index' %}";
-                            } else {
-                                alert(data.mensaje);
-                            }
-                        },
-                        failure: function (errMsg) {
-                            alert('Hubo error!');
-                        }
-                    });
-            });
         });
 
 
@@ -161,7 +272,6 @@
 
     <section>
         <div class="container col-centered col-md-12">
-            <form class="form" method="POST" id="form-registro">
                 <div class="row">
                     <div class="col-centered col-md-6">
                         <fieldset>
@@ -181,8 +291,11 @@
                                         <select id="select_cooperativa" class="form-control" style="font-size: 14px; margin-bottom: 5px;" required></select>
                                         <label for="inputUsuario" class="sr-only">Usuario</label>
                                         <input type="usuario" id="inputUsuario" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Usuario" name="usuario" required autofocus >
-                                        <label for="inputContrasena" class="sr-only">Nombres</label>
-                                        <input type="password" id="inputContrasena" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Contraseña" name="contraseña" required autofocus ><br/><br/>
+                                        <label for="inputContrasena" class="sr-only">Contraseña</label>
+                                        <input type="password" id="inputContrasena" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Contraseña" name="contraseña" required autofocus >
+                                        <label for="inputContrasena2" class="sr-only">Nombres</label>
+                                        <input type="password" id="inputContrasena2" class="form-control" style="font-size: 14px; margin-bottom: 5px" placeholder="Repetir Contraseña" name="contraseña" required autofocus ><br/>
+
                                     </div>
                                     <div class="col-centered col-md-6">
                                         <div class="panel panel-default">
@@ -219,9 +332,9 @@
                 </div>
                 <div class="container col-centered col-md-12">
                     <br/>
-                    <button class="btn btn-primary btn-success" id="btn_crearProductor" type="submit">Crear productor</button>
+                    <button class="btn btn-primary btn-success" id="btn_crearProductor" onclick="crearNuevoProductor()">Crear productor</button>
+                    <button class="btn btn-primary btn-success" id="btn_limpiar" onclick="limpiarCamposProductor()">Limpiar</button>
                 </div>
-            </form>
         </div>
     </section>
 </header>

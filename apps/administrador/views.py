@@ -418,8 +418,9 @@ def guardar_productor(request):
 
         usuario_existente = User.objects.filter(username=usuario)
         if usuario_existente.count() >= 1:
-            mensaje = "Ya existe un productor con el mismo usuario"
+            mensaje = "El usuario ya se encuentra registrado en el sistema"
         else:
+            print("No hubo coincidencias")
             user_model = User.objects.create_user(username=usuario, password=contrasena)
             user_model.first_name = nombreProductor
             user_model.last_name = apellidosProductor
@@ -447,7 +448,7 @@ def guardar_productor(request):
                                          ubicacion=coordenadas,
                                          id_usuario_productor=user_app)
             finca.save()
-            mensaje = "OK"
+            mensaje = "ok"
     return JsonResponse({"mensaje": mensaje})
 
 @csrf_exempt

@@ -20,7 +20,7 @@ class Cooperativa(models.Model):
 class Usuario(models.Model):
     foto = models.ImageField(upload_to='images/user',null=True)
     descripcion = models.CharField(max_length=1000,null=True)
-    telefono = models.IntegerField(null=True)
+    telefono = models.CharField(max_length=30,null=True)
     auth_user_id = models.ForeignKey(User, null = False)
     id_rol = models.ForeignKey(Rol,null = False)
     id_cooperativa = models.ForeignKey(Cooperativa, null=True)
