@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {# Load the tag library #}
 {% load staticfiles %}
 
@@ -34,7 +35,14 @@
                     alert("Hubo un error.")
                 }
             })
-        }
+        };
+        function cerrarSemana(){
+           $.getJSON(location.origin+"/catalogo/cerrarSemana").done(function(data){
+               $("#cierreMsj").text(data.mensaje)
+               $("#modalCierre").modal('show')
+          });
+
+       }
     </script>
 </head>
 <body id="page-top">
@@ -51,13 +59,17 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
+              <li class="nav-item" id ="crear_productor"><a class="nav-link" href="{% url 'catalogo:crearProductor' %}">Crear Productor</a></li>
               <li class="nav-item" id ="catalogo_productos"><a class="nav-link" href="{% url 'catalogo:catalogoProductos' %}">Catálogo Productos</a></li>
               <li class="nav-item" id ="evaluar_ofertas"><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
               <li class="nav-item" id ="armar_catalogo"><a class="nav-link" href="{% url 'catalogo:index' %}">Armar Catálogo</a></li>
+              <li class="nav-item" id ="cerrar_catalogo"><a class="nav-link" href="#" onclick="cerrarSemana()">Cerrar semana</a></li>
+              <li class="nav-item" id ="crear_producto" style="display: none" ><a class="nav-link" href="{% url 'catalogo:crearProducto' %}">Crear Producto</a></li>
+              <li class="nav-item" id ="ver_historico_ventas" style="display: none" ><a class="nav-link" href="{% url 'catalogo:verHistoricoVentas' %}">Ver Historico de Ventas</a></li>
               <li class="nav-item" id="cerrar_sesion"><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
            </ul>
         </div>
-      </div>
+      </div>S
     </nav>
     {% endblock %}
 
@@ -71,6 +83,23 @@
           <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Conoce el catálogo de productos de la semana</a>
         </div>
       </div>
+
+     <!--MODAL-->
+     <div class="modal fade" id="modalCierre" tabindex="-1" role="dialog">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #F05F40">
+                    <h4 class="modal-lg">Cierre semanal</h4>
+                </div>
+                <div class="modal-body">
+                    <label id="cierreMsj" class="modal-lg">prueba prueba pruea</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </header>
     {% endblock %}
 
