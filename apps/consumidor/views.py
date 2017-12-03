@@ -287,7 +287,7 @@ def saveCompra(request):
 
             catalogoOf = CatalogoOfertas.objects.filter(activo=True).order_by('fecha_inicio')
             ofertas = Oferta.objects.filter(id_catalogo_oferta=catalogoOf[catalogoOf.count()-1].id, id_producto=item.id_producto_catalogo.id_producto.id).order_by('precio')
-            print catalogoOf[catalogoOf.count()-1].id
+            print (catalogoOf[catalogoOf.count()-1].id)
 
             cantOfr = int(item.cantidad)
             for oferta in ofertas:
