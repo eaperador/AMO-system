@@ -12,11 +12,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse, HttpResponse
 from ..administrador.models import CatalogoProductos, Producto, ProductoCatalogo
-from ..consumidor.models import ItemCompra, Compra, MedioPago, ItemCarrito, Carrito
+from ..consumidor.models import ItemCompra, Compra, MedioPago, ItemCarrito, Carrito, FormConsumidor
 from ..productor.models import Usuario, Oferta, CatalogoOfertas, CompraOfertado
-from ..comun.models import Direccion
+from ..comun.models import Direccion, Rol
 from ..distribuidor.models import Entrega, Ruta
 from django.shortcuts import render
+from django.contrib.auth.models import User
 # Create your views here.
 
 @csrf_exempt
@@ -309,3 +310,55 @@ def saveCompra(request):
         carroCompra.delete()
 
     return JsonResponse({"mensaje": "OK"})
+
+@csrf_exempt
+def registrarse(request):
+    form = FormConsumidor()
+    context = {'form': form}
+    return render(request, "registroComprador.html", context)
+
+@csrf_exempt
+def registrarComprador(request):
+    if request.method == 'POST':
+        jsonData = json.loads(request.body)
+        foto = jsonData['foto']
+        mPago = jsonData['mPago']
+        direcciones = jsonData['direcciones']
+        usuario = jsonData['username']
+        clave = jsonData['password']
+        nombres = jsonData['first_name']
+        apellidos = jsonData['last_name']
+        correo = jsonData['email']
+        telefono = jsonData['telefono']
+
+        antUser = User.objects.filter(username=usuario)
+        if antUser.count() == 0:
+            user_data = User.objects.create_user(username=usuario, password=clave)
+            user_data.first_name = nombres
+            user_data.last_name = apellidos
+            user_data.email = correo
+            user_data.save()
+
+            rol = Rol.objects.get(nombre="Consumidor")
+            usuario_data = Usuario.objects.create(foto=foto,
+                                                 telefono=telefono,
+                                                 id_rol=rol,
+                                                 auth_user_id=user_data)
+            usuario_data.save()
+
+            medio_pago = MedioPago.objects.create(nombre=mPago,
+                                                 id_usuario_comprador=usuario_data)
+            medio_pago.save()
+
+            for dir_item in direcciones.split(","):
+                if dir_item != "":
+                    dir_usu = Direccion.objects.create(direccion=dir_item,
+                                                       id_usuario_comprador=usuario_data)
+                    dir_usu.save()
+
+            print "OK"
+            return JsonResponse({"mensaje": "OK"})
+        else:
+            return JsonResponse({"mensaje": "El usuario ya existe."})
+    else:
+        return JsonResponse({"mensaje": "OK"})

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-	<header class="masthead" style="background: whitesmoke">
+	<header style="background: whitesmoke">
 		<script>
             function addProducto(productoId, cantidad){
                 disp = $("#disp_"+productoId).val()
@@ -13,24 +13,24 @@
                     $("#mensaje_carrito").html('Puede ordenar máximo '+parseInt(disp)+' productos');
                 } else {
                     $.ajax({
-                    type: "POST",
-                    url: location.origin+"/consumidor/agregar_producto/",
-                    data: JSON.stringify({ productoId : productoId ,
-                                           cantidad : cantidad,
-                                           catalogo : {{catalogo.id}},
-                                           carrito: sessionStorage.getItem('carrito')
-                    }),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (data) {
-                        sessionStorage.setItem('carrito', data.carrito_id)
-                        sessionStorage.setItem('items', JSON.stringify(data.items));
-                        window.location = location.origin+"/consumidor/catalogo_compras/";
-                    },
-                    failure: function(errMsg){
-                       alert("Hubo un error");
-                    }
-                 });
+                        type: "POST",
+                        url: location.origin+"/consumidor/agregar_producto/",
+                        data: JSON.stringify({ productoId : productoId ,
+                                               cantidad : cantidad,
+                                               catalogo : {{catalogo.id}},
+                                               carrito: sessionStorage.getItem('carrito')
+                        }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            sessionStorage.setItem('carrito', data.carrito_id)
+                            sessionStorage.setItem('items', JSON.stringify(data.items));
+                            window.location = location.origin+"/consumidor/catalogo_compras/";
+                        },
+                        failure: function(errMsg){
+                           alert("Hubo un error");
+                        }
+                    });
                 }
             }
 
