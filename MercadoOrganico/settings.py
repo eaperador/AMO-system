@@ -137,10 +137,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'MercadoOrganico',
-            'USER': 'makito',
-            'PASSWORD': '',
-            'HOST': 'localhost',
+            'NAME': 'd3mr9l5da2ud7l',
+            'USER': 'lxnfjznzsyoqji',
+            'PASSWORD': '3851841e5b17970ee315a643f5b90d54f05e8d5081e2b51213181f668362bc34',
+            'HOST': 'ec2-107-20-250-195.compute-1.amazonaws.com',
             'PORT': '5432',
         }
     }
