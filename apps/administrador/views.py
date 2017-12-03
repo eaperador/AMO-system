@@ -316,10 +316,9 @@ def getVentaHistoricaPorMes(request):
             start_date = datetime(now.year,i,1)
 
             if i == 12:
-                end_date = datetime(now.year,1,1)
+                end_date = datetime(now.year+1,1,1)
             else:
                 end_date = datetime(now.year,i+1,1)
-
             compras = Compra.objects.filter(fecha_compra__lt=end_date, fecha_compra__gte=start_date)
             val_mes = 0
             ofertas_mes = []
