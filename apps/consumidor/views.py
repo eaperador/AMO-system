@@ -121,7 +121,7 @@ def select_productos(request):
     # Filtrar por los productos que existen dentro del catálogo
     if request.method == "GET":
         catalogo = CatalogoProductos.objects.filter(activo = True)
-        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id).order_by('id_producto__nombre')
+        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id).filter(cantidad_disponible__gt=0).order_by('id_producto__nombre')
         lista_productos = [{'id': productoCat.id_producto.id,
                             'nombre': productoCat.id_producto.nombre,
                             'descripcion': productoCat.id_producto.descripcion,
@@ -137,9 +137,10 @@ def select_producto(request, id, page):
         catalogo = listaCatalogoProductos.first()
         if (int(id) > 0):
             producto = Producto.objects.get(pk=id)
-            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(id_producto=producto.id).order_by('id')
+            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(id_producto=producto.id).\
+                filter(cantidad_disponible__gt=0).order_by('id')
         else:
-            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).order_by('id')
+            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(cantidad_disponible__gt=0).order_by('id')
         ON_CODESHIP = os.getenv('ON_CODESHIP', False)
         ON_HEROKU_BUG = os.getenv('ON_HEROKU_BUG', False)
         ON_HEROKU_TEST = os.getenv('ON_HEROKU_TEST', False)
