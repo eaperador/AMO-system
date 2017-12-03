@@ -32,7 +32,7 @@ def catalogo_compras(request):
         except ItemCarrito.DoesNotExist:
             itemsList = []
         istemsJson = json.dumps(itemsList)
-    return render(request, "catalogoCompras.html", {'catalogo':listaCatalogoProductos[0],
+    return render(request, "catalogoCompras.html", {'catalogo':listaCatalogoProductos.first(),
                                                     'items': istemsJson})
 
 @csrf_exempt
