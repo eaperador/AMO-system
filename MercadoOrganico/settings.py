@@ -13,6 +13,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Variable de entrono para CI
 ON_CODESHIP = os.getenv('ON_CODESHIP', False)
+ON_HEROKU_BUG = os.getenv('ON_HEROKU_BUG', False)
 ON_HEROKU_TEST = os.getenv('ON_HEROKU_TEST', False)
 ON_HEROKU_PROD = os.getenv('ON_HEROKU_PROD', False)
 
@@ -25,7 +26,7 @@ SECRET_KEY = 'ec*%#&9wh7^s%kv1(or3=zio8egzxi--v+)2^_9vn)7%*8f4x^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ejemplo-g4.herokuapp.com', 'amo-system-test.herokuapp.com','amo-system.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['amo-bugs.herokuapp.com','amo-system-test.herokuapp.com','amo-system.herokuapp.com','localhost']
 
 
 # Application definition
@@ -119,15 +120,27 @@ elif ON_HEROKU_PROD:
             'PORT': '5432',
         }
     }
-else:
-    # Configuracion de base de datos despliegue
+elif ON_HEROKU_BUG:
+    # Configuracion de base de datos para https://amo-system.herokuapp.com/
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'ded5jvvgu0tnul',
-            'USER': 'vmqbuiqgjjrabk',
-            'PASSWORD': '60f27b6ffa94744d9df0b6e567454088e122b8aa3f324617356b2de703c2df7a',
-            'HOST': 'ec2-23-21-96-159.compute-1.amazonaws.com',
+            'NAME': 'd9hjftllnl4620',
+            'USER': 'aypvxlsnxeqxyg',
+            'PASSWORD': '85fec2ae3f372a03809e5ed08043551ceea8344cb543bb727bc7249b73df545f',
+            'HOST': 'ec2-50-17-235-5.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
+    }
+else:
+    # Configuracion de base de datos local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'MercadoOrganico',
+            'USER': 'makito',
+            'PASSWORD': '',
+            'HOST': 'localhost',
             'PORT': '5432',
         }
     }

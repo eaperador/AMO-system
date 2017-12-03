@@ -5,7 +5,6 @@
 {% endblock %}
 
 {% block content %}
-     <header class="masthead" style="background: whitesmoke">
      <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
 	 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	 <script>
@@ -73,24 +72,76 @@
             });
             return false;
         };
-		function mostrarOfertas(ofertas, current){
+		function mostrarOfertas(catalogo_list, current){
 		    $('#listaOfertas').empty()
-            $.each(ofertas, function (i, item) {
-                var row = current
-                $('#listaOfertas').append("<tr style=\"color: black\"style=\"color: black\"> " +
-                                              "<th scope='row'>"+(row+i)+"</th>"+
-                                              "<td><p><label>"+item.fecha+"</label></p></td>" +
-                                              "<td>"+item.producto+"</td>" +
-                                              "<td id='cant_"+item.pk+"'>"+item.cantidad+"</td>"+
-                                              "<td>"+item.unidad+"</td>"+
-                                              "<td id='precio_"+item.pk+"' >"+item.precio+"</td>"+
-                                              "<td id='editable_"+item.pk+"'>"+item.estado+"</td>"+
-                                            "</tr>")
-                if (item.editable) {
-                    $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#modalLogin' onclick='LanzaPopup("+item.pk+")'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
+            console.log(catalogo_list)
+            first = true
+            $.each(catalogo_list, function (i, semana) {
+                if (first) {
+                    link = "<a data-toggle='collapse' href='#collapse_" + semana.catalogo.id + "' aria-expanded='true' aria-controls='collapse_" + semana.catalogo.id + "'> "
+                    content = "<div id='collapse_" + semana.catalogo.id + "' class='collapse show' role='tabpanel' aria-labelledby='heading_" + semana.catalogo.id + "' data-parent='#listaOfertas'> "
+                    first = false
+                } else {
+                    link = "<a class='collapsed' data-toggle='collapse' href='#collapse_" + semana.catalogo.id + "' aria-expanded='false' aria-controls='collapse_" + semana.catalogo.id + "'> "
+                    content = "<div id='collapse_" + semana.catalogo.id + "' class='collapse' role='tabpanel' aria-labelledby='heading_" + semana.catalogo.id + "' data-parent='#listaOfertas'> "
                 }
-                i++
-             });
+                $('#listaOfertas').append("<div class='card'> " +
+                    "    <div class='card-header' role='tab' id='heading_" + semana.catalogo.id + "'> " +
+                    "        <h5 class='mb-0'> " +
+                                link +
+                    "               Semana #" + semana.catalogo.id + " : " + semana.catalogo.fecha_ini + " - " + semana.catalogo.fecha_fin +
+                    "               &nbsp&nbsp("+semana.ofertas.length+")"  +
+                    "           </a> " +
+                    "        </h5> " +
+                    "   </div> " +
+                       content +
+                    "      <div class='card-body'> " +
+                    "        <table class='table table-responsive'> " +
+                    "             <thead> " +
+                    "               <tr style='color: black'>" +
+                    "                 <th class='col-xs-1'>#</th>" +
+                    "                 <th class='col-xs-1'>Fecha de la oferta</th>" +
+                    "                 <th class='col-xs-1'>Producto</th>" +
+                    "                 <th class='col-xs-1'>Cantidad</th>" +
+                    "                 <th class='col-xs-1'>Unidad</th>" +
+                    "                 <th class='col-xs-1'>Vendidos</th>" +
+                    "                 <th class='col-xs-1'>Precio</th>" +
+                    "                 <th class='col-xs-1'>Estado</th>" +
+                    "               </tr>" +
+                    "             </thead>" +
+                    "             <tbody id='ofertas_catlogo_" + semana.catalogo.id + "' >" +
+                    "             </tbody> " +
+                    "          </table> " +
+                    "      </div> " +
+                    "   </div> " +
+                    "</div>");
+                
+
+                $.each(semana.ofertas, function (i, item) {
+                    var row = current
+                    $('#ofertas_catlogo_'+item.catalogo_id).append(
+                        "       <tr style='color: black'style='color: black'> " +
+                        "          <th scope='row'>"+(row+i)+"</th>"+
+                        "          <td align='center'><p><label>"+item.fecha+"</label></p></td>" +
+                        "          <td align='center'>"+item.producto+"</td>" +
+                        "          <td id='cant_"+item.pk+"' align='center'>"+item.cantidad+"</td>"+
+                        "          <td align='center'>"+item.unidad+"</td>" +
+                        "          <td align='center'>"+item.vendido+" "+item.unidad+"</td>"+
+                        "          <td align='center' id='precio_"+item.pk+"' >"+item.precio+"</td>"+
+                        "          <td align='center'>"+item.estado+"</td>" +
+                        "          <td align='center' id='editable_"+item.pk+"'>"+"</td>"+
+                        "          <td align='center' id='delete_"+item.pk+"'>"+"</td>"+
+                        "       </tr>");
+
+                        if (item.editable) {
+                            $('#editable_'+item.pk).append("&nbsp<a id='to_edit_"+item.pk+"' href='#' data-toggle='modal' data-target='#modalLogin' onclick='LanzaPopup("+item.pk+")'> <i class='fa fa-edit' style='font-size:24px'></i></a>")
+                            $('#delete_'+item.pk).append("&nbsp<a id='to_delete_"+item.pk+"' href='#' onclick='EliminaOferta("+item.pk+")'> <i class='fa fa-trash-o' style='font-size:24px'></i></a>")
+                        }
+                        i++
+                });
+            });
+            
+
         };
 		function paginacion(ofertasPag){
 		    $('#pagination').empty()
@@ -112,6 +163,29 @@
                     $('#paginationList').append("<li class='disabled'><span>&raquo;</span></li>")
                 }
             }
+        }
+
+        function EliminaOferta(id){
+            $.ajax({
+                type: "DELETE",
+                url: location.origin+"/productor/oferta/"+id+"/",
+                contentType: "aplication/json; charset-utf-8",
+                dataType: "json",
+                success: function (data) {
+                    if (data[0].mensaje == 'OK'){
+                        console.log('Se elimina prodcuto')
+                        window.location.reload();
+                    }
+                    else {
+                        console.log('Error eliminando la oferta')
+                        console.log(data[0].mensaje)
+                        alert(data[0].mensaje)
+                    }
+                },
+                failure: function (errMsg) {
+                    alert("Error consumiendo el servicio web");
+                }
+            });
         }
 
         function LanzaPopup(idOferta) {
@@ -145,23 +219,7 @@
                     </form>
                 </div>
             </div>
-            <div class="row">
-                <table id="lista_ofertas_productor" class="table table-responsive">
-                    <thead>
-                        <tr style="color: black">
-                            <th class="col-xs-1">#</th>
-                            <th class="col-xs-1">Fecha de la oferta</th>
-                            <th class="col-xs-1">Producto</th>
-                            <th class="col-xs-1">Cantidad</th>
-                            <th class="col-xs-1">Unidad</th>
-                            <th class="col-xs-1">Precio</th>
-                            <th class="col-xs-1">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaOfertas">
-
-                    </tbody>
-                </table>
+            <div id="listaOfertas" role="tablist" align="left">
             </div>
             <div class="row" >
                 <div class="col-md-8" id="pagination">
@@ -179,7 +237,7 @@
                     <div class="modal-body">
                         <form method="post" id="form-oferta" enctype="multipart/form-data">
                             {% csrf_token %}
-                            <label id="inputOferta" class="modal-lg"></label>
+                            <label id="inputOferta" class="modal-lg" hidden></label>
                             <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
                             <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
                         </form>
@@ -193,5 +251,4 @@
             </div>
         </div>
      </section>
-    </header>
 {% endblock %}

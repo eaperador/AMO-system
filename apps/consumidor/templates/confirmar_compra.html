@@ -6,14 +6,22 @@
 
 {% block content %}
 	<header class="masthead" style="background: whitesmoke">
-
 		<script>
+			function redirectCompra(){
+			    window.location = "{% url 'consumidor:catalogo_compras' %}";
+			};
+
         	$(document).ready(function () {
         	    $("#form-facturacion").submit(function (event) {
-              		$.ajax({
+        	        var dir = $("#inputDireccion").val();
+        	        var tel = $("#inputDireccion").val();
+        	        $.ajax({
               		    type: "POST",
               		    url: location.origin+"/consumidor/finalizarCompra/",
-              		    data: JSON.stringify({ cantidadItems: sessionStorage.length, total: document.getElementById("total").innerHTML}),
+              		    data: JSON.stringify({ carrito : sessionStorage.getItem('carrito') ,
+                                               direccion : dir ,
+                                               telefono : tel
+              		    }),
               		    contentType: "application/json; charset=utf-8",
               		    dataType: "json",
               		    success: function(data){
@@ -32,29 +40,57 @@
               		event.preventDefault();
 				});
 
+        	     $.ajax({
+                    type: "GET",
+                    url: location.origin+"/consumidor/getPreciosProductos/",
+                    data: { carrito: sessionStorage.getItem('carrito')},
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        var items = [];
+                        var subtotalCompra = 0;
+                        var envio = 7000;
+                        var totalCompra =0;
+                        $.each(data, function (key, val) {
+                            var cantidad = val.cantidad;
+                            if(cantidad != null){
+                                valorTotal = parseInt(cantidad) * parseInt(val.precio)
+                                subtotalCompra += valorTotal;
+                                items.push("<tr>");
+                                items.push("<td id=''"+key+"''>"+val.nombre+" X "+cantidad+" "+val.unidad+"</td>");
+                                items.push("<td id=''"+key+"''>"+"$"+valorTotal+"</td>");
+                                items.push("</tr>");
+                            }
+                        });
+                        totalCompra = subtotalCompra+envio;
+                        $("<tbody/>",{html: items.join("")}).appendTo("table");
+                        document.getElementById("subtotal").innerHTML = subtotalCompra;
+                        document.getElementById("envio").innerHTML = envio;
+                        document.getElementById("total").innerHTML = totalCompra;
+                    },
+                    failure: function(errMsg){
+                       alert("Hubo un error");
+                    }
+                 });
 
-        	     $.getJSON(location.origin+"/consumidor/getPreciosProductos/").done(function (data) {
-        	         var items = [];
-        	         var subtotalCompra = 0;
-        	         var envio = 7000;
-        	         var totalCompra =0;
-        	        $.each(data, function (key, val) {
-                        var cantidad = sessionStorage.getItem(val.id);
-                        if(cantidad != null){
-                            valorTotal = parseInt(cantidad) * parseInt(val.precio)
-							subtotalCompra += valorTotal;
-							items.push("<tr>");
-                        	items.push("<td id=''"+key+"''>"+val.nombre+" X "+cantidad+"</td>");
-                        	items.push("<td id=''"+key+"''>"+"$"+valorTotal+"</td>");
-                        	items.push("</tr>");
-						}
-                    });
-        	        totalCompra = subtotalCompra+envio;
-        	        $("<tbody/>",{html: items.join("")}).appendTo("table");
-        	        document.getElementById("subtotal").innerHTML = subtotalCompra;
-        	        document.getElementById("envio").innerHTML = envio;
-        	        document.getElementById("total").innerHTML = totalCompra;
-        	    });
+        	     $.ajax({
+                    type: "GET",
+                    url: location.origin+"/getUsuario/",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        $.each(data, function (key, val) {
+                            $("#inputNombre").val(val.nombres);
+                            $("#inputApellidos").val(val.apellidos);
+                            $("#inputTelefono").val(val.telefono);
+                            $("#inputDireccion").val(val.direccion);
+                            $("#inputCorreo").val(val.correo);
+                        });
+                    },
+                    failure: function(errMsg){
+                       alert("Hubo un error");
+                    }
+                 });
         	});
     	</script>
 
@@ -66,36 +102,6 @@
 							<div class="col-centered col-md-6" style="background-color: white">
 								<br/>
 								<h3 style="text-align: center; font-weight: bold; color: black">Detalles Facturación</h3>
-								<br/>
-								<div class="panel-body">
-									<div class="col-centered col-lg-12">
-										<form class="form" method="post" id="form-facturacion">
-                        					<label for="inputNombre" class="sr-only">Nombres</label>
-                        					<input id="inputNombre" class="form-control" placeholder="Nombre" name="nombre" required autofocus ><br>
-
-                        					<label for="inputApellidos" class="sr-only">Apellidos</label>
-                        					<input id="inputApellidos" class="form-control" placeholder="Apellidos" name="apellidos" required autofocus ><br>
-
-                        					<label for="inputDireccion" class="sr-only">Dirección</label>
-                        					<input id="inputDireccion" class="form-control" placeholder="Dirección" name="direccion" required autofocus ><br>
-
-                        					<label for="inputTelefono" class="sr-only">Teléfono</label>
-                        					<input id="inputTelefono" class="form-control" placeholder="Teléfono" name="telefono" required autofocus ><br>
-
-                        					<label for="inputCorreo" class="sr-only">Correo</label>
-                        					<input id="inputCorreo" class="form-control" placeholder="Correo" name="correo" required autofocus ><br>
-
-											<br/>
-                        					<div class="float-right text-center">
-                        					    <button class="btn btn-lg btn-outline" id="btn_pagar" type="submit">Finalizar Compra</button>
-                        					</div>
-                    					</form>
-									</div>
-								</div>
-							</div>
-							<div class="col-centered col-md-6" style="background-color: white">
-								<br/>
-								<h3 style="text-align: center; font-weight: bold; color: black">Tu Pedido</h3>
 								<br/>
 								<div class="panel-body">
 									<div class="col-centered col-lg-12">
@@ -123,6 +129,40 @@
 												</div>
 											 </div>
 										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-centered col-md-6" style="background-color: white">
+								<br/>
+								<h3 style="text-align: center; font-weight: bold; color: black">Tu Pedido</h3>
+								<br/>
+								<div class="panel-body">
+									<div class="col-centered col-lg-12">
+										<form class="form" method="post" id="form-facturacion">
+                        					<label for="inputNombre" class="sr-only">Nombres</label>
+                        					<input id="inputNombre" class="form-control" placeholder="Nombre" name="nombre" required autofocus ><br>
+
+                        					<label for="inputApellidos" class="sr-only">Apellidos</label>
+                        					<input id="inputApellidos" class="form-control" placeholder="Apellidos" name="apellidos" required autofocus ><br>
+
+                        					<label for="inputDireccion" class="sr-only">Dirección</label>
+                        					<input id="inputDireccion" class="form-control" placeholder="Dirección" name="direccion" required autofocus ><br>
+
+                        					<label for="inputTelefono" class="sr-only">Teléfono</label>
+                        					<input type="number" id="inputTelefono" class="form-control" placeholder="Teléfono" name="telefono" required autofocus ><br>
+
+                        					<label for="inputCorreo" class="sr-only">Correo</label>
+                        					<input type="email" id="inputCorreo" class="form-control" placeholder="Correo" name="correo" required autofocus ><br>
+
+											<br/>
+                        					<div class="float-right text-center">
+												<a class="btn btn-default btn-outline" onclick="redirectCompra()" style="color: black">Seguir comprando</a>
+                        					    <button class="btn btn-primary btn-success" id="btn_pagar" type="submit">Finalizar Compra</button>
+                        						<br/>
+												<br/>
+											</div>
+
+                    					</form>
 									</div>
 								</div>
 							</div>

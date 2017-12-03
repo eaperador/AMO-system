@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from datetime import timedelta, datetime
+from datetime import datetime
 import json
-from django.core.serializers.json import DjangoJSONEncoder
-import time
+
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
@@ -12,10 +13,15 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 
+from ..comun.models import Usuario
+from ..consumidor.models import Compra, ItemCompra
 from ..comun.views import sendMailNotification
-from .models import CatalogoProductos, Producto
-from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas
+from .models import CatalogoProductos, Producto, TipoUnidad, Categoria
+from ..productor.models import EstadoOferta, Oferta, CatalogoOfertas, CompraOfertado
+
 from ..administrador.models import ProductoCatalogo
+from django.contrib.auth.models import User
+from ..comun.models import Cooperativa,Usuario, Rol,Finca
 
 @csrf_exempt
 def index(request):
@@ -65,14 +71,17 @@ def select_catalogos(request):
 @csrf_exempt
 def select_productos(request):
     if request.method == "GET":
-        productos = Producto.objects.filter(activo=True)
-        lista_productos = [{'id': producto.id,
-                            'nombre': producto.nombre,
-                            'descripcion': producto.descripcion,
-                            'foto': str(producto.foto),
-                            'activo': producto.activo} for producto in productos]
-
+        catalogo = CatalogoOfertas.objects.filter(activo=True)
+        listaOfertas = Oferta.objects.filter(id_catalogo_oferta=catalogo.first().id)\
+                                     .distinct('id_producto__nombre')\
+                                     .order_by('id_producto__nombre')
+        if request.method == "GET":
+            lista_productos = [{'id': oferta.id_producto.id,
+                                'nombre': oferta.id_producto.nombre,
+                                'descripcion': oferta.id_producto.descripcion,
+                                'activo': oferta.id_producto.activo} for oferta in listaOfertas]
     data_convert = json.dumps(lista_productos)
+
     return HttpResponse(data_convert)
 
 ### Seleccionar un producto en especifico ###
@@ -86,23 +95,28 @@ def select_producto(request, id):
 
 ### Listar ofertas de los productores ###
 @csrf_exempt
-def listarOfertas(request, productoId):
+def listarOfertas(request, productoId, filtro):
     if request.method == 'GET':
+        listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
         if productoId == '0':
-            data_oferta = []
+            listaOfertas = Oferta.objects.filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
         else:
-            listaCatalogoOfertas = CatalogoOfertas.objects.filter(activo=1)
-            listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
-            data_oferta = [{'id': oferta.id,
-                            'producto': oferta.id_producto.nombre,
-                            'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
-                            'productor': oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
-                            'cantidad': oferta.cantidad,
-                            'precio': oferta.precio,
-                            'estadoId': oferta.id_estado_oferta.id,
-                            'estadoNombre': oferta.id_estado_oferta.nombre,
-                            'unidad': oferta.id_producto.id_tipo_unidad.abreviatura} for oferta in listaOfertas]
-    data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
+            estado_oferta = EstadoOferta.objects.filter(pk=2)# estado 2 es activa
+            if filtro == '1':
+                listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id)
+            elif filtro == '2':
+                listaOfertas = Oferta.objects.filter(id_producto=productoId).filter(id_catalogo_oferta=listaCatalogoOfertas[0].id).filter(id_estado_oferta=estado_oferta)
+
+        data_oferta = [{'id': oferta.id,
+                        'producto': oferta.id_producto.nombre,
+                        'fecha': oferta.fecha.strftime('%Y-%m-%d %H:%M'),
+                        'productor': oferta.id_productor.auth_user_id.first_name + " " + oferta.id_productor.auth_user_id.last_name,
+                        'cantidad': oferta.cantidad,
+                        'precio': oferta.precio,
+                        'estadoId': oferta.id_estado_oferta.id,
+                        'estadoNombre': oferta.id_estado_oferta.nombre,
+                        'unidad': oferta.id_producto.id_tipo_unidad.abreviatura} for oferta in listaOfertas.order_by('id_producto__nombre', 'precio')]
+        data_convert = json.dumps(data_oferta, cls=DjangoJSONEncoder)
     return HttpResponse(data_convert)
 
 def enviarNotificacion(oferta):
@@ -132,6 +146,31 @@ def evaluarOfertas(request):
     return render(request, "Ofertas/evaluar_ofertas.html")
 
 @csrf_exempt
+def catalogoProductos(request):
+    return render(request, "Ofertas/catalogoProductos.html")
+
+@csrf_exempt
+def crearProducto(request):
+    return render(request, "Producto/crear_producto.html")
+
+@csrf_exempt
+def tiposUnidad(request):
+    tipos_unidad = TipoUnidad.objects.all()
+    if request.method == "GET":
+        lista_tipos_unidad = [{'id': tu.id,
+                        'nombre': tu.nombre,
+                        'abreviatura': tu.abreviatura,
+                        } for tu in tipos_unidad]
+    data_convert = json.dumps(lista_tipos_unidad)
+    return HttpResponse(data_convert)
+
+@csrf_exempt
+def Categorias(request):
+    if request.method == "GET":
+        categorias = Categoria.objects.all()
+    return HttpResponse(serializers.serialize("json", categorias))
+
+@csrf_exempt
 def ingresarCatalogoOferta(request):
     if request.method == "POST":
         jsonData = json.loads(request.body)
@@ -152,4 +191,275 @@ def get_CatalogoOfertaActivo(request):
         catalogoOferta = CatalogoOfertas.objects.get(activo=1)
         data_catalogoOferta = {'fecha_inicio': catalogoOferta.fecha_inicio.strftime('%Y-%m-%d'), 'fecha_fin': catalogoOferta.fecha_fin.strftime('%Y-%m-%d')}
         data_convert = json.dumps(data_catalogoOferta)
+    return HttpResponse(data_convert)
+
+@csrf_exempt
+def getCatalogoProducto(request):
+    if request.method == 'POST':
+        jsonData = json.loads(request.body)
+        id_catalogo = jsonData['catalogo']
+        catalogo = CatalogoProductos.objects.get(pk=id_catalogo)
+        id_producto = jsonData['producto']
+        producto = Producto.objects.get(pk=id_producto)
+
+        producto_catalogo = ProductoCatalogo.objects.filter(id_producto=producto,id_catalogo=catalogo)
+
+        if producto_catalogo:
+            message = "Si"
+        else:
+            message = "No"
+
+    return JsonResponse({"mensaje": message})
+
+@csrf_exempt
+def listar_productos(request,page):
+    if request.method == "GET":
+        listado_productos = Producto.objects.all()
+
+        # paginacion
+        paginator = Paginator(listado_productos, 4)
+
+        try:
+            prodsPag = paginator.page(page)
+        except PageNotAnInteger:
+            prodsPag = paginator.page(1)
+        except EmptyPage:
+            prodsPag = paginator.page(paginator.num_pages)
+
+        prevPage = 0
+        nextPage = 0
+        if (prodsPag.has_previous()):
+            prevPage = prodsPag.previous_page_number()
+
+        if (prodsPag.has_next()):
+            nextPage = prodsPag.next_page_number()
+
+        productosPag = {"has_other_pages": prodsPag.has_other_pages(),
+                           "has_previous": prodsPag.has_previous(),
+                           "previous_page_number": prevPage,
+                           "page_range": prodsPag.paginator.num_pages,
+                           "has_next": prodsPag.has_next(),
+                           "next_page_number": nextPage,
+                           "current_page": prodsPag.number,
+                           "first_row": prodsPag.start_index()}
+        # fin pag
+
+        data_producto = [{'id': producto.id,
+                          'nombre': producto.nombre,
+                          'descripcion': producto.descripcion,
+                          'imagen': str(producto.foto),
+                          'activo': producto.activo} for producto in prodsPag.object_list]
+
+    json_ = [{"productos": data_producto,
+              "prodsPag": productosPag
+              }]
+
+    return HttpResponse(json.dumps(json_))
+
+@csrf_exempt
+def guardarEstadoProducto(request):
+    if request.method == 'POST':
+        jsonProducto = json.loads(request.body)
+        productoId = jsonProducto['productoId']
+        estado = jsonProducto['estado']
+        catalogo_oferta = CatalogoOfertas.objects.get(activo=1)
+
+        if estado == 1:
+            Producto.objects.filter(pk=productoId).update(activo=estado)
+            mensaje = "ok"
+        else:
+            if catalogo_oferta.fecha_fin >= datetime.now().date():
+                ofertas = Oferta.objects.filter(id_catalogo_oferta = catalogo_oferta).filter(id_producto = productoId)
+                if ofertas.count() == 0 :
+                    Producto.objects.filter(pk=productoId).update(activo = estado)
+                    mensaje = "ok"
+                else:
+                    mensaje = "no"
+            else:
+                print("lo cambia de estado adesactivado")
+                Producto.objects.filter(pk=productoId).update(activo=estado)
+                mensaje="ok"
+
+    return JsonResponse({"mensaje": mensaje})
+
+@csrf_exempt
+def ingresar_producto(request):
+    if (request.method=="POST"):
+        print(request.POST.get('activo'))
+        if request.POST.get('activo') == "on":
+            activo = True
+        else:
+            activo = False
+        tipo_unidad = TipoUnidad.objects.get(pk=request.POST['unidad'])
+        categoria = Categoria.objects.get(pk=request.POST['categoria'])
+        new_product = Producto(nombre=request.POST['nombre'],
+                               descripcion=request.POST['descripcion'],
+                               foto=request.FILES['imagen'],
+                               activo=activo,
+                               id_tipo_unidad=tipo_unidad,
+                               id_categoria=categoria);
+        new_product.save();
+    return JsonResponse({"mensaje": "ok"})
+
+@csrf_exempt
+def getVentaHistoricaPorMes(request):
+    if (request.method == "POST"):
+        jsonProducto = json.loads(request.body)
+        productoId = int(jsonProducto['idProducto'])
+        now = datetime.now()
+
+        dataventa = []
+        meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        for i in range(1,13):
+            data = {}
+
+            start_date = datetime(now.year,i,1)
+
+            if i == 12:
+                end_date = datetime(now.year+1,1,1)
+            else:
+                end_date = datetime(now.year,i+1,1)
+            compras = Compra.objects.filter(fecha_compra__lt=end_date, fecha_compra__gte=start_date)
+            val_mes = 0
+            ofertas_mes = []
+
+            if (compras):
+                for c in compras:
+                    items = ItemCompra.objects.filter(id_compra=c)
+                    if(items):
+                        for it in items:
+                            ofertas = CompraOfertado.objects.filter(id_item_compra=it)
+                            for of in ofertas:
+                                if (of.id_oferta.id_producto.pk == productoId):
+                                    ofertas_mes.append(of.id_oferta.pk)
+                            producto = it.id_producto_catalogo.id_producto
+                            if(producto.pk == productoId):
+                                val_mes += (it.id_producto_catalogo.precio_definido * it.cantidad)
+            #print(val_mes)
+            if (i==1):
+                comparacion = 0
+            elif (dataventa[i-2]['valor'] == 0):
+                comparacion = 0
+            else:
+                comparacion = ((val_mes-dataventa[i-2]['valor'])*100)/dataventa[i-2]['valor']
+            data["mes"] = meses[i-1]
+            data["valor"] = val_mes
+            data["comparacion"] = comparacion
+            data["ofertas"] = len(list(set(ofertas_mes)))
+
+            dataventa.append(data)
+        data_info = json.dumps(dataventa)
+    return HttpResponse(data_info)
+
+@csrf_exempt
+def getHistoricoVentas(request):
+    return render(request, "Reportes/historico_precios_producto.html")
+
+
+def confirmar(ofertas):
+    for oferta in ofertas:
+        prod = oferta.id_productor
+        cantidad = oferta.cantidad - oferta.cantidad_disponible
+        venta = cantidad * oferta.precio
+        email = prod.auth_user_id.email
+        asunto = "Confirmación de pedido"
+        mensaje = "Señor(a) " + prod.auth_user_id.first_name + " " + prod.auth_user_id.last_name + ": \n\n"
+        mensaje = mensaje + "De la forma más atenta queremos informale que su oferta tuvo una venta de \n"
+        mensaje = mensaje + "         "+str(cantidad) + " " +str(oferta.id_producto.id_tipo_unidad.abreviatura)
+        mensaje = mensaje + " de " + oferta.id_producto.nombre
+        mensaje = mensaje + " por un total de $" + str(venta) + "\n"
+
+        if cantidad > 0 :
+            mensaje = mensaje + "Recuerde que debe hacernos llegar su producto en los proximos 2 días. \n"
+        mensaje = mensaje + "Puede consultar más información de la oferta en su perfil y recuerde estar atento a futuras notificaciones\n\n"
+        mensaje = mensaje + "Saludos."
+        sendMailNotification(email, asunto, mensaje)
+
+
+def cerrarSemana(request):
+    today = datetime.now().date()
+    catalogoSet = CatalogoProductos.objects.filter(fecha_inicio__lte=today).filter(fecha_fin__gte=today).filter(activo=True)
+    catalogo = catalogoSet.first()
+    if (catalogo == None):
+        return JsonResponse({"mensaje": 'No hay catalogo para cerrar'})
+    else:
+        catalogo.activo = False
+        catalogo.save()
+        prodList = CompraOfertado.objects.filter(id_item_compra__id_producto_catalogo__id_catalogo=catalogo.id).distinct('id_oferta')
+        ofertas = list()
+        for prodVenta in prodList:
+            ofertas.append(Oferta.objects.filter(id = prodVenta.id_oferta.id).first())
+
+        confirmar (ofertas)
+
+
+        return JsonResponse({"mensaje": 'Se cerro el catalogo con vigencia '+str(catalogo.fecha_inicio)+' - '+str(catalogo.fecha_fin)})
+
+
+@csrf_exempt
+def crearProductor(request):
+    return render(request, "Ofertas/crear_productor.html")
+
+@csrf_exempt
+def guardar_productor(request):
+    mensaje = ""
+    if request.method == 'POST':
+        jsonProductor = json.loads(request.body)
+        nombreProductor = jsonProductor['nombreProductor']
+        apellidosProductor = jsonProductor['apellidosProductor']
+        telefono = jsonProductor['telefono']
+        email = jsonProductor['email']
+        descripcionProd = jsonProductor['descripcionProd']
+        cooperativa = jsonProductor['cooperativa']
+        usuario = jsonProductor['usuario']
+        contrasena = jsonProductor['contasena']
+        imagenProductor = jsonProductor['imagenProductor']
+        nombreFinca = jsonProductor['nombreFinca']
+        descripcionFinca = jsonProductor['descripcionFinca']
+        imagenFinca = jsonProductor['imagenFinca']
+        coordenadas = jsonProductor['coordenadas']
+
+        usuario_existente = User.objects.filter(username=usuario)
+        if usuario_existente.count() >= 1:
+            mensaje = "El usuario ya se encuentra registrado en el sistema"
+        else:
+            print("No hubo coincidencias")
+            user_model = User.objects.create_user(username=usuario, password=contrasena)
+            user_model.first_name = nombreProductor
+            user_model.last_name = apellidosProductor
+            user_model.email = email
+            user_model.save()
+
+            # get rol
+            rol = Rol.objects.get(pk=1)
+            # get cooperativa
+            coop = Cooperativa.objects.get(pk=cooperativa)
+
+            # usuario no puede existir
+            user_app = Usuario.objects.create(foto=imagenProductor,
+                                              telefono=telefono,
+                                              descripcion=descripcionProd,
+                                              id_rol=rol,
+                                              id_cooperativa=coop,
+                                              auth_user_id=user_model)
+            user_app.save()
+
+            # crear finca
+            finca = Finca.objects.create(nombre=nombreFinca,
+                                         descripcion=descripcionFinca,
+                                         foto=imagenFinca,
+                                         ubicacion=coordenadas,
+                                         id_usuario_productor=user_app)
+            finca.save()
+            mensaje = "ok"
+    return JsonResponse({"mensaje": mensaje})
+
+@csrf_exempt
+def listar_cooperativas(request):
+    if request.method == "GET":
+        lista_cooperativas = Cooperativa.objects.all()
+        data_cooperativas = [{'id': cooperativa.id,
+                              'ciudad': cooperativa.ciudad} for cooperativa in lista_cooperativas]
+    data_convert = json.dumps(data_cooperativas)
+
     return HttpResponse(data_convert)

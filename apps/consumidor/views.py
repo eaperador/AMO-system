@@ -4,49 +4,104 @@ from __future__ import unicode_literals
 import json
 
 import datetime
+
+import os
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse, HttpResponse
 from ..administrador.models import CatalogoProductos, Producto, ProductoCatalogo
-from ..consumidor.models import ItemCompra, Compra, MedioPago
-from ..productor.models import Usuario
-from ..comun.models import Direccion
-from ..distribuidor.models import Entrega
+from ..consumidor.models import ItemCompra, Compra, MedioPago, ItemCarrito, Carrito, FormConsumidor
+from ..productor.models import Usuario, Oferta, CatalogoOfertas, CompraOfertado
+from ..comun.models import Direccion, Rol
+from ..distribuidor.models import Entrega, Ruta
 from django.shortcuts import render
+from django.contrib.auth.models import User
 # Create your views here.
 
 @csrf_exempt
 def catalogo_compras(request):
     listaCatalogoProductos = CatalogoProductos.objects.filter(activo=1)
-    listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=listaCatalogoProductos[0].id)
-    return render(request, "catalogoCompras.html", {'productos':listaProductosCatalogo})
+    if request.method == 'GET':
+        try:
+            carrito_id = request.GET.get('carrito')
+            itemsList = [{'id': item.id,
+                          'cantidad': item.cantidad,
+                          'producto': item.id_producto_catalogo.id}
+                         for item in ItemCarrito.objects.filter(id_carrito=carrito_id)]
+        except ItemCarrito.DoesNotExist:
+            itemsList = []
+        istemsJson = json.dumps(itemsList)
+    return render(request, "catalogoCompras.html", {'catalogo':listaCatalogoProductos.first(),
+                                                    'items': istemsJson})
 
 @csrf_exempt
 def agregar_producto(request):
     if request.method == 'POST':
         jsonOferta = json.loads(request.body)
-        productoId = jsonOferta['productoId']
+        producto_cat_id = jsonOferta['productoId']
         cantidad = jsonOferta['cantidad']
-        producto = ProductoCatalogo.objects.get(id=productoId)
+        catalogo_id = jsonOferta['catalogo']
+        carrito_id = jsonOferta['carrito']
+        producto = ProductoCatalogo.objects.filter(id=producto_cat_id).filter(id_catalogo=catalogo_id).first()
+        if (carrito_id is not None):
+            carrito = Carrito.objects.get(id = carrito_id)
+            itemCompras = ItemCarrito.objects.filter(id_producto_catalogo=producto).filter(id_carrito=carrito_id)
+            if (len(itemCompras) > 0):
+                itemCompra = itemCompras.first()
+                itemCompra.cantidad = itemCompra.cantidad + int(cantidad)
+            else:
+                itemCompra = ItemCarrito(cantidad=cantidad,
+                                         id_producto_catalogo=producto,
+                                         id_carrito = Carrito.objects.get(id = carrito_id))
+        else:
+            carrito = Carrito(cantidad_items = int(cantidad),
+                              valor_total = producto.precio_definido * int(cantidad))
+            carrito.save()
+            itemCompra = ItemCarrito(cantidad=int(cantidad),
+                                     id_producto_catalogo=producto,
+                                     id_carrito = carrito)
+        carrito.save();
+        itemCompra.save()
+        itemsList = [{'id': item.id,
+                      'cantidad': item.cantidad,
+                      'producto': item.id_producto_catalogo.id}
+                     for item in ItemCarrito.objects.filter(id_carrito=carrito.id)]
 
-        if int(cantidad) > int(producto.cantidad_disponible):
-            cantidad = str(int(producto.cantidad_disponible))
+        istemsJson = json.dumps(itemsList)
+    return JsonResponse({"mensaje": "ok",
+                         "carrito_id": carrito.id,
+                         "items": itemsList})
+@csrf_exempt
+def eliminar_producto(request):
+    if request.method == 'PUT':
+        jsonOferta = json.loads(request.body)
+        producto_id = jsonOferta['productoId']
+        cantidad = jsonOferta['cantidad']
+        catalogo_id = jsonOferta['catalogo']
+        carrito_id = jsonOferta['carrito']
+        producto = ProductoCatalogo.objects.filter(id_producto_id=producto_id).filter(id_catalogo=catalogo_id).first()
+        itemsList = []
+        if (carrito_id is not None):
+            carrito = Carrito.objects.get(id=carrito_id)
+            itemCompras = ItemCarrito.objects.filter(id_producto_catalogo=producto).filter(id_carrito=carrito_id)
+            if (len(itemCompras) > 0):
+                itemCompra = itemCompras.first()
+                itemCompra.cantidad = itemCompra.cantidad - int(cantidad)
+            carrito.save();
+            if (itemCompra.cantidad > 0):
+                itemCompra.save()
+            else:
+                itemCompra.delete()
+            itemsList = [{'id': item.id,
+                          'cantidad': item.cantidad,
+                          'producto': item.id_producto_catalogo.id}
+                         for item in ItemCarrito.objects.filter(id_carrito=carrito.id)]
 
-        try:
-            itemCompra = ItemCompra.objects.get(id_producto_catalogo=producto)
-            itemCompra.cantidad = str(int(itemCompra.cantidad) + int(cantidad))
-            itemCompra.save()
-        except ItemCompra.DoesNotExist:
-            prodAdd = ItemCompra(cantidad=cantidad,
-                                 id_producto_catalogo=producto)
-            prodAdd.save()
-
-        producto.cantidad_disponible = str(int(producto.cantidad_disponible) - int(cantidad))
-        producto.save()
-
-    return JsonResponse({"mensaje": "ok"})
+    return JsonResponse({"mensaje": "ok",
+                         "carrito_id": carrito.id,
+                         "items": itemsList})
 
 @csrf_exempt
 def listar_productos_catalogo_view(request):
@@ -64,14 +119,15 @@ def listar_productos_catalogo_view(request):
 
 @csrf_exempt
 def select_productos(request):
+    # Filtrar por los productos que existen dentro del catálogo
     if request.method == "GET":
-        productos = Producto.objects.filter(activo=1)
-        lista_productos = [{'id': producto.id,
-                            'nombre': producto.nombre,
-                            'descripcion': producto.descripcion,
-                            'imagen': str(producto.foto),
-                            'activo': producto.activo} for producto in productos]
-
+        catalogo = CatalogoProductos.objects.filter(activo = True)
+        productos = ProductoCatalogo.objects.filter(id_catalogo_id = catalogo[0].id).filter(cantidad_disponible__gt=0).order_by('id_producto__nombre')
+        lista_productos = [{'id': productoCat.id_producto.id,
+                            'nombre': productoCat.id_producto.nombre,
+                            'descripcion': productoCat.id_producto.descripcion,
+                            'imagen': str(productoCat.id_producto.foto),
+                            'activo': productoCat.id_producto.activo} for productoCat in productos]
         data_convert = json.dumps(lista_productos)
         return HttpResponse(data_convert)
 
@@ -79,12 +135,30 @@ def select_productos(request):
 def select_producto(request, id, page):
     if request.method == "GET":
         listaCatalogoProductos = CatalogoProductos.objects.filter(activo=1)
+        catalogo = listaCatalogoProductos.first()
         if (int(id) > 0):
             producto = Producto.objects.get(pk=id)
-            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=listaCatalogoProductos[0].id).filter(id_producto=producto.id).order_by('id')
+            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(id_producto=producto.id).\
+                filter(cantidad_disponible__gt=0).order_by('id')
         else:
-            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=listaCatalogoProductos[0].id).order_by('id')
-        
+            listaProductosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo.id).filter(cantidad_disponible__gt=0).order_by('id')
+        ON_CODESHIP = os.getenv('ON_CODESHIP', False)
+        ON_HEROKU_BUG = os.getenv('ON_HEROKU_BUG', False)
+        ON_HEROKU_TEST = os.getenv('ON_HEROKU_TEST', False)
+        ON_HEROKU_PROD = os.getenv('ON_HEROKU_PROD', False)
+        if (ON_CODESHIP or  ON_HEROKU_BUG or ON_HEROKU_TEST or ON_HEROKU_PROD):
+            hoursDelta = 0
+        else:
+            hoursDelta = 5
+        limit_date = datetime.datetime.now() - datetime.timedelta(minutes=5) + datetime.timedelta(hours=hoursDelta)
+
+        for prod in listaProductosCatalogo:
+            itemsReserva = ItemCarrito.objects.filter(id_producto_catalogo=prod.id).filter(id_carrito__fecha_hora__gte=limit_date)
+            reserved = 0
+            for item in itemsReserva:
+                reserved += item.cantidad
+            prod.cantidad_disponible -= reserved
+
         #paginacion
         #page = request.GET.get('page', 1)
         paginator = Paginator(listaProductosCatalogo, 4)
@@ -129,37 +203,15 @@ def select_producto(request, id, page):
 
     return HttpResponse(json.dumps(json_))
 
-@csrf_exempt
-def eliminar_producto(request):
-    if request.method == 'PUT':
-        jsonOferta = json.loads(request.body)
-        productoId = jsonOferta['productoId']
-        cantidad = jsonOferta['cantidad']
-        producto = ProductoCatalogo.objects.get(id=productoId)
-        try:
-            itemCompra = ItemCompra.objects.get(id_producto_catalogo=producto)
-            if(int(itemCompra.cantidad) != 0 and int(cantidad) <= int(itemCompra.cantidad)):
-                itemCompra.cantidad = str(int(itemCompra.cantidad) - int(cantidad))
-                itemCompra.save()
-
-                producto.cantidad_disponible = str(int(producto.cantidad_disponible) + int(cantidad))
-                producto.save()
-            else:
-                producto.cantidad_disponible = str(int(producto.cantidad_disponible) + int(itemCompra.cantidad))
-                producto.save()
-
-                itemCompra.delete()
-        except ItemCompra.DoesNotExist:
-           pass
-    return JsonResponse({"mensaje": "ok"})
 
 @csrf_exempt
 def items_carrito(request):
     sum = 0
     try:
         if request.method == 'GET':
-            itemsCompra = ItemCompra.objects.all()
-            for item in itemsCompra:
+            carrito_id = request.GET.get('carrito')
+            itemsCarrito = ItemCarrito.objects.filter(id_carrito=carrito_id)
+            for item in itemsCarrito:
                 sum += int(item.cantidad)
     except:
         pass
@@ -172,12 +224,14 @@ def confirmarCompra(request):
 @csrf_exempt
 def get_Precios(request):
     if request.method == "GET":
-        catalogo_productos = CatalogoProductos.objects.filter(activo=1)
-        productosCatalogo = ProductoCatalogo.objects.filter(id_catalogo=catalogo_productos[0].id)
-        lista_productos = [{'id': catalogo.id_producto.id,
-                            'nombre': catalogo.id_producto.nombre,
-                            'precio': catalogo.precio_definido
-                            } for catalogo in productosCatalogo]
+        carrito_id = request.GET.get('carrito')
+        itemsCarrito = ItemCarrito.objects.filter(id_carrito=carrito_id)
+        lista_productos = [{'id': item.id,
+                            'nombre': item.id_producto_catalogo.id_producto.nombre,
+                            'precio': item.id_producto_catalogo.precio_definido,
+                            'cantidad': item.cantidad,
+                            'unidad': item.id_producto_catalogo.id_producto.id_tipo_unidad.abreviatura
+                            } for item in itemsCarrito]
 
     data_convert = json.dumps(lista_productos)
     return HttpResponse(data_convert)
@@ -185,24 +239,124 @@ def get_Precios(request):
 @csrf_exempt
 def saveCompra(request):
     if request.method == 'POST':
-        jsonUser = json.loads(request.body)
-        cantidad = jsonUser['cantidadItems']
-        total = jsonUser['total']
-        usuario = Usuario.objects.get(auth_user_id=request.user.id)
-        direccion = Direccion.objects.get(id=1)
-        medio = MedioPago.objects.get(id=1)
-        entrega = Entrega.objects.get(id=1)
+        jsonData = json.loads(request.body)
+        usuario = Usuario.objects.get(auth_user_id=request.user)
+        carrito_id = jsonData['carrito']
+        dir = jsonData['direccion']
+        carroCompra = Carrito.objects.get(id=carrito_id)
+        itemsCarrito = ItemCarrito.objects.filter(id_carrito=carrito_id)
+        dirUsuario = Direccion.objects.get(id_usuario_comprador=usuario.id)
+        if not Direccion.objects.filter(id_usuario_comprador=usuario.id).exists():
+            dirUsuario = Direccion(direccion=dir,
+                                   id_usuario_comprador=usuario)
+            dirUsuario.save()
+        medioPago = MedioPago.objects.get(id_usuario_comprador=usuario.id)
+        if not MedioPago.objects.filter(id_usuario_comprador=usuario.id).exists():
+            medioPago = MedioPago(nombre='Efectivo',
+                                  id_usuario_comprador=usuario)
+            medioPago.save()
+        ruta = Ruta(descripcion='Ruta',
+                    id_usuario_distribuidor=usuario)
+        ruta.save()
+        entrega = Entrega(estado='Pendiente',
+                          id_ruta=ruta)
+        entrega.save()
 
         compra = Compra(fecha_compra=datetime.datetime.now(),
-                        valor_total= total,
-                        cantidad_items= cantidad,
-                        fecha_entrega= datetime.datetime.now(),
-                        id_usuario_comprador = usuario,
-                        id_direccion_compra = direccion,
-                        id_entrega = entrega,
-                        id_medio_pago=medio);
+                        valor_total=0,
+                        cantidad_items=0,
+                        fecha_entrega=datetime.datetime.now(),
+                        id_usuario_comprador=usuario,
+                        id_direccion_compra=dirUsuario,
+                        id_entrega=entrega,
+                        id_medio_pago=medioPago);
         compra.save()
+
+        vTotal = 0.0;
+        canIt = 0;
+        for item in itemsCarrito:
+            vTotal += float(item.id_producto_catalogo.precio_definido) * int(item.cantidad)
+            canIt += int(item.cantidad)
+            itemCompra = ItemCompra(cantidad=item.cantidad,
+                                    id_producto_catalogo=item.id_producto_catalogo,
+                                    id_compra=compra)
+            pCatalog = ProductoCatalogo.objects.get(id=item.id_producto_catalogo_id)
+            pCatalog.cantidad_disponible -= int(item.cantidad)
+            pCatalog.save()
+            itemCompra.save()
+
+            catalogoOf = CatalogoOfertas.objects.filter(activo=True).order_by('fecha_inicio')
+            ofertas = Oferta.objects.filter(id_catalogo_oferta=catalogoOf[catalogoOf.count()-1].id, id_producto=item.id_producto_catalogo.id_producto.id).order_by('precio')
+            print catalogoOf[catalogoOf.count()-1].id
+
+            cantOfr = int(item.cantidad)
+            for oferta in ofertas:
+                if oferta.id_producto.id == item.id_producto_catalogo.id_producto.id and cantOfr > 0:
+                    if int(cantOfr) >= int(oferta.cantidad_disponible):
+                        cantOfr -= int(oferta.cantidad_disponible)
+                        oferta.cantidad_disponible = 0
+                    else:
+                        oferta.cantidad_disponible -= int(cantOfr)
+                        cantOfr = 0
+                    cOfertado = CompraOfertado(cantidad=item.cantidad,
+                                               id_item_compra=itemCompra,
+                                               id_oferta=oferta)
+                    cOfertado.save()
+                    oferta.save()
+            item.delete()
+
+        compra.valor_total=vTotal
+        compra.cantidad_items=canIt
+        compra.save()
+        carroCompra.delete()
 
     return JsonResponse({"mensaje": "OK"})
 
+@csrf_exempt
+def registrarse(request):
+    form = FormConsumidor()
+    context = {'form': form}
+    return render(request, "registroComprador.html", context)
 
+@csrf_exempt
+def registrarComprador(request):
+    if request.method == 'POST':
+        jsonData = json.loads(request.body)
+        foto = jsonData['foto']
+        m_pago = jsonData['medio_pago']
+        direcciones = jsonData['direcciones']
+        usuario = jsonData['username']
+        clave = jsonData['password']
+        nombres = jsonData['first_name']
+        apellidos = jsonData['last_name']
+        correo = jsonData['email']
+        telefono = jsonData['telefono']
+
+        antUser = User.objects.filter(username=usuario)
+        if antUser.count() == 0:
+            user_data = User.objects.create_user(username=usuario, password=clave)
+            user_data.first_name = nombres
+            user_data.last_name = apellidos
+            user_data.email = correo
+            user_data.save()
+
+            rol = Rol.objects.get(nombre="Consumidor")
+            usuario_data = Usuario.objects.create(foto=foto,
+                                                 telefono=telefono,
+                                                 id_rol=rol,
+                                                 auth_user_id=user_data)
+            usuario_data.save()
+
+            medio_pago = MedioPago.objects.create(nombre=m_pago,
+                                                 id_usuario_comprador=usuario_data)
+            medio_pago.save()
+
+            for dir_item in direcciones.split(","):
+                if dir_item != "":
+                    dir_usu = Direccion.objects.create(direccion=dir_item,
+                                                       id_usuario_comprador=usuario_data)
+                    dir_usu.save()
+        else:
+            return JsonResponse({"mensaje": "El usuario ya existe."})
+        
+    return JsonResponse({"mensaje": "OK"})

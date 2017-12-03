@@ -41,7 +41,7 @@
         function logout(){
             $.getJSON(location.origin+"/logout").done(function (data) {
                 if(data.mensaje == "ok"){
-                    location.reload();
+                    window.location = "{% url 'comun:index' %}";
                 }
                 else {
                     alert("Hubo un error.")
@@ -65,7 +65,7 @@
                         if (item.mensaje == 'OK')
                         {
                             $("#mess-error").hide();
-                            window.location = "{% url 'comun:index' %}";
+                            location.reload();
                         }
                         else
                         {
@@ -82,37 +82,14 @@
           });
           $.getJSON(location.origin+"/isLogged/").done(function(data){
               if(data.mensaje == "no"){
-                  $("#cerrar_sesion").hide();
-                  $("#consultar_ofertas").hide();
-                  $("#ofertar").hide();
-                  $("#evaluar_ofertas").hide();
-                  $("#armar_catalogo").hide();
                   $("#iniciar_sesion").show();
+                  $("#registrar_condumidor").show();
               }else {
-                  $.getJSON("http://localhost:8000/getRol/").done(function(data){
-                      if(data.mensaje == "Productor"){
-                          $("#consultar_ofertas").show();
-                          $("#ofertar").show();
-                          $("#cerrar_sesion").show();
-                          $("#evaluar_ofertas").hide();
-                          $("#armar_catalogo").hide();
+                  $.getJSON(location.origin+"/getRol/").done(function(data){
+                      $("#cerrar_sesion").show();
+                      if(data.mensaje == "Consumidor"){
                           $("#iniciar_sesion").hide();
-                          $("#catalogo_compras").hide();
-                      }else if(data.mensaje == "Administrador"){
-                          $("#consultar_ofertas").hide();
-                          $("#ofertar").hide();
-                          $("#evaluar_ofertas").show();
-                          $("#armar_catalogo").show();
-                          $("#cerrar_sesion").show();
-                          $("#iniciar_sesion").hide();
-                          $("#catalogo_compras").hide();
-                      }else if(data.mensaje == "Consumidor"){
-                          $("#consultar_ofertas").hide();
-                          $("#ofertar").hide();
-                          $("#evaluar_ofertas").hide();
-                          $("#armar_catalogo").hide();
-                          $("#cerrar_sesion").show();
-                          $("#iniciar_sesion").hide();
+                          $("#registrar_condumidor").hide();
                       }
                     });
                 }
@@ -129,18 +106,12 @@
         <a class="navbar-brand js-scroll-trigger" href="{% url 'comun:index' %}" >MerkaOrgánico</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
-          <span class="navbar-toggler-icon"></span>
-          <span class="navbar-toggler-icon"></span>
-          <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item" id ="consultar_ofertas" ><a class="nav-link" href="{% url 'productor:ver_ofertas' %}">Consultar Ofertas</a></li>
-            <li class="nav-item" id ="ofertar" ><a class="nav-link" href="{% url 'productor:ver_productos' %}">Ofertar</a></li>
-            <li class="nav-item" id ="evaluar_ofertas" ><a class="nav-link" href="{% url 'catalogo:evaluarOfertas' %}">Evaluar Ofertas</a></li>
-            <li class="nav-item" id ="armar_catalogo"><a class="nav-link" href="{% url 'catalogo:index' %}">Armar Catálogo</a></li>
-            <li class="nav-item" id="cerrar_sesion" ><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
-            <li class="nav-item" id="iniciar_sesion"><a href="#" class="nav-link" data-toggle="modal" data-target="#modalLogin"><i class="fa fa-fw fa-sign-in"></i>Iniciar Sesión</a></li>
+            <li class="nav-item" id ="registrar_condumidor" style="display: none" ><a class="nav-link" href="{% url 'consumidor:registrarse' %}"><i class="fa fa-user-circle-o"></i> Registrarse</a></li>
+            <li class="nav-item" id="cerrar_sesion" style="display: none" ><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
+            <li class="nav-item" id="iniciar_sesion"style="display: none" ><a href="#" class="nav-link" data-toggle="modal" data-target="#modalLogin"><i class="fa fa-fw fa-sign-in"></i>Iniciar Sesión</a></li>
           </ul>
         </div>
       </div>
@@ -148,16 +119,7 @@
     {% endblock %}
 
     {% block content %}
-     <header class="masthead">
-      <div class="header-content" style="background-image:{% static 'img/header.jpg' %}">
-        <div class="header-content-inner" >
-          <h1 id="homeHeading" style="background-color: black">FRESCO + ORGANICO + SALUDABLE</h1>
-          <hr>
-          <p>Lo mejor del campo a la puerta de tu casa semana a semana</p>
-          <a class="btn btn-primary btn-xl js-scroll-trigger" href="{% url 'consumidor:catalogo_compras' %}">Conoce el catálogo de productos de la semana</a>
-        </div>
-      </div>
-    </header>
+
     {% endblock %}
 
     {% block footer %}

@@ -5,12 +5,34 @@
 {% endblock %}
 
 {% block content %}
-     <header class="masthead" style="background: whitesmoke">
      <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
      <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
      <script>
+         function listar_ofertas (selected_producto){
+             $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto + "/1").done(function (data) {
+                    var items = [];
+                    $.each(data, function (key,val) {
+                        items.push("<tr>");
+                        items.push("<td id=''"+key+"''>"+val.fecha+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.producto+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.productor+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.precio+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.unidad+"</td>");
+                        items.push("<td id=''"+key+"''>"+val.cantidad+"</td>");
+                        if (val.estadoId == '1'){
+                            items.push("<td><input type=\"button\" id=\"Aprobar\" value=\"Aprobar\" class=\"btn_evaluar_ok buttonStyle\" onclick=\"evaluar("+val.id+","+2+","+selected_producto+")\"/>" +
+                                            "<input type=\"button\" id=\"Rechazar\" value=\"Rechazar\" class=\"btn_evaluar_mal buttonStyleMal\" onclick=\"evaluar("+val.id+","+3+","+selected_producto+")\"/></td>");
+                        }
+                        else{
+                             items.push("<td id=''"+key+"''>"+val.estadoNombre+"</td>");
+                        }
+                        items.push("</tr>");
+                    });
+                    $("<tbody/>",{html: items.join("")}).appendTo("table");
+                });
+         }
         function evaluar(ofertaId,estadoId,productoId)
         {
             $.ajax({
@@ -30,6 +52,7 @@
         };
 
         $(document).ready(function () {
+            listar_ofertas(0)
             $.getJSON(location.origin+"/catalogo/getCatalogoOfertaActivo/").done(function (data) {
                 semana = "Ofertas de la semana del " +
                     data.fecha_inicio +
@@ -42,29 +65,10 @@
             $(productos).change(function () {
                 $("#lista_ofertas_producto").find("tr:gt(0)").remove();
                 var selected_producto = productos.val();
-                if(selected_producto == ''){
+                if(selected_producto == '' || selected_producto == null){
                     selected_producto = 0
                 }
-                $.getJSON(location.origin+"/catalogo/listarOfertas/" + selected_producto).done(function (data) {
-                    var items = [];
-                    $.each(data, function (key,val) {
-                        items.push("<tr>");
-                        items.push("<td id=''"+key+"''>"+val.fecha+"</td>");
-                        items.push("<td id=''"+key+"''>"+val.productor+"</td>");
-                        items.push("<td id=''"+key+"''>"+val.precio+"</td>");
-                        items.push("<td id=''"+key+"''>"+val.unidad+"</td>");
-                        items.push("<td id=''"+key+"''>"+val.cantidad+"</td>");
-                        if (val.estadoId == '1'){
-                            items.push("<td><input type=\"button\" id=\"Aprobar\" value=\"Aprobar\" class=\"btn_evaluar_ok buttonStyle\" onclick=\"evaluar("+val.id+","+2+","+selected_producto+")\"/>" +
-                                            "<input type=\"button\" id=\"Rechazar\" value=\"Rechazar\" class=\"btn_evaluar_mal buttonStyleMal\" onclick=\"evaluar("+val.id+","+3+","+selected_producto+")\"/></td>");
-                        }
-                        else{
-                             items.push("<td id=''"+key+"''>"+val.estadoNombre+"</td>");
-                        }
-                        items.push("</tr>");
-                    });
-                    $("<tbody/>",{html: items.join("")}).appendTo("table");
-                });
+                listar_ofertas(selected_producto)
             });
 
             //Listar productos
@@ -96,10 +100,11 @@
                  <thead>
                      <tr style="color: black">
                          <th class="col-xs-4">Fecha de la oferta</th>
+                         <th class="col-xs-4">Producto</th>
                          <th class="col-xs-4">Productor</th>
                          <th class="col-xs-4">Precio (Unidad)</th>
                          <th class="col-xs-4">Unidad</th>
-                         <th class="col-xs-4">Cantidad Disponible</th>
+                         <th class="col-xs-4">Cantidad Ofertada</th>
                          <th class="col-xs-4">Estado</th>
                      </tr>
                  </thead>
@@ -107,5 +112,4 @@
             </div>
          </div>
     </section>
-    </header>
 {% endblock %}

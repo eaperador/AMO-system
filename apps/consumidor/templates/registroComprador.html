@@ -1,0 +1,223 @@
+{% extends 'layout/consumidor_layout.html' %}
+
+{% block title %}
+	Registro
+{% endblock %}
+
+{% block content %}
+	<header style="background: whitesmoke">
+        <style>
+            fieldset
+            {
+                min-width: 2px;
+                margin-left: 2px;
+                margin-right: 2px;
+                padding-top: 0.35em;
+                padding-bottom: 0.625em;
+                padding-left: 0.75em;
+                padding-right: 0.75em;
+                border: 1px solid;
+                display: block;
+                font:80%/1 sans-serif;
+                border-color: black;
+            }
+            legend
+            {
+                width: auto;
+            }
+            .cc-selector input{
+                margin:0;padding:0;
+                -webkit-appearance:none;
+                   -moz-appearance:none;
+                        appearance:none;
+            }
+            .visa{background-image:url(/static/images/mPagos/visa.jpg);}
+            .master{background-image:url(/static/images/mPagos/mastercard.jpg);}
+            .maestro{background-image:url(/static/images/mPagos/maestro.jpg);}
+            .amex{background-image:url(/static/images/mPagos/amex.jpg);}
+            .diners{background-image:url(/static/images/mPagos/diners.jpg);}
+            .paypal{background-image:url(/static/images/mPagos/paypal.jpg);}
+            .efectivo{background-image:url(/static/images/mPagos/efectivo.jpg);}
+
+            .cc-selector input:active +.drinkcard-cc{opacity: .9;}
+            .cc-selector input:checked +.drinkcard-cc{
+                -webkit-filter: none;
+                   -moz-filter: none;
+                        filter: none;
+            }
+            .drinkcard-cc{
+                cursor:pointer;
+                background-size:contain;
+                background-repeat:no-repeat;
+                display:inline-block;
+                width:100px;height:70px;
+                -webkit-transition: all 100ms ease-in;
+                   -moz-transition: all 100ms ease-in;
+                        transition: all 100ms ease-in;
+                -webkit-filter: brightness(1.8) grayscale(1) opacity(.7);
+                   -moz-filter: brightness(1.8) grayscale(1) opacity(.7);
+                        filter: brightness(1.8) grayscale(1) opacity(.7);
+            }
+            .drinkcard-cc:hover{
+                -webkit-filter: brightness(1.2) grayscale(.5) opacity(.9);
+                   -moz-filter: brightness(1.2) grayscale(.5) opacity(.9);
+                        filter: brightness(1.2) grayscale(.5) opacity(.9);
+            }
+
+            /* Extras */
+            a:visited{color:#888}
+            a{color:#444;text-decoration:none;}
+            p{margin-bottom:.3em;}
+        </style>
+		<script>
+            var ldir = 1
+
+            function cargarImagen(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#iPerfil')
+                            .attr('src', e.target.result)
+                            .width(200)
+                            .height(250);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            function agregarDir() {
+                dirText = $("#iDireccion").val()
+                console.log("cant:"+ldir+",text:"+dirText);
+                if (dirText=="") {
+                    alert("Debe digitar una dirección");
+                } else {
+                    $('#listaDirecciones').append("<tr style=\"color: black\"> " +
+                        "<th scope='row' style=\"text-align: center\">"+(ldir)+"</th>"+
+                        "<td class=\"dir\">"+dirText+"</td>" +
+                        "</tr>");
+                    ldir +=1;
+                    $('#iDireccion').val("");
+                }
+            }
+
+            function registrarConsumidor(){
+                var medioPago = $('input[name=credit-card]:checked').val();
+                var direcciones = "";
+                $("td").each(function(){
+                    direcciones += "," + $(this).text();
+                });
+                direcciones = direcciones.substr(1);
+                $.ajax({
+                    type: "POST",
+                    url: location.origin + "/consumidor/registrarComprador/",
+                    data: JSON.stringify({
+                        username: $('#id_username').val(),
+                        password: $('#id_password').val(),
+                        first_name: $('#id_first_name').val(),
+                        last_name: $('#id_last_name').val(),
+                        email: $('#id_email').val(),
+                        telefono: $('#id_telefono').val(),
+                        foto: $("#fileUrl").val().split('/').pop().split('\\').pop(),
+                        medio_pago: medioPago,
+                        direcciones: direcciones
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.mensaje == 'OK') {
+                            alert('Usuario creado con exito');
+                            window.location = "{% url 'comun:index' %}";
+                        } else {
+                            alert(data.mensaje);
+                        }
+                    },
+                    failure: function (errMsg) {
+                        alert('Hubo error!');
+                    }
+                });
+            }
+		</script>
+		<section id="RegistroConsumidor" >
+			<div class="container">
+				<div class="row">
+                    <div class="col" style="text-align: left">
+						<h3 style="font-weight:bold; color: black"><i class="fa fa-user-circle-o"></i> REGISTRARSE:</h3>
+                    </div>
+				</div>
+                <br>
+                    <div class="row">
+                        <div class="col" style="text-align: left">
+                            <fieldset>
+                                <legend style="font-weight:bold; color: black">Datos del usuario</legend>
+                                <div class="row">
+                                    <div class="col">
+                                            {% csrf_token %}
+                                            {% for field in form %}
+                                                <br>
+                                                {{ field }}
+                                            {% endfor %}
+                                    </div>
+                                    <div class="col" style="color: black">
+                                        <br>
+                                        <img class="imgText" id="iPerfil" src="#" alt="Tu imagen de perfil"/><br><br>
+                                        <input type='file' id="fileUrl" class="inputfile" required onchange="cargarImagen(this)" />
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col" style="text-align: left">
+                            <fieldset>
+                                <legend style="font-weight:bold; color: black">Direcciones</legend>
+                                <div class="row">
+                                    <div class="col">
+                                        <input id="iDireccion" class="form-control" placeholder="Direccion" name="iDireccion">
+                                        <button class="btn btn-primary" id="btn_addDir" type="button" onclick="agregarDir()" >
+                                            <i class="fa fa-plus" style="font-size:24px"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <br>
+                                <table class="table table-hover table-responsive" id="tDir">
+                                    <thead>
+                                        <tr style="color: black">
+                                            <th class="col-xs-1">#</th>
+                                            <th class="col-xs-1">Dirección</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="listaDirecciones"></tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col" style="text-align: center">
+                            <fieldset>
+                                <legend style="font-weight:bold; color: black">Medios de Pago</legend>
+                                <input id="visa" type="radio" name="credit-card" value="visa" checked="true" />
+                                <label class="drinkcard-cc visa" for="visa"></label>
+                                <input id="master" type="radio" name="credit-card" value="master" />
+                                <label class="drinkcard-cc master" for="master"></label>
+                                <input id="maestro" type="radio" name="credit-card" value="maestro" />
+                                <label class="drinkcard-cc maestro" for="maestro"></label>
+                                <input id="amex" type="radio" name="credit-card" value="amex" />
+                                <label class="drinkcard-cc amex" for="amex"></label>
+                                <input id="diners" type="radio" name="credit-card" value="diners" />
+                                <label class="drinkcard-cc diners" for="diners"></label>
+                                <input id="paypal" type="radio" name="credit-card" value="paypal" />
+                                <label class="drinkcard-cc paypal" for="paypal"></label>
+                                <input id="efectivo" type="radio" name="credit-card" value="efectivo" />
+                                <label class="drinkcard-cc efectivo" for="efectivo"></label>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col" style="text-align: center">
+                            <button class="btn btn-primary btn-success" id="btn_registrar" type="button" onclick="registrarConsumidor()" >Registrar</button>
+                        </div>
+                    </div>
+			</div>
+		</section>
+	</header>
+{% endblock content %}

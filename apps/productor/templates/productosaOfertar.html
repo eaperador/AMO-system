@@ -11,9 +11,17 @@
 	 <script>
         (function () {
 		    $.getJSON( location.origin+"/productor/listaProductos/").done(function (data) {
-			     mostrarProductos(data[0].productos, data[0].productosPag.first_row)
-                 paginacion(data[0].productosPag)
-                });
+		        console.log('Lista Productos a Ofertar', data)
+		        if ("mensaje" in data[0]){
+		            console.log('No es posible obtener los productos a ofertar')
+                    alert(data[0].mensaje)
+                }
+                else {
+		            console.log('Consulta de productos Ok')
+                    mostrarProductos(data[0].productos, data[0].productosPag.first_row)
+                    paginacion(data[0].productosPag)
+                }
+            });
         })();
 
 		function enviarForm(page) {
@@ -33,7 +41,6 @@
         }
 
 		function mostrarProductos(productos, current){
-		    console.log(productos);
 		    $('#listaProductos').empty();
             $.each(productos, function (i, item) {
                 var nombreProducto = item.nombre;
@@ -44,20 +51,33 @@
                                               "<td class='text-left'>"+item.descripcion+"</td>" +
                                               "<td>"+item.tipoUnidad+"</td>"+
                                               "<td>"+item.categoria+"</td>"+
-                                              "<td>"+"<button onclick=LanzaPopup("+item.pk+") data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
+                                              "<td>"+"<button onclick='LanzaPopup("+item.pk+",\""+item.tipoUnidad.trim()+"\")' data-toggle='modal' data-target='#modalLogin' class='btn btn-primary'>Hacer Oferta</button>"+"</td>"+
                                             "</tr>");
                 i++
              });
         }
 
-		function LanzaPopup(idProducto) {
+		function LanzaPopup(idProducto, unidad) {
+		    $("#mess-error").hide();
 		    console.log('producto: ', idProducto);
             $('#inputProducto').html(idProducto);
+            $('#inputCantidad').attr("placeholder", "Cantidad en "+unidad);
+            $('#inputPrecio').attr("placeholder", "Precio por "+unidad);
         }
 
         function Ofertar() {
 		    var id = document.getElementById('inputProducto');
             var idproducto = id.innerText || id.textContent;
+
+            var today = new Date();
+            var dia = today.getDate();
+            var mes = today.getMonth()+1;
+            var ano = today.getFullYear();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            console.log('Hoy: ', dia, '/', mes, '/', ano, ' ', h,':', m)
+
             $.ajax({
                 type: "POST",
                 url: location.origin+"/productor/crearOferta",
@@ -68,18 +88,27 @@
                 success: function (data) {
                     $.each(data,function (i,item) {
                         if (item.mensaje == 'OK') {
+                            document.getElementById("inputCantidad").value = "";
+                            document.getElementById("inputPrecio").value = "";
+                            $("#mess-error").hide();
                             window.location = "{% url 'productor:ver_productos' %}";
                         }
                         else {
-                            $("#mess-error").hide();
-                            $("#mensaje").html('Error');
+                            document.getElementById("inputCantidad").value = "";
+                            document.getElementById("inputPrecio").value = "";
+                            console.log('Entra al else, mensaje rta: ', item.mensaje)
+                            $("#mess-error").show();
+                            $("#mensaje").html(item.mensaje);
                         }
                       })
                 },
                 failure: function (errMsg) {
+                    document.getElementById("inputCantidad").value = "";
+                    document.getElementById("inputPrecio").value = "";
                     alert("Hubo un error");
                 }
             });
+
             return false;
         }
 
@@ -104,11 +133,49 @@
                 }
             }
         }
+
+        function limpiarCampos() {
+             document.getElementById("inputPrecio").value = "";
+             document.getElementById("inputCantidad").value = "";
+        }
+
+        $(document).ready(function () {
+             $.ajax({
+                type: "GET",
+                url: location.origin+"/productor/ConsultaSemanaOferta/",
+                contentType: "aplication/json; charset-utf-8",
+                success: function(data){
+                      if(data[0].mensaje == "fail"){
+                          console.log(data)
+                          alert('Error consultando la semana de ofertas');
+                          $("#lblSemanaOferta").html("- - -");
+                      }else {
+                        console.log(data)
+                        //document.getElementById("lblSemanaOferta").value = data[0].semanaOferta;
+                        $("#lblSemanaOferta").html(data[0].semanaOferta);
+                      }
+                  },
+                  failure: function (errMsg) {
+                      alert('Error consultando la semana de ofertas');
+                  }
+            });
+        });
     </script>
      <section id="Productor">
          <div class="container" >
             <div class="row">
                 <h1 style="color: black">Productos a Ofertar</h1>
+            </div>
+            <div class="row">
+                <br/>
+            </div>
+            <div class="row">
+                <h6 style="color: black"><strong> Semana : </strong></h6>
+                <h6 id="lblSemanaOferta" style="color: black"></h6>
+                <br/>
+            </div>
+            <div class="row">
+                <br/>
             </div>
             <div class="row">
                 <table class="table table-hover table-responsive">
@@ -143,14 +210,18 @@
                     <div class="modal-body">
                         <form method="post" id="form-oferta">
                             <label id="inputProducto" class="modal-lg"></label>
-                            <input id="inputPrecio" class="form-control" placeholder="Precio" required autofocus ><br>
-
-                            <input id="inputCantidad" class="form-control" placeholder="Cantidad en kg" required>
+                            <div id="mess-error">
+                                <div class="alert alert-danger">
+                                    <label for="mensaje" id="mensaje"></label>
+                                </div>
+                            </div>
+                            <input id="inputPrecio" class="form-control" required autofocus ><br>
+                            <input id="inputCantidad" class="form-control" required>
                         </form>
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="limpiarCampos()">Cancelar</button>
                         <button type="button" class="btn btn-primary" onclick="Ofertar()">Ofertar</button>
                     </div>
                 </div>

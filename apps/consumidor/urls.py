@@ -12,4 +12,6 @@ urlpatterns = [
     url(r'^confirmarCompra/$', views.confirmarCompra, name="confirmarCompra"),
     url(r'^getPreciosProductos/$', views.get_Precios, name="getPreciosProductos"),
     url(r'^seleccionarProducto/(?P<id>.+)/(?P<page>.+)/$', views.select_producto, name="seleccionarProducto"),
-    url(r'^finalizarCompra/$', views.saveCompra, name="finalizarCompra")]
+    url(r'^finalizarCompra/$', views.saveCompra, name="finalizarCompra"),
+    url(r'^registrarse/$', views.registrarse, name="registrarse"),
+    url(r'^registrarComprador/$', views.registrarComprador, name="registrarComprador")]
