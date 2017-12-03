@@ -26,7 +26,7 @@ SECRET_KEY = 'ec*%#&9wh7^s%kv1(or3=zio8egzxi--v+)2^_9vn)7%*8f4x^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['amo-bugs.herokuapp.com','amo-system-test.herokuapp.com','amo-system.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['amo-bugs.herokuapp.com','amo-system-test.herokuapp.com','amo-system.herokuapp.com','localhost','merkaorganico.herokuapp.com']
 
 
 # Application definition
