@@ -322,7 +322,7 @@ def registrarComprador(request):
     if request.method == 'POST':
         jsonData = json.loads(request.body)
         foto = jsonData['foto']
-        mPago = jsonData['mPago']
+        m_pago = jsonData['medio_pago']
         direcciones = jsonData['direcciones']
         usuario = jsonData['username']
         clave = jsonData['password']
@@ -346,7 +346,7 @@ def registrarComprador(request):
                                                  auth_user_id=user_data)
             usuario_data.save()
 
-            medio_pago = MedioPago.objects.create(nombre=mPago,
+            medio_pago = MedioPago.objects.create(nombre=m_pago,
                                                  id_usuario_comprador=usuario_data)
             medio_pago.save()
 
@@ -355,10 +355,7 @@ def registrarComprador(request):
                     dir_usu = Direccion.objects.create(direccion=dir_item,
                                                        id_usuario_comprador=usuario_data)
                     dir_usu.save()
-
-            print "OK"
-            return JsonResponse({"mensaje": "OK"})
         else:
             return JsonResponse({"mensaje": "El usuario ya existe."})
-    else:
-        return JsonResponse({"mensaje": "OK"})
+        
+    return JsonResponse({"mensaje": "OK"})

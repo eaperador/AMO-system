@@ -100,44 +100,42 @@
                 }
             }
 
-            $(document).ready(function () {
-        	    $("#form-registro").submit(function (event) {
-        	        var medioPago = $('input[name=credit-card]:checked', '#form-registro').val();
-        	        var direcciones = "";
-                    $("td").each(function(){
-                        direcciones += "," + $(this).text();
-                    });
-                    direcciones = direcciones.substr(1);
-                    $.ajax({
-                        type: "POST",
-                        url: location.origin + "/consumidor/registrarComprador/",
-                        data: JSON.stringify({
-                            username: $('#id_username').val(),
-                            password: $('#id_password').val(),
-                            first_name: $('#id_first_name').val(),
-                            last_name: $('#id_last_name').val(),
-                            email: $('#id_email').val(),
-                            telefono: $('#id_telefono').val(),
-                            foto: $("#fileUrl").val().split('/').pop().split('\\').pop(),
-                            mPago: medioPago,
-                            direcciones: direcciones
-                        }),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (data) {
-                            if (data.mensaje == 'OK') {
-                                alert('Usuario creado con exito');
-                                window.location = "{% url 'comun:index' %}";
-                            } else {
-                                alert(data.mensaje);
-                            }
-                        },
-                        failure: function (errMsg) {
-                            alert('Hubo error!');
+            function registrarConsumidor(){
+                var medioPago = $('input[name=credit-card]:checked').val();
+                var direcciones = "";
+                $("td").each(function(){
+                    direcciones += "," + $(this).text();
+                });
+                direcciones = direcciones.substr(1);
+                $.ajax({
+                    type: "POST",
+                    url: location.origin + "/consumidor/registrarComprador/",
+                    data: JSON.stringify({
+                        username: $('#id_username').val(),
+                        password: $('#id_password').val(),
+                        first_name: $('#id_first_name').val(),
+                        last_name: $('#id_last_name').val(),
+                        email: $('#id_email').val(),
+                        telefono: $('#id_telefono').val(),
+                        foto: $("#fileUrl").val().split('/').pop().split('\\').pop(),
+                        medio_pago: medioPago,
+                        direcciones: direcciones
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.mensaje == 'OK') {
+                            alert('Usuario creado con exito');
+                            window.location = "{% url 'comun:index' %}";
+                        } else {
+                            alert(data.mensaje);
                         }
-                    });
-        	    });
-        	});
+                    },
+                    failure: function (errMsg) {
+                        alert('Hubo error!');
+                    }
+                });
+            }
 		</script>
 		<section id="RegistroConsumidor" >
 			<div class="container">
@@ -147,7 +145,6 @@
                     </div>
 				</div>
                 <br>
-                <form class="form" method="post" id="form-registro">
                     <div class="row">
                         <div class="col" style="text-align: left">
                             <fieldset>
@@ -217,10 +214,9 @@
                     <br>
                     <div class="row">
                         <div class="col" style="text-align: center">
-                            <button class="btn btn-primary btn-success" id="btn_registrar" type="submit">Registrar</button>
+                            <button class="btn btn-primary btn-success" id="btn_registrar" type="button" onclick="registrarConsumidor()" >Registrar</button>
                         </div>
                     </div>
-                </form>
 			</div>
 		</section>
 	</header>
