@@ -36,9 +36,10 @@
             })
         };
         function cerrarSemana(){
-           $.getJSON(location.origin+"/catalogo/cerrarSemana").done(function(data){
-               $("#cierreMsj").text(data.mensaje)
-               $("#modalCierre").modal('show')
+          $.getJSON(location.origin+"/catalogo/cerrarSemana").done(function(data){
+               $("#cierreMsj2").text(data.mensaje)
+               console.log(data.mensaje)
+               $("#modalCierre2").modal('show')
           });
 
        }
@@ -68,8 +69,9 @@
               <li class="nav-item" id="cerrar_sesion"><a href="#" class="nav-link" onclick="logout();"><i class="fa fa-fw fa-sign-out"></i>Cerrar Sesión</a></li>
            </ul>
         </div>
-      </div>S
+      </div>
     </nav>
+
     {% endblock %}
 
     {% block content %}
@@ -83,27 +85,27 @@
         </div>
       </div>
 
-     <!--MODAL-->
-     <div class="modal fade" id="modalCierre" tabindex="-1" role="dialog">
-         <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="background-color: #F05F40">
-                    <h4 class="modal-lg">Cierre semanal</h4>
-                </div>
-                <div class="modal-body">
-                    <label id="cierreMsj" class="modal-lg">prueba prueba pruea</label>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Aceptar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
     </header>
     {% endblock %}
 
     {% block footer %}
-
+    <!--MODAL-->
+        <div class="modal" id="modalCierre2" tabindex="-1" role="dialog">
+             <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #F05F40">
+                        <h4 class="modal-lg">Cierre semanal</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label id="cierreMsj2" class="modal-lg">prueba prueba pruea</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
     {% endblock %}
