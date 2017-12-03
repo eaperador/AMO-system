@@ -361,14 +361,17 @@ def confirmar(ofertas):
     for oferta in ofertas:
         prod = oferta.id_productor
         cantidad = oferta.cantidad - oferta.cantidad_disponible
+        venta = cantidad * oferta.precio
         email = prod.auth_user_id.email
         asunto = "Confirmación de pedido"
         mensaje = "Señor(a) " + prod.auth_user_id.first_name + " " + prod.auth_user_id.last_name + ": \n\n"
         mensaje = mensaje + "De la forma más atenta queremos informale que su oferta tuvo una venta de \n"
         mensaje = mensaje + "         "+str(cantidad) + " " +str(oferta.id_producto.id_tipo_unidad.abreviatura)
-        mensaje = mensaje + " de " + oferta.id_producto.nombre +"\n"
+        mensaje = mensaje + " de " + oferta.id_producto.nombre
+        mensaje = mensaje + " por un total de $" + str(venta) + "\n"
+
         if cantidad > 0 :
-            mensaje = mensaje + "Recuerde que debe hacernos llegar su producto en los proximos 2 días \n"
+            mensaje = mensaje + "Recuerde que debe hacernos llegar su producto en los proximos 2 días. \n"
         mensaje = mensaje + "Puede consultar más información de la oferta en su perfil y recuerde estar atento a futuras notificaciones\n\n"
         mensaje = mensaje + "Saludos."
         sendMailNotification(email, asunto, mensaje)

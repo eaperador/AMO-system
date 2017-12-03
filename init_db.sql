@@ -46,6 +46,9 @@ INSERT INTO administrador_producto (id, nombre, descripcion, foto, activo, id_ca
 INSERT INTO productor_estadooferta (id, nombre) VALUES (1, 'Pendiente');
 INSERT INTO productor_estadooferta (id, nombre) VALUES (2, 'Aprobada');
 INSERT INTO productor_estadooferta (id, nombre) VALUES (3, 'Rechazada');
+ALTER SEQUENCE auth_user_id_seq RESTART WITH 10;
+ALTER SEQUENCE comun_usuario_id_seq RESTART WITH 10;
+commit;
 
 INSERT INTO productor_catalogoofertas (id, fecha_inicio, fecha_fin, activo) VALUES (1, '2017-11-01', '2017-11-12', true);
 INSERT INTO productor_catalogoofertas (id, fecha_inicio, fecha_fin, activo) VALUES (2, '2017-09-01', '2017-09-12', true);
